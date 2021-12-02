@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+
+from lib.WAVReader import WAVReader as WR
+from lib.WAVWriter import WAVWriter as WW
+from lib.DSP_Tools import normaliseRMS, rms
+
+from joblib import Parallel, delayed
+# import matplotlib.pyplot as plt
+import multiprocessing as mp
+import numpy as np
+import argparse
+import glob
+import sys
+import os
+
+# NOTE
+    # At a tarRMS of 0.05, all of the files sound like clipped energy; there is no speech
+    # At a tarRMS of 0.1, some of the files have good - albeit noisy - data
+    # It looks from the plots like we should just be able to pick 0.075 and move on
+
+
+def plotIt(x, y, z, name):
+
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(right=0.75)
+    twin1 = ax.twinx()
+
+    p1, = ax.plot(x, y, "b-", label="avg. clip/frame")
+    p2, = twin1.plot(x, z, "r-", label="# to throw out")
+
+    ax.set_xlabel("tarRMS")
+    ax.set_ylabel("clips/frame")
+    twin1.set_ylabel("# to throw out")
+
+    ax.yaxis.label.set_color(p1.get_color())
+    twin1.yaxis.label.set_color(p2.get_color())
+
+    ax.legend(handles=[p1, p2])
+
+    plt.savefig('{}_after_collect_data_2.png'.format(name))
+
+
+def saveWav(i):
+
+    utt, tarRMS = i
+
+    wav = WR(utt)
+    sig = wav.getData()
+    fs = wav.getSamplingRate()
+    bits = wav.getBitsPerSample()
+    # dur = wav.getDuration()
+
+    kx, _ = normaliseRMS(sig, tarRMS)
+
+    if not (kx >= -1).all() or not (kx <= 1).all():
+        os.remove(utt) # I have to remove 66 files here because they are just clipping and noise; I have gone through a handful of them and can confirm that they are just bad
+        # print(utt, '\t', rms(sig), '\t', dur)
+    else:
+        WW(utt, kx, fs, bits).write()
+
+
+def normIt(i):
+
+    utt, tarRMS = i
+
+    wav = WR(utt)
+    sig = wav.getData()
+    dur = wav.getDuration()
+
+    kx, k = normaliseRMS(sig, tarRMS)
+    if not (kx >= -1).all() or not (kx <= 1).all(): # For counting clipping if you need it.
+        count = 0
+        for i in kx:
+            if i <= -1:
+                count += 1
+            elif i >= 1:
+                count += 1
+        return count, dur, count / len(sig)
+    return 0, dur, 0
+
+
+def iterate(ddir, tarRMS):
+
+    for condition in ['train', 'dev']:
+        wavFolder = os.path.join(ddir, 'data', condition, 'wav', '*')
+        # wavFolder = os.path.join(ddir, condition, '*') # For the big waveforms # NOTE we don't need to do this since Yan and I decided that the little waveforms are where we should actually be focusing for the comparison
+        wavs = glob.glob(wavFolder)
+        # for utt in wavs:
+        #     saveWav((utt, tarRMS))
+        Parallel(n_jobs=int(mp.cpu_count() / 2))(delayed(saveWav)((utt, tarRMS)) for utt in wavs)
+    
+    # Don't do the noise files as well. From Yan:
+        # You don't RMS-normliase both speech and noise. 
+        # Because once the RMS of the speech is set, 
+        # given the target SNR the noise level will have to be 
+        # adjusted in order to meet the target SNR; even if the noise is RMS-normalised, 
+        # its level would change after the SNR level is set by altering the level of the noise. 
+            
+
+def investigate(ddir, tarRMS):
+
+    for condition in ['train', 'dev']:
+
+        wavFolder = os.path.join(ddir, 'data', condition, 'wav', '*')
+        wavs = glob.glob(wavFolder)
+
+        meansList, myCounts = list(), list()
+        # Loop over a couple of potential target RMS values
+        y = np.linspace(0.05, 1.0, 2)
+        for lilTarRMS in y:
+
+            # Parallelized approach for quick running
+            # for utt in wavs:
+            #     x = normIt((utt, lilTarRMS))
+            X = Parallel(n_jobs=int(mp.cpu_count() / 2))(delayed(normIt)((utt, lilTarRMS)) for utt in wavs)
+            myList, count = list(), 0
+            for x in X:
+                if x[-1] > 0:
+                    myList.append(x[-1])
+                    count += 1
+            myMean = sum(myList) / len(myList)
+            meansList.append(myMean)
+            myCounts.append(count)
+        
+        plotIt(y, meansList, myCounts, condition)
+
+
+def makeDurationHistogram(ddir, tarRMS):
+
+    durList = list()
+    for condition in ['train', 'dev']:
+        wavFolder = os.path.join(ddir, 'data', condition, 'wav', '*')
+        wavs = glob.glob(wavFolder)
+        for wav in wavs:
+            sig = WR(wav)
+            sigDur = sig.getDuration()
+            durList.append(sigDur)
+    
+    minDur = np.min(durList)
+    maxDur = np.max(durList)
+    avgDur = np.mean(durList)
+
+    print("MinDuration\t", minDur, "MaxDuration\t", maxDur, "AvgDuration\t", avgDur)
+    num_bins = 30
+    n, bins, patches = plt.hist(durList, num_bins, facecolor='#0868ac', alpha=0.5)
+    plt.xlabel('Waveform duration (seconds)', fontsize = 14)
+    plt.ylabel('Count', fontsize = 14)
+    plt.title('Durational Distribution for\nChunked ADReSS Challenge Data', fontsize = 18, loc = 'left')
+    plt.savefig('durations_for_normalization.pdf')
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Normalize the RMS values for all of the waveforms, including noise files for objecitve intelligibility metrics.')
+    # parser.add_argument('dir', nargs='?', type=str, help='location of copied waveforms', default='/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/Full_wave_enhanced_audio_rms_normalized')
+    parser.add_argument('dir', nargs='?', type=str, help='location of copied waveforms', default='/tmp/tmp.OgrVUR6iE4')
+    parser.add_argument('tarRMS', nargs='?', type=float, help='the rms level (make as large as possible without clipping', default=0.075)
+
+    args = parser.parse_args()
+    # makeDurationHistogram(args.dir, args.tarRMS)
+    # investigate(args.dir, args.tarRMS) # Get into the weeds debugging
+    iterate(args.dir, args.tarRMS) # Actually do it
+
+
+if __name__ == "__main__":
+
+    main()

@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import argparse
+import glob
+import os
+
+
+def matlabCall(wavFolder, destFolder):
+
+    command = "rastaCSV('$inputFolder', '$destFolder')"
+    os.system("inputFolder={}; destFolder={}/; matlab -batch \"{}\";".format(wavFolder, destFolder, command))
+    
+
+def extract(exp_dir, scripts_dir, which):
+
+    wavFolder = os.path.join(exp_dir, 'data', which, 'wav')
+    destFolder = os.path.join(exp_dir, 'data', which, 'csv')
+
+    # Go to the MATLAB code directory
+    current_dir = os.getcwd()
+    os.chdir(scripts_dir)
+    matlabCall(wavFolder, destFolder)
+    os.chdir(current_dir)
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Description of part of pipeline.')
+    parser.add_argument('exp_dir', type=str, help='Temporary experiment directory.')
+    parser.add_argument('scripts_dir', type=str, help='Location of MATLAB code')
+    parser.add_argument('train_dev', type=str, help='Whether we are doing training or development extraction at the moment.')
+
+    args = parser.parse_args()
+    extract(args.exp_dir, args.scripts_dir, args.train_dev)
+
+
+if __name__ == "__main__":
+
+    main()
+

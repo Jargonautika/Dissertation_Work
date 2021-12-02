@@ -1,0 +1,43 @@
+nohup: ignoring input
+joblib.externals.loky.process_executor._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/externals/loky/process_executor.py", line 431, in _process_worker
+    r = call_item()
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/externals/loky/process_executor.py", line 285, in __call__
+    return self.fn(*self.args, **self.kwargs)
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/_parallel_backends.py", line 595, in __call__
+    return self.func(*args, **kwargs)
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/parallel.py", line 263, in __call__
+    for func, args, kwargs in self.items]
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/parallel.py", line 263, in <listcomp>
+    for func, args, kwargs in self.items]
+  File "main.py", line 117, in multiProctTest
+    statistic, pvalue = stats.ttest_ind(cc, cd, equal_var = False, nan_policy = 'raise') # Equal_var means Welch, not student's t-test
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/scipy/stats/stats.py", line 5628, in ttest_ind
+    cna, npa = _contains_nan(a, nan_policy)
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/scipy/stats/stats.py", line 239, in _contains_nan
+    raise ValueError("The input contains nan values")
+ValueError: The input contains nan values
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "main.py", line 252, in <module>
+    main(extractedFeatureSet)
+  File "main.py", line 234, in main
+    output = tTestInd(df)
+  File "main.py", line 128, in tTestInd
+    X = Parallel(n_jobs=mp.cpu_count())(delayed(multiProctTest)((ccDF[feature].tolist(), cdDF[feature].tolist(), feature)) for feature in df.columns[:-1])
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/parallel.py", line 1054, in __call__
+    self.retrieve()
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/parallel.py", line 933, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+  File "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/lib/python3.6/site-packages/joblib/_parallel_backends.py", line 542, in wrap_future_result
+    return future.result(timeout=timeout)
+  File "/usr/lib/python3.6/concurrent/futures/_base.py", line 425, in result
+    return self.__get_result()
+  File "/usr/lib/python3.6/concurrent/futures/_base.py", line 384, in __get_result
+    raise self._exception
+ValueError: The input contains nan values

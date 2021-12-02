@@ -1,0 +1,12 @@
+* Evaluate on witheld test data with everything
+* Test on shorter segments
+* Implement other feature extraction paradigm(s)
+
+
+# TODO Make some notes about what still needs to be done on the NN and ML side of things 
+    # Make sure that we don't have to reinvent the wheel once we've figured stuff out about the consonantal and vocalic statistics
+
+# TODO check out the literature on acoustic analysis for the pathological data  
+    # Look for consistency or divergent from what has been reported
+    # Have people looked at spectral tilt?
+        # Send interesting papers Yan's way

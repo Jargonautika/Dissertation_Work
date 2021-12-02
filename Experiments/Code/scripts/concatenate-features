@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+import pandas as pd
+import numpy as np
+import argparse
+import glob
+import sys
+import os
+
+
+def stitch(exp_dir, ams, mfcc, rasta, which):
+
+    # All of the directories have the same base filenames
+    fileNames = [os.path.basename(f) for f in glob.glob(os.path.join(ams, 'data', which, 'csv/*.csv'))][:]
+
+    for f in fileNames:
+        df0 = pd.read_csv(os.path.join(ams, 'data', which, 'csv', f), header = None)
+        df1 = pd.read_csv(os.path.join(mfcc, 'data', which, 'csv', f), header = None)
+        df2 = pd.read_csv(os.path.join(rasta, 'data', which, 'csv', f), header = None)
+
+        DF = df0.append(df1, ignore_index = True)
+        DF = DF.append(df2, ignore_index = True)
+        # DF = DF.append(df3, ignore_index = True)
+        # for lilDF in [df0, df1, df2]: #, df3]: # TODO frames are obviously off here
+        #     print(lilDF.shape)
+        # print(DF.shape)
+        # print()
+        # import sys
+        # sys.exit()
+
+        # print(os.path.join(exp_dir, 'data', which, 'csv', f))
+        DF.to_csv(os.path.join(exp_dir, 'data', which, 'csv', f), index_label = False, header = None)
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Concatenate disparate dataframes from different feature extraction processes (AMS, MFCC, RASTA) together.')
+    parser.add_argument('exp_dir', nargs='?',  type=str, help='Combination destination for the concatenated frames', default='/tmp/tmp.Wy3D2NOZ86')
+    parser.add_argument('ams', nargs='?',  type=str, help='AMS experiment directory', default='/tmp/tmp.2CKHTckEZ3')
+    parser.add_argument('mfcc', nargs='?',  type=str, help='MFCC experiment directory', default='/tmp/tmp.OnCYm1VXui')
+    parser.add_argument('rasta', nargs='?',  type=str, help='RASTA experiment directory', default='/tmp/tmp.1Uu3jV6Anl')
+    parser.add_argument('which', nargs='?',  type=str, help='train or dev from the training data (not withheld testing)', default='train')
+
+    args = parser.parse_args()
+    # print(args)
+    # sys.exit()
+
+    stitch(args.exp_dir, args.ams, args.mfcc, args.rasta, args.which)
+
+
+if __name__ == "__main__":
+
+    main()

@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import argparse
+import sys
+import os
+
+
+def test(metadata, exp_dir):
+
+    df = pd.read_csv(metadata, sep = ';').rename(columns=lambda x: x.strip())
+        
+    for condition, code in [("cc", 0), ("cd", 1)]:
+        dev = df[df["Label"] == code]
+        dev = dev.drop(['Label'], axis = 1)
+
+        conditionColumn = [condition for i in range(dev.shape[0])]
+        dev['Label'] = conditionColumn
+
+        genderColumn = ["male" if i == 0 else "female" for i in dev['gender'].tolist()]
+        dev['gender'] = genderColumn
+    
+        dev.to_csv(os.path.join(exp_dir, 'data', 'dev', (condition + '.csv')), sep = '\t', index = False)
+
+
+def train(metadata, exp_dir, condition):
+
+    df = pd.read_csv(metadata, sep = ';').rename(columns=lambda x: x.strip())
+
+    # Add a column for condition so when we combine it is still interpretable
+    conditionColumn = [condition for i in range(df.shape[0])]
+    df['Label'] = conditionColumn
+
+    # Save out the new dataframe
+    df.to_csv(os.path.join(exp_dir, 'data', 'train', (condition + '.csv')), sep = '\t', index = False)
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Create development set.')
+    parser.add_argument('metadata', nargs='?', type=str, help='location for the metadata .csv file', default='/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/cd_meta_data.txt')
+    parser.add_argument('exp_dir', nargs='?', type=str, help='location for the experiment files', default='/tmp/tmp.YlVcGcjskQ')
+    parser.add_argument('condition', nargs='?', type=str, help='diagnosis state of individual patient', default='cd')
+    parser.add_argument('train_or_test', nargs='?', type=str, help='diagnosis state of individual patient', default='train')
+    
+    args = parser.parse_args()
+    if args.train_or_test == "train":
+        train(args.metadata, args.exp_dir, args.condition)
+    else:
+        test(args.metadata, args.exp_dir)
+
+
+if __name__ == "__main__":
+
+    main()

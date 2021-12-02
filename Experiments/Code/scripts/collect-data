@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import pandas as pd
+import argparse
+import glob
+import sys
+import os
+
+
+# Collect the appropriate data together
+def collect2(exp_dir, data_dir, sub_folder, which):
+
+    df = pd.read_csv(os.path.join(exp_dir, 'data', which, 'df.csv'), sep = '\t')
+    for _, row in df.iterrows():
+        
+        sources = glob.glob(os.path.join(data_dir, sub_folder, row.ID.strip()+ '*.wav'))
+        for source in sources:
+            name = os.path.basename(source).split('.')[0]
+            destination = os.path.join(exp_dir, 'data', which, 'wav', name + '_' + row.Label + '.wav')
+            os.popen('cp {} {}'.format(source, destination))
+
+
+# Collect the appropriate data together
+def collect(exp_dir, data_dir, sub_folder, which):
+
+    df = pd.read_csv(os.path.join(exp_dir, 'data', which, 'df.csv'), sep = '\t')
+    for _, row in df.iterrows():
+        
+        sources = glob.glob(os.path.join(data_dir, sub_folder, row.Label, row.ID.strip()+ '*.wav'))
+        for source in sources:
+            name = os.path.basename(source).split('.')[0]
+            destination = os.path.join(exp_dir, 'data', which, 'wav', name + '_' + row.Label + '.wav')
+            os.popen('cp {} {}'.format(source, destination))
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Collect raw data prior to feature extraction.')
+    parser.add_argument('dir', nargs='?', type=str, help='location of .csvs with identifying information', default='/tmp/tmp.YlVcGcjskQ')
+    parser.add_argument('data_dir', nargs='?', type=str, help='training as opposed to testing, not dev', default='../../Data/ADReSS-IS2020-data/train')
+    parser.add_argument('sub_folder', nargs='?', type=str, help='full wave or chunked waves', default='Normalised_audio_chunks')
+    parser.add_argument('which', nargs='?', type=str, help='train or dev from the training data (not withheld testing)', default='train')
+    parser.add_argument('train_or_test', nargs='?', type=str, help='where are we pulling the data from', default='False')
+
+    args = parser.parse_args()
+    if args.train_or_test == "False" and args.which == "dev":
+        collect2(args.dir, args.data_dir + "/../test/", "Normalised_audio-chunks", args.which)
+    else:
+        collect(args.dir, args.data_dir, args.sub_folder, args.which)
+
+
+
+if __name__ == "__main__":
+
+    main()
+

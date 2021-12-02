@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+from lib.WAVReader import WAVReader as WR
+from lib.WAVWriter import WAVWriter as WW
+from joblib import Parallel, delayed
+import multiprocessing as mp
+import pandas as pd
+import numpy as np
+import argparse
+import glob
+import sys
+import os
+
+
+def locateBigWav(speaker):
+
+    id = "{}.wav".format(speaker)
+    for condition in ['test', 'train']:
+        startDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/{}".format(condition)
+        for root, dirs, files in os.walk(startDir, topdown=False):
+            if id in files:
+                return os.path.join(root, files[files.index(id)])
+
+
+def iterSources(i):
+
+    source, sigFS, sigData, exp_dir, which, row, bits = i
+
+    name = os.path.basename(source).split('.')[0]
+
+    # I'm right on this understanding of what the filename splits mean.
+    # More explicitly written in /Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor.py
+    # in getAverageWordDuration()
+    _, _, startSIL, _, _, offsetA, offsetB = name.split('_')[0].split('-')
+    startPoint = int(startSIL) + int(offsetA)
+    endPoint = int(startSIL) + int(offsetB)
+
+    begin = startPoint / 1000
+    end = endPoint / 1000
+
+    # Get the start and end points for extraction
+    startFrame = int(np.round(sigFS * begin))
+    endFrame = int(np.round(sigFS * end))
+    subSigData = sigData[startFrame : endFrame]
+
+    # Save it out
+    WW(os.path.join(exp_dir, 'data', which, 'wav', name + '_' + row.Label + '.wav'), subSigData, sigFS, bits).write()
+
+
+def multiProcRows(i):
+
+    row, data_dir, sub_folder, exp_dir, which, top = i
+
+    # Get the metadata about who we're dealing with
+    ID = row.ID.strip()
+
+    # Find their long file (and textgrid) (that's not been tampered with by Haider et Luz's weird energy normalization)
+    bigWav = locateBigWav(ID)
+
+    # Get the waveform into a Numpy array
+    sig = WR(bigWav)
+
+    # Get the waveform's data and metadata
+    sigData = sig.getData()
+    sigFS = sig.getSamplingRate()
+    bits = sig.getBitsPerSample()
+
+    # Figure out how many cut utterances we have for this speaker
+    if top:
+        sources = glob.glob(os.path.join(data_dir, sub_folder, row.ID.strip()+ '*.wav'))
+    else:
+        sources = glob.glob(os.path.join(data_dir, sub_folder, row.Label, row.ID.strip()+ '*.wav'))
+
+    # Iterate over those utterances
+    for source in sources:
+        iterSources((source, sigFS, sigData, exp_dir, which, row, bits))
+
+
+# Collect the appropriate data together
+def collect(exp_dir, data_dir, sub_folder, which, top):
+
+    df = pd.read_csv(os.path.join(exp_dir, 'data', which, 'df.csv'), sep = '\t')
+    Parallel(n_jobs=mp.cpu_count())(delayed(multiProcRows)((row, data_dir, sub_folder, exp_dir, which, top)) for _, row in df.iterrows())
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Collect raw data prior to feature extraction; extract it from the big files and do not use their "normalized" files. They are garbage.')
+    parser.add_argument('dir', nargs='?', type=str, help='location of .csvs with identifying information', default='/tmp/tmp.OgrVUR6iE4')
+    parser.add_argument('data_dir', nargs='?', type=str, help='training as opposed to testing, not dev', default='../../Data/ADReSS-IS2020-data/train')
+    parser.add_argument('sub_folder', nargs='?', type=str, help='full wave or chunked waves', default='Normalised_audio-chunks')
+    parser.add_argument('which', nargs='?', type=str, help='train or dev from the training data (not withheld testing)', default='train')
+    parser.add_argument('train_or_test', nargs='?', type=str, help='where are we pulling the data from', default='False')
+
+    args = parser.parse_args()
+    if args.train_or_test == "False" and args.which == "dev":
+        collect(args.dir, args.data_dir + "/../test/", "Normalised_audio-chunks", args.which, True)
+    else:
+        collect(args.dir, args.data_dir, args.sub_folder, args.which, False)
+
+
+if __name__ == "__main__":
+
+    main()
+

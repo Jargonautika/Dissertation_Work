@@ -1,0 +1,13 @@
+nohup: ignoring input
+/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/acoustic-analysis/vowels.py:160: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  sharey=True)
+Now working on z 1.04
+Now working on z 1.15
+Now working on z 1.28
+Now working on z 1.44
+Now working on z 1.645
+Now working on z 1.75
+Now working on z 1.96
+Now working on z 2.05
+Now working on z 2.33
+Now working on z 2.58

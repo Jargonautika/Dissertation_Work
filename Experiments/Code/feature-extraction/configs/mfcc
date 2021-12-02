@@ -1,0 +1,21 @@
+#!/usr/bin env bash
+
+RUNNUM=${1:-3104}
+exp_dir=${2:-/tmp/tmp.OnCYm1VXui}
+stage=${3:-2}
+crossVal=${4:-"True"} # True = LOO; False = withheld data
+
+mkdir -p $exp_dir
+
+env=/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/MFCC/bin/activate
+scripts_dir=../scripts
+data_dir=../../Data/ADReSS-IS2020-data/train
+dev_size=0.2
+random_state=1
+subset_folder=Normalised_audio-chunks
+extraction_dir=../PYTHON/MFCC
+extraction_script=extract-mfcc
+algorithm=mfcc
+byFrame="True"
+
+bash train.sh $env $scripts_dir $data_dir $dev_size $random_state $subset_folder $extraction_dir $extraction_script $algorithm $RUNNUM $exp_dir $byFrame $stage $crossVal

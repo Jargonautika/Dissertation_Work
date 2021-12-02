@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import argparse
+import os
+
+
+def split(metadata, exp_dir, condition, size, state):
+
+    df = pd.read_csv(metadata, sep = ';').rename(columns=lambda x: x.strip())
+
+    # Add a column for condition so when we combine it is still interpretable
+    conditionColumn = [condition for i in range(df.shape[0])]
+    df['Label'] = conditionColumn
+
+    # Split the data into train and development sets
+    train, dev = train_test_split(df, test_size=size, random_state=state, shuffle=True)
+
+    # Save out the new dataframes
+    train.to_csv(os.path.join(exp_dir, 'data', 'train', (condition + '.csv')), sep = '\t', index = False)
+    dev.to_csv(os.path.join(exp_dir, 'data', 'dev', (condition + '.csv')), sep = '\t', index = False)
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Create development set.')
+    parser.add_argument('metadata', type=str, help='location for the metadata .csv file')
+    parser.add_argument('exp_dir', type=str, help='location for the experiment files')
+    parser.add_argument('condition', type=str, help='diagnosis state of individual patient')
+    parser.add_argument('dev_size', type=float, help='size of development set (e.g. 0.2)')
+    parser.add_argument('random_state', type=int, help='integer for random state seed')
+    
+    args = parser.parse_args()
+    split(args.metadata, args.exp_dir, args.condition, args.dev_size, args.random_state)
+
+
+if __name__ == "__main__":
+
+    main()

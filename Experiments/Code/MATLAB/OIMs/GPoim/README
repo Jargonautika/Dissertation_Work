@@ -1,0 +1,53 @@
+=========================================================================================
+     README for using the glimpsing metric to compute speech intelligibility in noise 
+=========================================================================================
+
+
+
+====================
+The folder contents
+====================
+|_ GPoim.m
+|_ makeRateMap4IHC.m
+|_ IHC_cooke.m
+|_ README
+
+
+
+============================================
+The use of main function: GPoim
+============================================
+gpoim = GPoim(s, n, fs, s_o, prtLevel) 
+
+This MATLAB implementation computes the normalised estimate of the number of above-threshold 
+speech target regions represented at the level of the auditory nerve.
+
+input:
+        s           input speech signal
+        n           input noise signal
+        fs          sampling frequency, Hz
+        s_o         unmodified form of s. This argument only takes effect if s differs from 
+        			s_o in duration
+        prtLevel    presentation level of s+n mixture, SPL [default: 74 dB SPL]
+
+output:
+        gpoim       index of glimpsing metric
+        gp          original glimpse proportion in Cooke (2006)
+
+ usage:
+ 		To compute intelligibility index of a speech signal in presence of a given noise 
+ 		signal: 
+        [gpoim, gp] = GPoim(speech, noise, fs)
+        
+        To compute intelligibility index of a modified signal which differs from the original
+        unmodified signal in duration: 
+        [gpoim, gp] = GPoim(modified, noise, fs, unmodified)
+        
+        To compute intelligibility index of a speech signal in presence of a given noise 
+ 		signal, with the presentation level of speech+noise mixture in dB SPL known:
+        [gpoim, gp] = GPoim(modified, noise, fs, unmodified, 63)
+++++++++++++++++++++++++++++++++++++++++++
+
+Authors: Yan Tang and Martin Cooke
+Created: July 28, 2015
+ 
