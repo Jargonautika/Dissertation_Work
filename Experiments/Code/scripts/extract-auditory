@@ -5,7 +5,7 @@ import argparse
 
 def call(exp_dir, which, scope):
 
-    bashCommand = "python3 ../PYTHON/AUDITORY/main.py {} {} {}".format(exp_dir, which, scope)
+    bashCommand = "python3 ../Code/PYTHON/AUDITORY/main.py {} {} {}".format(exp_dir, which, scope)
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     print()
@@ -19,7 +19,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Description of part of pipeline.')
     parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default = '/tmp/tmp.TcRZJvM59O')
-    parser.add_argument('scripts_dir', nargs='?', type=str, help='Location of PYTHON code', default = '../PYTHON/AUDITORY')
+    parser.add_argument('scripts_dir', nargs='?', type=str, help='Location of PYTHON code', default = '../Code/PYTHON/AUDITORY')
     parser.add_argument('train_dev', nargs='?', type=str, help='Whether we are doing training or development extraction at the moment.', default = '/tmp/tmp.TcRZJvM59O/data/train')
     parser.add_argument('scope', nargs = '?', type = str, help = "speaker level global or utterance level local", default = 'auditory-global')
 

@@ -159,10 +159,10 @@ def averageDataFrame(df, windowCount, n=4):
 
 def readFiles(X, byFrame, experiment):
 
-    labels, utteranceList = X
-    y, speakerDict, returnVectors = list(), dict(), list()
+    labels, utterances = X
+    y, speakerDict, returnVectors, utteranceList = list(), dict(), list(), list()
     # counter = 0
-    for label, utterance in zip(labels, utteranceList):
+    for label, utterance in zip(labels, utterances):
         # counter += 1
         # if counter > 10:
         #     break
@@ -176,6 +176,7 @@ def readFiles(X, byFrame, experiment):
 
                 vector = df.to_numpy()
                 y.append(label)
+                utteranceList.append(utterance)
                 returnVectors.append(vector)
                 speakerDict[speaker][1].append(vector)
 
@@ -190,6 +191,7 @@ def readFiles(X, byFrame, experiment):
                     vector += intVals
 
                 y.append(label)
+                utteranceList.append(utterance)
                 vector = np.array(vector).reshape(1, -1)
                 returnVectors.append(vector)
                 speakerDict[speaker][1].append(vector)
@@ -197,11 +199,13 @@ def readFiles(X, byFrame, experiment):
         else:
             # Consider an input dataframe of shape (375,150) with AMS features
             if experiment == "raw": # Raw frames as input feature fectors (150)
-                for _, colSeries in df.items():
-                    vector = colSeries.to_numpy()
-                    y.append(label)
-                    returnVectors.append(vector)
-                    speakerDict[speaker][1].append(vector)
+                for i, (_, colSeries) in enumerate(df.items()):
+                    if i > 0: # Otherwise we get a vector of column labels (9 for RASTA, 13 for MFCC, etc)
+                        vector = colSeries.to_numpy()
+                        y.append(label)
+                        utteranceList.append(utterance)
+                        returnVectors.append(vector)
+                        speakerDict[speaker][1].append(vector)
 
             elif experiment == "averaged": # Averaged frames as input feature vectors (142)
                 windowCount = df.shape[1]
@@ -209,6 +213,7 @@ def readFiles(X, byFrame, experiment):
                     vectors = list(averageDataFrame(df, windowCount))
                     for vector in vectors:
                         y.append(label)
+                        utteranceList.append(utterance)
                         returnVectors.append(vector)
                         speakerDict[speaker][1].append(vector)
 
@@ -218,6 +223,7 @@ def readFiles(X, byFrame, experiment):
                     vectors = list(subsetDataFrame(df, windowCount))
                     for vector in vectors:
                         y.append(label)
+                        utteranceList.append(utterance)
                         returnVectors.append(vector)
                         speakerDict[speaker][1].append(vector)
 
@@ -231,10 +237,11 @@ def readFiles(X, byFrame, experiment):
                         vectors = list(subsetDataFrame(miniDF, miniWindowCount))
                         for vector in vectors:
                             y.append(label)
+                            utteranceList.append(utterance)
                             returnVectors.append(vector)
                             speakerDict[speaker][1].append(vector)
         
-    return y, np.vstack(returnVectors), speakerDict 
+    return y, np.vstack(returnVectors), speakerDict, utteranceList
 
 
 def getLabels(exp, data, which):
@@ -267,8 +274,8 @@ def getData(exp, data, byFrame, experiment):
 
     else:
 
-        y_train, X_train, trainSpeakerDict = readFiles(getLabels(exp, data, 'train'), byFrame, experiment)
-        y_test, X_test, devSpeakerDict = readFiles(getLabels(exp, data, 'dev'), byFrame, experiment)
+        y_train, X_train, trainSpeakerDict, trainUtterances = readFiles(getLabels(exp, data, 'train'), byFrame, experiment)
+        y_test, X_test, devSpeakerDict, devUtterances = readFiles(getLabels(exp, data, 'dev'), byFrame, experiment)
 
         # Separate out the control condition from the test condition
         controlLabelsTrain = [True if i == 'cc' else False for i in y_train]
@@ -383,10 +390,12 @@ def getData(exp, data, byFrame, experiment):
         z = joblib.dump(y_train, '{}/vectors/classifiers/{}-y_train.pkl'.format(exp, experiment), compress=9)
         z = joblib.dump(X_train, '{}/vectors/classifiers/{}-X_train.pkl'.format(exp, experiment), compress=9)
         z = joblib.dump(trainSpeakerDict, '{}/vectors/classifiers/{}-trainSpeakerDict.pkl'.format(exp, experiment), compress=9)
+        z = joblib.dump(trainUtterances, '{}/vectors/classifiers/{}-trainUtterances.pkl'.format(exp, experiment), compress=9)
 
         z = joblib.dump(y_test, '{}/vectors/classifiers/{}-y_test.pkl'.format(exp, experiment), compress=9)
         z = joblib.dump(X_test, '{}/vectors/classifiers/{}-X_test.pkl'.format(exp, experiment), compress=9)
         z = joblib.dump(devSpeakerDict, '{}/vectors/classifiers/{}-devSpeakerDict.pkl'.format(exp, experiment), compress=9)
+        z = joblib.dump(devUtterances, '{}/vectors/classifiers/{}-devUtterances.pkl'.format(exp, experiment), compress=9)
 
         z = joblib.dump(scaler, '{}/vectors/classifiers/{}-scaler.pkl'.format(exp, experiment), compress=9)
 
@@ -394,8 +403,8 @@ def getData(exp, data, byFrame, experiment):
     le = LabelEncoder()
     le.fit(y_train)
 
-    # print('Objects dumped for classification')
-    # return None, None, None, None, None, None
+    print('Objects dumped for classification')
+    return None, None, None, None, None, None
 
     # The frame-level features take SO LONG to train and test, so we're going to quantize them down to 10% and see if that helps much. 
     if byFrame:
@@ -414,8 +423,8 @@ def getData(exp, data, byFrame, experiment):
 def makeCalls(exp_dir, data_dir, random_state, byFrame, RUNNUM, experiment, loocv_not_withheld):
 
     X, y, X_test, y_test, le, devSpeakerDict = getData(exp_dir, data_dir, byFrame, experiment)
-    # if not X and not y and not X_test and not y_test and not le and not devSpeakerDict:
-    #     return
+    if not X and not y and not X_test and not y_test and not le and not devSpeakerDict:
+        return
 
     if loocv_not_withheld:
         crossVal(exp_dir, experiment, X, y, X_test, y_test, devSpeakerDict, random_state, le, RUNNUM)
@@ -426,17 +435,17 @@ def makeCalls(exp_dir, data_dir, random_state, byFrame, RUNNUM, experiment, looc
 def main():
 
     parser = argparse.ArgumentParser(description='Call all of the classification algorithms and consolidate a global report.')
-    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.2CKHTckEZ3')
-    parser.add_argument('data_dir', nargs='?', type=str, help='Location for the map for the scalar score (e.g. MMSE).', default='../../Data/ADReSS-IS2020-data/train')
+    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldMFCC')
+    parser.add_argument('data_dir', nargs='?', type=str, help='Location for the map for the scalar score (e.g. MMSE).', default='../Data/ADReSS-IS2020-data/train')
     parser.add_argument('random_state', nargs='?', type=int, help='Affects the ordering of the indices, which controls the randomness of each fold in KFold validation', default=1)
     parser.add_argument('by_frame', nargs='?', type=str, help='True if we need to run this by frame or False if we are using COMPARE or something else distilled.', default="True")
-    parser.add_argument('run_num', nargs='?', type=str, help='Which runthrough we are on.', default='3104')
+    parser.add_argument('run_num', nargs='?', type=str, help='Which runthrough we are on.', default='1897')
     parser.add_argument('loocv_not_withheld', nargs='?', type=str, help='If True, we will do 5 fold leave-one-out cross validation; if False, we are training on all the training data and testing on the withheld test data ', default='False')
-    parser.add_argument('algorithm', nargs='?', type=str, help='Which input feature type we are using', default='ams')
+    parser.add_argument('algorithm', nargs='?', type=str, help='Which input feature type we are using', default='mfcc')
 
     args = parser.parse_args()
     if args.by_frame == "True":
-        for experiment in ['raw', 'averaged', 'flattened']: # 'averaged_and_flattened']:
+        for experiment in ['raw']:#, 'averaged', 'flattened']: # 'averaged_and_flattened']:
             print('Now working on {}'.format(experiment))
             makeCalls(args.exp_dir, args.data_dir, args.random_state, True, args.run_num, experiment, args.loocv_not_withheld)
     else:

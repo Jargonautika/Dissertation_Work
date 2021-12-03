@@ -5,7 +5,7 @@ import argparse
 
 def call(exp_dir, feature_dir, which):
 
-    bashCommand = "python3 ../PYTHON/openSMILE/main.py {} {} {}".format(exp_dir, feature_dir, which)
+    bashCommand = "python3 ../Code/PYTHON/openSMILE/main.py {} {} {}".format(exp_dir, feature_dir, which)
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 

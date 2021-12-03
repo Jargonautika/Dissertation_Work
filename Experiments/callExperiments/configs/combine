@@ -3,17 +3,17 @@
 RUNNUM=${1:-3104}
 exp_dir=${2:-/tmp/tmp.Wy3D2NOZ86} 
 stage=${3:-2}
-crossVal=${4:-"True"} # True = LOO; False = withheld data
+crossVal=${4:-"True"} # True = LOO; False = WITHHELD
 
 mkdir -p $exp_dir
 
 env=/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/COMBINE/bin/activate
-scripts_dir=../scripts
-data_dir=../../Data/ADReSS-IS2020-data/train
+scripts_dir=../Code/scripts
+data_dir=../Data/ADReSS-IS2020-data/train
 dev_size=0.2
 random_state=1
 subset_folder=Normalised_audio-chunks
-extraction_dir=../MATLAB/AMS
+extraction_dir=../Code/MATLAB/AMS
 extraction_script=extract-ams
 algorithm=combine
 byFrame="True"

@@ -4,17 +4,17 @@ algorithm=${1:-"auditory"}
 RUNNUM=${2:-3104}
 exp_dir=${3:-/tmp/tmp.TcRZJvM59O}
 stage=${4:-2}
-crossVal=${5:-"True"} # True = LOO; False = withheld data
+crossVal=${5:-"True"} # True = LOO; False = WITHHELD
 
 mkdir -p $exp_dir
 
 env=/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/AUDITORY/bin/activate
-scripts_dir=../scripts
-data_dir=../../Data/ADReSS-IS2020-data/train
+scripts_dir=../Code/scripts
+data_dir=../Data/ADReSS-IS2020-data/train
 dev_size=0.2
 random_state=1
 subset_folder=Normalised_audio-chunks
-extraction_dir=../PYTHON/AUDITORY
+extraction_dir=../Code/PYTHON/AUDITORY
 extraction_script=extract-auditory
 byFrame="False"
 

@@ -17,7 +17,7 @@ RUNNUM=${10}
 exp_dir=${11:-""}
 byFrame=${12:-"True"}
 stage=${13:-1}
-crossVal=${14:-"True"} # True = LOO; False = withheld data
+crossVal=${14:-"True"} # True = LOSO; False = WITHHELD
 
 source $env
 if [ ! -d $exp_dir ]; then
@@ -46,15 +46,13 @@ echo "$algorithm-$RUNNUM" > $exp_dir/algorithm.txt
 # Run Feature Extraction
 if [[ $stage -le 0 ]]; then
 
-	# We don't often use the auditory-global stuff anymore, but just in case, we need to be able to switch back and forth
-	if [ "$algorithm" = "auditory-global" ]; then
-		cp /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor_global.py /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor.py
-	elif [ "$algorithm" = "auditory-local" ]; then
-		cp /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor_local.py /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor.py
+	if [ "$algorithm" = "auditory-local" ]; then
+		cp /home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/PYTHON/AUDITORY/extractor_local.py /home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/PYTHON/AUDITORY/extractor.py
 	fi
 
 	echo "Now working on extracting $algorithm"
 
+	# TODO fix this for LOSO
 	if [ "$crossVal" = "True" ]; then
 
 		# Beginning of implementation for cross-validation using the training and dev sets only
@@ -73,7 +71,7 @@ if [[ $stage -le 0 ]]; then
 			python3 $scripts_dir/train-dev-split-2 $metadata_loc $exp_dir $condition "train"
 		done
 
-		meta_data_test=/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt
+		meta_data_test=/home/chasea2/SPEECH/Dissertation_Work/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt
 		python3 $scripts_dir/train-dev-split-2 $meta_data_test $exp_dir $condition 'test'
 	fi
 
@@ -81,21 +79,6 @@ if [[ $stage -le 0 ]]; then
 	for dir in train dev; do
 		python3 $scripts_dir/combine-dataframes $exp_dir/data/$dir
 	done
-
-	# NOTE this is all wrong. The "energy normalized" short waveforms are just all basically garbage
-	# and it's a miracle that anyone is getting results out of these data. It's insane. Listen to 
-	# /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/test/Normalised_audio-chunks/S201-87-30878-38412-3-4000-4310.wav  
-	# and then listen to /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/Full_wave_enhanced_audio_rms_normalized/dev/S201.wav
-	# between 30 and 35 seconds to see what I'm talking about. It's so bad. 
-
-		# Collect the data together
-		# I do this copying every time, so I'm never re-normalizing already normalized files
-		# for dir in train dev; do
-		# 	python3 $scripts_dir/collect-data $exp_dir $data_dir $subset_folder $dir $crossVal
-		# done
-
-	# The new plan now is to manually extract the data myself from the big waveforms and just do my normalization
-	# without their normalization going through it and screwing stuff up first. 
 
 	# Collect the data together and extract actually good waveforms
 	for dir in train dev; do
@@ -119,10 +102,10 @@ if [[ $stage -le 0 ]]; then
 
 	echo "Done extracting features for $algorithm"
 	if [ "$algorithm" = "auditory-global" ] || [ "$algorithm" = "auditory-local" ]; then
-		rm /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Code/PYTHON/AUDITORY/extractor.py
+		rm /home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/PYTHON/AUDITORY/extractor.py
 	fi
 
-	# exit 0
+	exit 0
 	
 fi
 
@@ -130,12 +113,12 @@ fi
 if [[ $stage -le 1 ]]; then
 
 	# Regression
-	echo "Now working on regressing $algorithm"
-	python3 $scripts_dir/regression/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal $algorithm
+	# echo "Now working on regressing $algorithm"
+	# python3 $scripts_dir/regression/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal $algorithm
 
 	# Classification
-	# echo "Now working on classifying $algorithm"
-	# python3 $scripts_dir/classification/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal $algorithm
+	echo "Now working on classifying $algorithm"
+	python3 $scripts_dir/classification/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal $algorithm
 
 	echo "Done doing basic machine learning with $algorithm for training set"
 	exit 0
@@ -146,17 +129,18 @@ fi
 if [[ $stage -le 2 ]]; then
 
 	# Feed Forward Neural Network
-	echo "Now working on the feed-forward neural net for $algorithm"
 	env=/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/NEURAL/bin/activate
 	source $env
 	mkdir -p $exp_dir/nn_checkpoints
 
-	python3 $scripts_dir/neural/Keras/main.py $exp_dir $data_dir $algorithm $random_state $byFrame $RUNNUM $crossVal
+	# echo "Now working on the feed-forward neural net for $algorithm"
+	# python3 $scripts_dir/neural/Keras/main.py $exp_dir $data_dir $algorithm $random_state $byFrame $RUNNUM $crossVal
 
-	# I can't figure this out. Ask Lane for help?
-	# python3 $scripts_dir/neural/PyTorch/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal
+	echo "Now working on the GRU Neural Net for $algorithm"
+	# python3 $scripts_dir/neural/PyTorch/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal # Old non-working feed forward neural net; replaced with Keras early 2021
+	python3 $scripts_dir/neural/PyTorch/GRU.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal
 
-	echo "Done doing neural network modeling with $algorithm for withheld test set"
+	echo "Done doing neural network modeling with $algorithm"
 	exit 0
 
 fi

@@ -31,8 +31,8 @@ def extract(exp_dir, which):
 def main():
 
     parser = argparse.ArgumentParser(description='Description of part of pipeline.')
-    parser.add_argument('exp_dir', type=str, help='Temporary experiment directory.')
-    parser.add_argument('train_dev', type=str, help='Whether we are doing training or development extraction at the moment.')
+    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldMFCC')
+    parser.add_argument('train_dev', nargs='?', type=str, help='Whether we are doing training or development extraction at the moment.', default='/tmp/tmp.withheldMFCC/data/train')
 
     args = parser.parse_args()
     extract(args.exp_dir, args.train_dev)
