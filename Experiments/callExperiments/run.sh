@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 RUNNUM=1897 
-stage=1
+stage=2
 crossVal="False"
 
 # bash ./configs/ams $RUNNUM /tmp/withheldAMS $stage $crossVal

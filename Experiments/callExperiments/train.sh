@@ -134,11 +134,11 @@ if [[ $stage -le 2 ]]; then
 	mkdir -p $exp_dir/nn_checkpoints
 
 	# echo "Now working on the feed-forward neural net for $algorithm"
-	# python3 $scripts_dir/neural/Keras/main.py $exp_dir $data_dir $algorithm $random_state $byFrame $RUNNUM $crossVal
+	# python3 $scripts_dir/neural/Keras/bagOfWords.py $exp_dir $data_dir $algorithm $random_state $byFrame $RUNNUM $crossVal
 
 	echo "Now working on the GRU Neural Net for $algorithm"
 	# python3 $scripts_dir/neural/PyTorch/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal # Old non-working feed forward neural net; replaced with Keras early 2021
-	python3 $scripts_dir/neural/PyTorch/GRU.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal
+	python3 $scripts_dir/neural/PyTorch/sequence.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal
 
 	echo "Done doing neural network modeling with $algorithm"
 	exit 0
