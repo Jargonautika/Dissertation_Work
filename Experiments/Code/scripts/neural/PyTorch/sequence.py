@@ -8,13 +8,16 @@ import argparse
 import numpy as np
 import pandas as pd
 import torch.nn as nn
-from torch import optim
 import torch.nn.functional as F
 
 from GRU import GRU
+from torch import optim
 from torch.optim import Adam
 from matplotlib import pyplot as plt
 from feedForwardNet import Feedforward
+from dataLoader import customDataLoader
+from torch.utils.data import DataLoader
+from torch.nn.functional import cross_entropy
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -106,55 +109,89 @@ def getData(exp, data, byFrame, experiment):
     X_test, _ = reFrameData(X_test, devUtterances)
     assert len(X_test) == len(y_test)
 
-    return torch.tensor(X_train, dtype = torch.double), le.transform(y_train), [torch.tensor(x, dtype = torch.double) for x in X_test], le.transform(y_test), fillShape
+    # Convert the data into tensors
+    W = torch.tensor(X_train, dtype = torch.double)
+    x = le.transform(y_train)
+    Y = [torch.tensor(x, dtype = torch.double).cuda() for x in X_test]
+    z = le.transform(y_test)
+    x, z = map(torch.from_numpy, (x, z))
+    x = x.float()
+    z = z.float()
+
+    # Put the data on the GPU device
+    W.cuda()
+
+    # Get the final indexes
+    last_idxes = ((W != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0]).int()
+
+    trainData = DataLoader(dataset = customDataLoader(W, x, last_idxes), batch_size = 50)
+    testData = DataLoader(dataset = customDataLoader(Y, z), batch_size = 1)
+
+    return trainData, testData, fillShape
 
 
 def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not_withheld):
 
     # Load in the data
-    X_train, y, X_test, y_test, fillShape = getData(exp_dir, data_dir, byFrame, experiment)
-    last_idxes = ((X_train != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0]).int()
-
-    # Convert the data into tensors
-    Y_train, Y_val = map(torch.from_numpy, (y, y_test))
-    Y_train = Y_train.float()
-    Y_val = Y_val.float()
+    X_trainData, X_testData, fillShape = getData(exp_dir, data_dir, byFrame, experiment)
 
     # Initialize the model
     net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2)
+    net.cuda()
 
-    # Train the model
-    output = net(X_train[:,:,:], last_idxes[:])
+    #Hyperparameters
+    epochs = 500
+    learning_rate = 0.001
+    total_loss = 0.0
+    optimizer = Adam(net.parameters(), lr=learning_rate)
+
+    # Do a single pass
+    j = len(X_trainData)
+    for i, batch in enumerate(X_trainData):
+        print(i, i/j)
+        examples = batch["data"]
+        labels = batch["labels"]
+        idxes = batch["indices"]
+        prediction = net(examples, idxes)
+        loss = net.criterion(prediction, labels.long())
+        total_loss += loss.item()
+        loss.backward()
+        optimizer.step()
 
     # Evaluate the model first to get a baseline
-    y_pred = net.test(X_test, y_test)
-    before_train = net.accuracy(y_pred, y_test)
+    y_pred = net.getPredictions(X_testData.data)
+    before_train = net.accuracy(y_pred, X_testData.labels)
     print('Test loss before training', before_train)
 
     # Train up the model
-    epochs = 500
-    learning_rate = 0.001
-    optimizer = Adam(net.parameters(), lr=learning_rate)
     for epoch in range(epochs):
 
         optimizer.zero_grad()
+        total_loss = 0.0
 
-        # Forward pass
-        output = net(X_train)
+        # Forward pass in batches for memory's sake
+        for batch in X_trainData:
+            examples = batch["data"]
+            labels = batch["labels"]
+            idxes = batch["indices"]
+            prediction = net(examples, idxes)
 
-        # Compute and saveloss
-        loss = net.criterion(output, y)
-        net.loss_arr.append(loss.item())
+            # Compute and save loss
+            loss = net.criterion(prediction, labels.long())
+            net.loss_arr.append(loss.item())
+
+            # For checking the loss by epoch instead of by batch
+            total_loss += loss.item()
+
+            # Backward pass
+            loss.backward()
+            optimizer.step()
 
         # Compute and save accuracy
-        y_pred = net.test(X_test, y_test)
-        net.acc_arr.append(net.accuracy(y_pred, Y_train))
+        y_pred = net.getPredictions(X_testData.data)
+        net.acc_arr.append(net.accuracy(y_pred, X_testData.labels))
 
-        # Backward pass
-        loss.backward()
-        net.optimizer.step()
-
-        if epoch % 50 == 0:
+        if epoch % 5 == 0:
             print('Epoch {}: train loss: {}\t train accuracy: {}'.format(epoch, loss.item(), net.acc_arr[-1]))
             torch.save({'epoch'                 : epoch,
                         'model_state_dict'      : net.state_dict(),
@@ -162,12 +199,13 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
                         'loss'                  : loss
                         }, os.path.join(net.ckpt_dest, "GRU_{}".format(epoch))
                        )
-
+        break # For testing why things are breaking
+    
     # Evaluate the model
-    y_pred = net.test(X_test, y_test)
-    after_train = net.accuracy(y_pred, y_test)
+    y_pred = net.getPredictions(X_testData.data)
+    after_train = net.accuracy(y_pred, X_testData.labels)
 
-    print('Test loss after Training', after_train.item())
+    print('Test loss after Training', after_train)
 
     # Visualize the model
     # plotIt(net, exp_dir, "Feed Forward Neural Network")
@@ -184,6 +222,7 @@ if __name__ == "__main__":
     parser.add_argument('loocv_not_withheld', nargs='?', type=str, help='If True, we will do 5 fold leave-one-out cross validation; if False, we are training on all the training data and testing on the withheld test data ', default='False')
 
     args = parser.parse_args()
+    assert torch.cuda.is_available(), "Cuda isn't online; figure that out to run this script."
 
     # This distinction may not actually matter for the neural networking implementation
     if args.by_frame == "True":

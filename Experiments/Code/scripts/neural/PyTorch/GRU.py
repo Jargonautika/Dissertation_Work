@@ -35,6 +35,7 @@ class GRU(nn.Module):
         self.linear = nn.Linear(self.linear_input_dim, num_classes)
 
         self.acc_arr = list()
+        self.loss_arr = list()
 
 
     def forward(self, x, last_idxes=None): # x: bs x seq length (containg tokens), last_idxes: (seq_length,)
@@ -57,7 +58,7 @@ class GRU(nn.Module):
     def accuracy(self, y_pred, y_true):
         return (torch.argmax(y_pred, dim = 1) == y_true).float().mean()
 
-    def test(self, X_test, y_test):
+    def getPredictions(self, X_test):
 
         y_pred = list()
         for test_ex in X_test:
