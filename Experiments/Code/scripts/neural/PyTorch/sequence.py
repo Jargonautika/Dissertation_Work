@@ -205,7 +205,8 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
             torch.save({'epoch'                 : epoch,
                         'model_state_dict'      : net.state_dict(),
                         'optimizer_state_dict'  : optimizer.state_dict(),
-                        'loss'                  : loss
+                        'loss'                  : loss,
+                        'accuracy'              : net.acc_arr[-1]
                         }, os.path.join(net.ckpt_dest, "GRU_Epoch_{}".format(epoch))
                        )    
     # Evaluate the model
