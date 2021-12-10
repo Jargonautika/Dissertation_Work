@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+CUDA_LAUNCH_BLOCKING = "1"
+
 import os
 import glob
 import torch
@@ -17,7 +19,6 @@ from matplotlib import pyplot as plt
 from feedForwardNet import Feedforward
 from dataLoader import customDataLoader
 from torch.utils.data import DataLoader
-from torch.nn.functional import cross_entropy
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -112,17 +113,21 @@ def getData(exp, data, byFrame, experiment):
     # Convert the data into tensors
     W = torch.tensor(X_train, dtype = torch.double)
     x = le.transform(y_train)
-    Y = [torch.tensor(x, dtype = torch.double).cuda() for x in X_test]
+    Y = [torch.tensor(x, dtype = torch.double) for x in X_test]
     z = le.transform(y_test)
     x, z = map(torch.from_numpy, (x, z))
     x = x.float()
     z = z.float()
 
-    # Put the data on the GPU device
-    W.cuda()
+    # Get the final indexes with actual values in them
+    last_idxes = ((W != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0] - 1).int()
 
-    # Get the final indexes
-    last_idxes = ((W != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0]).int()
+    # Put the data on the GPU
+    W = W.to('cuda:0')
+    x = x.to('cuda:0')
+    Y = [y.to('cuda:0') for y in Y]
+    z = z.to('cuda:0')
+    last_idxes = last_idxes.to('cuda:0')
 
     trainData = DataLoader(dataset = customDataLoader(W, x, last_idxes), batch_size = 50)
     testData = DataLoader(dataset = customDataLoader(Y, z), batch_size = 1)
@@ -136,8 +141,9 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
     X_trainData, X_testData, fillShape = getData(exp_dir, data_dir, byFrame, experiment)
 
     # Initialize the model
-    net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2)
-    net.cuda()
+    ckpt_dest = os.path.join(exp_dir, 'nn_checkpoints')
+    net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
+    net.to('cuda:0')
 
     #Hyperparameters
     epochs = 500
@@ -145,23 +151,26 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
     total_loss = 0.0
     optimizer = Adam(net.parameters(), lr=learning_rate)
 
-    # Do a single pass
-    j = len(X_trainData)
-    for i, batch in enumerate(X_trainData):
-        print(i, i/j)
-        examples = batch["data"]
-        labels = batch["labels"]
-        idxes = batch["indices"]
-        prediction = net(examples, idxes)
-        loss = net.criterion(prediction, labels.long())
-        total_loss += loss.item()
-        loss.backward()
-        optimizer.step()
+    # # Do a single pass for debugging
+    # j = len(X_trainData)
+    # for i, batch in enumerate(X_trainData):
+    #     print(i, i/j)
+    #     examples = batch["data"]
+    #     oneHotLabels = batch["oneHotLabels"]
+    #     idxes = batch["indices"]
+    #     # Pass prediction through a softmax layer
+    #     prediction = torch.softmax(net(examples, idxes), 0)
+    #     loss = net.criterion(prediction, oneHotLabels)
+    #     total_loss += loss.item()
+    #     loss.backward()
+    #     optimizer.step()
 
-    # Evaluate the model first to get a baseline
-    y_pred = net.getPredictions(X_testData.data)
-    before_train = net.accuracy(y_pred, X_testData.labels)
-    print('Test loss before training', before_train)
+    # # Evaluate the model first to get a baseline
+    # y_pred = net.getPredictions(X_testData)
+    # before_train = net.accuracy(y_pred, X_testData.dataset.labels)
+    # del y_pred
+    # print('Test loss before training', total_loss)
+    # print('Test accuracy before training', before_train)
 
     # Train up the model
     for epoch in range(epochs):
@@ -170,15 +179,14 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
         total_loss = 0.0
 
         # Forward pass in batches for memory's sake
-        for batch in X_trainData:
+        for j, batch in enumerate(X_trainData):
             examples = batch["data"]
-            labels = batch["labels"]
+            oneHotLabels = batch["oneHotLabels"]
             idxes = batch["indices"]
-            prediction = net(examples, idxes)
+            prediction = torch.softmax(net(examples, idxes), 0)
 
-            # Compute and save loss
-            loss = net.criterion(prediction, labels.long())
-            net.loss_arr.append(loss.item())
+            # Compute loss
+            loss = net.criterion(prediction, oneHotLabels)
 
             # For checking the loss by epoch instead of by batch
             total_loss += loss.item()
@@ -188,21 +196,20 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
             optimizer.step()
 
         # Compute and save accuracy
-        y_pred = net.getPredictions(X_testData.data)
-        net.acc_arr.append(net.accuracy(y_pred, X_testData.labels))
+        y_pred = net.getPredictions(X_testData)
+        net.acc_arr.append(net.accuracy(y_pred, X_testData.dataset.labels))
+        net.loss_arr.append(total_loss)
 
         if epoch % 5 == 0:
             print('Epoch {}: train loss: {}\t train accuracy: {}'.format(epoch, loss.item(), net.acc_arr[-1]))
             torch.save({'epoch'                 : epoch,
                         'model_state_dict'      : net.state_dict(),
-                        'optimizer_state_dict'  : net.optimizer.state_dict(),
+                        'optimizer_state_dict'  : optimizer.state_dict(),
                         'loss'                  : loss
-                        }, os.path.join(net.ckpt_dest, "GRU_{}".format(epoch))
-                       )
-        break # For testing why things are breaking
-    
+                        }, os.path.join(net.ckpt_dest, "GRU_Epoch_{}".format(epoch))
+                       )    
     # Evaluate the model
-    y_pred = net.getPredictions(X_testData.data)
+    y_pred = net.getPredictions(X_testData)
     after_train = net.accuracy(y_pred, X_testData.labels)
 
     print('Test loss after Training', after_train)

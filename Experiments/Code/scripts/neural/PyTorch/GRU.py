@@ -11,11 +11,12 @@ import random
 
 # Base code provided by Marc Canby; modified by Chase Adams 2021
 class GRU(nn.Module):
-    def __init__(self, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes):
+    def __init__(self, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest):
         super(GRU, self).__init__()
 
         self.hidden_size = hidden_size
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.BCELoss() # For binary; if you switch to ternary, update this
+        self.ckpt_dest = ckpt_dest
 
         # Create an embedding layer (https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html)
         #   to represent the words in your vocabulary. Make sure to use vocab_size, embed_size, and pad_idx here.
@@ -40,7 +41,7 @@ class GRU(nn.Module):
 
     def forward(self, x, last_idxes=None): # x: bs x seq length (containg tokens), last_idxes: (seq_length,)
 
-        x = self.linear1(x.float()) # bs x seq length x embed dim
+        x = self.linear1(x) # bs x seq length x embed dim
 
         output, _  = self.gru(x) # bs x seq length x hidden size
         if last_idxes is not None: # training
@@ -56,17 +57,19 @@ class GRU(nn.Module):
         return z
 
     def accuracy(self, y_pred, y_true):
-        return (torch.argmax(y_pred, dim = 1) == y_true).float().mean()
+        return torch.sum(y_pred == y_true) / len(y_true)
 
     def getPredictions(self, X_test):
 
         y_pred = list()
-        for test_ex in X_test:
-            test_ex = test_ex.unsqueeze(0) # (1, seq_len)
-            output = self.forward(test_ex) # (1, num classes)
-            output = output.squeeze(0) # num_classes
-            probs = torch.softmax(output, 0)
+        for batch in X_test:
+            test_ex = batch["data"]
+            prediction = self.forward(test_ex) # (1, num classes)
+            prediction = prediction.squeeze(0) # num_classes
+            probs = torch.softmax(prediction, 0)
             assert probs.sum() < 1.00001 and probs.sum() > .99999
             pred = torch.argmax(probs).item()
             y_pred.append(pred)
+        y_pred = torch.tensor(y_pred)
+        y_pred = y_pred.to('cuda:0')
         return y_pred
