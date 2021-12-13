@@ -15,7 +15,7 @@ import pandas as pd
 import torch.nn as nn
 import torch.nn.functional as F
 
-from GRU import GRU
+from RNN import RNN
 from torch import optim
 from torch.optim import Adam
 from matplotlib import pyplot as plt
@@ -33,7 +33,7 @@ def plotIt(net, exp_dir, title = ""):
     plt.title(title)
     plt.xlabel("Epoch")
 
-    plt.savefig(os.path.join(exp_dir, 'reports', 'Gated_Recurrent_NN_loss.pdf'))
+    plt.savefig(os.path.join(exp_dir, 'reports', 'Recurrent_Recurrent_NN_loss.pdf'))
 
 
 # From a matrix of unrelated vectors to a tensor of utterances
@@ -52,7 +52,7 @@ def reFrameData(data, utterances, padding = 0):
             if padding > 0:
                 # Pad out the tensors right
                 for j in range(padding - len(tmpData)):
-                    tmpData.append(np.full(fillShape, 1000.0)) # 1000 here means "not a real cepstral coefficient; please ignore"
+                    tmpData.append(np.full(fillShape, 0.0))
             returnData.append(np.array(tmpData))
             tmpData = [data[i+1]]
 
@@ -60,7 +60,7 @@ def reFrameData(data, utterances, padding = 0):
     if padding > 0:
         # Pad out the tensors right
         for j in range(padding - len(tmpData)):
-            tmpData.append(np.full(fillShape, 1000.0))
+            tmpData.append(np.full(fillShape, 0.0))
     returnData.append(np.array(tmpData))
 
     return returnData, fillShape
@@ -126,11 +126,11 @@ def getData(exp, data, byFrame, experiment):
     last_idxes = ((W != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0] - 1).int()
 
     # Put the data on the GPU
-    W = W.to('cuda:0')
-    x = x.to('cuda:0')
-    Y = [y.to('cuda:0') for y in Y]
-    z = z.to('cuda:0')
-    last_idxes = last_idxes.to('cuda:0')
+    W = W.to('cuda:1')
+    x = x.to('cuda:1')
+    Y = [y.to('cuda:1') for y in Y]
+    z = z.to('cuda:1')
+    last_idxes = last_idxes.to('cuda:1')
 
     trainData = DataLoader(dataset = customDataLoader(W, x, last_idxes), batch_size = 50)
     testData = DataLoader(dataset = customDataLoader(Y, z), batch_size = 1)
@@ -145,11 +145,11 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
 
     # Initialize the model
     ckpt_dest = os.path.join(exp_dir, 'nn_checkpoints')
-    net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
-    net.to('cuda:0')
+    net = RNN(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
+    net.to('cuda:1')
 
     #Hyperparameters
-    epochs = 500
+    epochs = 5
     learning_rate = 0.001
     optimizer = Adam(net.parameters(), lr=learning_rate)
 
@@ -191,7 +191,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
             prediction = net(examples, idxes)
             prediction = prediction.squeeze(0)
             probs = torch.softmax(prediction, 0)
-            probs = prediction.clamp(0, 1) # https://stackoverflow.com/questions/66456541/runtimeerror-cuda-error-device-side-assert-triggered-on-loss-function
+            probs = prediction.clamp(0, 1)
             prediction = torch.argmax(probs, dim = 1)
 
             # Compute loss
@@ -216,7 +216,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
                         'optimizer_state_dict'  : optimizer.state_dict(),
                         'loss'                  : loss,
                         'accuracy'              : net.acc_arr[-1]
-                        }, os.path.join(net.ckpt_dest, "GRU_Epoch_{}".format(epoch))
+                        }, os.path.join(net.ckpt_dest, "RNN_Epoch_{}".format(epoch))
                        )    
     # Evaluate the model
     y_pred = net.getPredictions(X_testData)
@@ -225,7 +225,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
     print('Test loss after Training', after_train)
 
     # Visualize the model
-    plotIt(net, exp_dir, "Gated Recurrent Network")
+    plotIt(net, exp_dir, "Recurrent Recurrent Network")
 
 
 if __name__ == "__main__":
