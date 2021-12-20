@@ -52,7 +52,7 @@ def reFrameData(data, utterances, padding = 0):
             if padding > 0:
                 # Pad out the tensors right
                 for j in range(padding - len(tmpData)):
-                    tmpData.append(np.full(fillShape, 0.0)) # 1000 here means "not a real cepstral coefficient; please ignore"
+                    tmpData.append(np.full(fillShape, 0.0)) # 0.0 here means "not a real cepstral coefficient; please ignore"; it doesn't work super great.
             returnData.append(np.array(tmpData))
             tmpData = [data[i+1]]
 
