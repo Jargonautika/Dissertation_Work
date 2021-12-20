@@ -11,13 +11,13 @@ def pythonCall(wavFolder, destFolder):
 
     for wav in glob.glob(os.path.join(wavFolder, '*.wav')):
         base = os.path.basename(os.path.splitext(wav)[0].strip())
-        mfbs = os.path.join(destFolder, base + '.csv')
+        outpath = os.path.join(destFolder, base + '.csv')
         ext = Extractor(wav)
         mfbs = ext.getMelFilterBank()
 
         df = pd.DataFrame(mfbs)
         dfT = df.T # We have to transpose this because currently it gives us (# windows, 13) instead of the other way
-        dfT.to_csv(mfbs, index_label = False, header = False)
+        dfT.to_csv(outpath, index_label = False, header = False)
 
 
 def extract(exp_dir, which):
