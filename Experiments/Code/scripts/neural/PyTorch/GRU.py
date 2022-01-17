@@ -30,7 +30,7 @@ class GRU(nn.Module):
         self.linear = nn.Linear(self.linear_input_dim, num_classes)
 
         # Have an activation function
-        self.activation = nn.Sigmoid()
+        self.activation = nn.ReLU()
 
         self.acc_arr = list()
         self.loss_arr = list()

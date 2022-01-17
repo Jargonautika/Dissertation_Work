@@ -12,6 +12,7 @@ import argparse
 import numpy as np
 
 from GRU import GRU
+from LSTM import LSTM
 from torch.optim import Adam
 from matplotlib import pyplot as plt
 from dataLoader import customDataLoader
@@ -19,7 +20,7 @@ from torch.utils.data import DataLoader
 from sklearn.preprocessing import LabelEncoder
 
 
-def plotIt(net, exp_dir, title = ""):
+def plotIt(net, exp_dir, model_type, title = ""):
 
     plt.plot(net.loss_arr, 'r-', label='loss')
     plt.plot(net.acc_arr, 'b-', label='train accuracy')
@@ -27,7 +28,7 @@ def plotIt(net, exp_dir, title = ""):
     plt.title(title)
     plt.xlabel("Epoch")
 
-    plt.savefig(os.path.join(exp_dir, 'reports', 'Gated_Recurrent_NN_loss.pdf'))
+    plt.savefig(os.path.join(exp_dir, 'reports', '{}_loss.pdf'.format(model_type)))
 
 
 # From a matrix of unrelated vectors to a tensor of utterances
@@ -132,18 +133,21 @@ def getData(exp, data, byFrame, experiment):
     return trainData, testData, fillShape
 
 
-def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not_withheld):
+def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_type, loocv_not_withheld):
 
     # Load in the data
     X_trainData, X_testData, fillShape = getData(exp_dir, data_dir, byFrame, experiment)
 
     # Initialize the model
     ckpt_dest = os.path.join(exp_dir, 'nn_checkpoints')
-    net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
+    if model_type == 'GRU':
+        net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
+    elif model_type == 'LSTM':
+        net = LSTM(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
     net.to('cuda:0')
 
     #Hyperparameters
-    epochs = 500
+    epochs = 50
     learning_rate = 0.001
     optimizer = Adam(net.parameters(), lr=learning_rate)
 
@@ -185,7 +189,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
             prediction = net(examples, idxes)
             prediction = prediction.squeeze(0)
             probs = torch.softmax(prediction, 0)
-            probs = prediction.clamp(0, 1) # https://stackoverflow.com/questions/66456541/runtimeerror-cuda-error-device-side-assert-triggered-on-loss-function
+            # probs = prediction.clamp(0, 1) # https://stackoverflow.com/questions/66456541/runtimeerror-cuda-error-device-side-assert-triggered-on-loss-function # This was adding the two columns together into the lefthand column  
             prediction = torch.argmax(probs, dim = 1)
 
             # Compute loss
@@ -210,7 +214,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
                         'optimizer_state_dict'  : optimizer.state_dict(),
                         'loss'                  : loss,
                         'accuracy'              : net.acc_arr[-1]
-                        }, os.path.join(net.ckpt_dest, "GRU_Epoch_{}".format(epoch))
+                        }, os.path.join(net.ckpt_dest, "{}_Epoch_{}".format(model_type, epoch))
                        )    
     # Evaluate the model
     y_pred = net.getPredictions(X_testData)
@@ -219,17 +223,21 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, loocv_not
     print('Test loss after Training', after_train)
 
     # Visualize the model
-    plotIt(net, exp_dir, "Gated Recurrent Network")
+    if model_type == 'GRU':
+        plotIt(net, exp_dir, model_type, "Gated Recurrent Network")
+    elif model_type == 'LSTM':
+        plotIt(net, exp_dir, model_type, "Long Short-Term Memory")
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Call all of the regression algorithms and consolidate a global report.')
-    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldMFCC')
+    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldMFB')
     parser.add_argument('data_dir', nargs='?', type=str, help='Location for the map for the scalar score (e.g. MMSE).', default='../Data/ADReSS-IS2020-data/train')
     parser.add_argument('random_state', nargs='?', type=int, help='Affects the ordering of the indices, which controls the randomness of each fold in KFold validation.', default=1)
     parser.add_argument('by_frame', nargs='?', type=str, help='True if we need to run this by frame or False if we are using COMPARE or something else distilled.', default="True")
     parser.add_argument('run_num', nargs='?', type=str, help='Which runthrough we are on.', default='1897')
+    parser.add_argument('model_type', nargs='?', type=str, help='You wanna use an LSTM or a GRU?', default='LSTM')
     parser.add_argument('loocv_not_withheld', nargs='?', type=str, help='If True, we will do 5 fold leave-one-out cross validation; if False, we are training on all the training data and testing on the withheld test data ', default='False')
 
     args = parser.parse_args()
@@ -239,6 +247,6 @@ if __name__ == "__main__":
     if args.by_frame == "True":
         for experiment in ['raw']: #['raw', 'averaged', 'flattened']: #, 'averaged_and_flattened']:
             # print('Now working on {}'.format(experiment))
-            main(args.exp_dir, args.data_dir, args.random_state, True, experiment, args.run_num, args.loocv_not_withheld)
+            main(args.exp_dir, args.data_dir, args.random_state, True, experiment, args.run_num, args.model_type, args.loocv_not_withheld)
     else:
-        main(args.exp_dir, args.data_dir, args.random_state, False, "compare", args.run_num, args.loocv_not_withheld)
+        main(args.exp_dir, args.data_dir, args.random_state, False, "compare", args.run_num, args.model_type, args.loocv_not_withheld)
