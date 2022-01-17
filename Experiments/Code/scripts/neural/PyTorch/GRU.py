@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils import data
-import random
 
 # Base code provided by Marc Canby; modified by Chase Adams 2021
 class GRU(nn.Module):
@@ -35,6 +29,9 @@ class GRU(nn.Module):
         self.linear_input_dim = self.hidden_size if not bidirectional else self.hidden_size * 2
         self.linear = nn.Linear(self.linear_input_dim, num_classes)
 
+        # Have an activation function
+        self.activation = nn.Sigmoid()
+
         self.acc_arr = list()
         self.loss_arr = list()
 
@@ -53,7 +50,7 @@ class GRU(nn.Module):
             assert x.shape[0] == 1 # assuming inference has batch size of 1
             y = output[:,-1,:]
         assert len(y.shape) == 2 and y.shape[0] == x.shape[0]
-        z = self.linear(y) # bs x num_classes
+        z = self.linear(self.activation(y)) # bs x num_classes
         return z
 
     def accuracy(self, y_pred, y_true):
