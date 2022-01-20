@@ -131,7 +131,7 @@ def getData(exp, data, byFrame, experiment):
     if 'AMS' not in exp:
         batch_size = 50
     else:
-        batch_size = 10
+        batch_size = 10 # We run into a pretty significant Cuda out of memory error here with 375 AMS features. The tensor is too big for iona.
     trainData = DataLoader(dataset = customDataLoader(W, x, last_idxes), batch_size = batch_size)
     testData = DataLoader(dataset = customDataLoader(Y, z), batch_size = 1)
 
@@ -152,7 +152,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
     net.to('cuda:0')
 
     #Hyperparameters
-    epochs = 50
+    epochs = 5
     learning_rate = 0.001
     optimizer = Adam(net.parameters(), lr=learning_rate)
 
