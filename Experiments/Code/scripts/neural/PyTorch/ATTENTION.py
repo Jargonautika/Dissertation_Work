@@ -24,6 +24,17 @@ class AttentionModel:
     CONCAT = 3
 
 
+class Params:
+    def __init__(self, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest):
+        self.feat_size = feat_size
+        self.embed_dim = embed_size
+        self.rnn_hidden_dim = hidden_size
+        self.dropout = dropout
+        self.bidirectional = bidirectional
+        self.num_classes = num_classes
+        self.ckpt_dest = ckpt_dest
+
+
 # Base code provided by Marc Canby; modified by Chase Adams 2021
 class Attention(nn.Module):
     def __init__(self, method, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest):
@@ -74,7 +85,7 @@ class RnnClassifier(nn.Module):
         self.device = device
 
         # Embedding layer
-        self.word_embeddings = nn.Embedding(self.params.vocab_size, self.params.embed_dim)
+        self.word_embeddings = nn.Embedding(self.params.feat_size, self.params.embed_dim)
 
         # Calculate number of directions
         self.num_directions = 2 if self.params.bidirectional == True else 1

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import torch
-
 torch.manual_seed(42)
 
 CUDA_LAUNCH_BLOCKING = "1"
@@ -12,8 +11,7 @@ import joblib
 import argparse
 import numpy as np
 
-from GRU import GRU
-from LSTM import LSTM
+from ATTENTION import *
 from torch.optim import Adam
 from matplotlib import pyplot as plt
 from dataLoader import customDataLoader
@@ -145,6 +143,10 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
 
     # Initialize the model
     ckpt_dest = os.path.join(exp_dir, 'nn_checkpoints')
+    
+    params = Params(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
+    net = RnnClassifier('cuda:0', params)
+
     if model_type == 'GRU':
         net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
     elif model_type == 'LSTM':
