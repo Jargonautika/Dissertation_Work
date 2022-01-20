@@ -152,7 +152,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
     net.to('cuda:0')
 
     #Hyperparameters
-    epochs = 5
+    epochs = 50
     learning_rate = 0.001
     optimizer = Adam(net.parameters(), lr=learning_rate)
 
