@@ -120,11 +120,11 @@ def getData(exp, data, byFrame, experiment):
     last_idxes = ((W != 0.0).sum(dim = 2).sum(dim=1)/fillShape[0] - 1).int()
 
     # Put the data on the GPU
-    W = W.to('cuda:0')
-    x = x.to('cuda:0')
-    Y = [y.to('cuda:0') for y in Y]
-    z = z.to('cuda:0')
-    last_idxes = last_idxes.to('cuda:0')
+    W = W.to('cuda:1')
+    x = x.to('cuda:1')
+    Y = [y.to('cuda:1') for y in Y]
+    z = z.to('cuda:1')
+    last_idxes = last_idxes.to('cuda:1')
 
     if 'AMS' not in exp:
         batch_size = 50
@@ -143,42 +143,22 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
 
     # Initialize the model
     ckpt_dest = os.path.join(exp_dir, 'nn_checkpoints')
-    
-    params = Params(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
-    net = RnnClassifier('cuda:0', params)
 
+    # Decide if you're on a GRU or LSTM run with attention
     if model_type == 'GRU':
-        net = GRU(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
-    elif model_type == 'LSTM':
-        net = LSTM(feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest)
-    net.to('cuda:0')
+        rnn_type = 0
+    else:
+        rnn_type = 1
+    
+    params = Params(rnn_type, feat_size=fillShape[0], embed_size=256, hidden_size=512, dropout=0.3, bidirectional=True, num_classes=2, ckpt_dest = ckpt_dest, label_size = 2, num_layers = 5)
+    net = RnnClassifier('cuda:1', params)
+
+    net.to('cuda:1')
 
     #Hyperparameters
-    epochs = 50
+    epochs = 5
     learning_rate = 0.001
     optimizer = Adam(net.parameters(), lr=learning_rate)
-
-    # # Do a single pass for debugging
-    # j = len(X_trainData)
-    # total_loss = 0.0
-    # for i, batch in enumerate(X_trainData):
-    #     print(i, i/j)
-    #     examples = batch["data"]
-    #     oneHotLabels = batch["oneHotLabels"]
-    #     idxes = batch["indices"]
-    #     # Pass prediction through a softmax layer
-    #     prediction = torch.softmax(net(examples, idxes), 0)
-    #     loss = net.criterion(prediction, oneHotLabels)
-    #     total_loss += loss.item()
-    #     loss.backward()
-    #     optimizer.step()
-
-    # # Evaluate the model first to get a baseline
-    # y_pred = net.getPredictions(X_testData)
-    # before_train = net.accuracy(y_pred, X_testData.dataset.labels)
-    # del y_pred
-    # print('Test loss before training', total_loss)
-    # print('Test accuracy before training', before_train)
 
     # Train up the model
     for epoch in range(epochs):

@@ -7,13 +7,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 from torch.utils import data
 import random
 
 
 class RnnType:
-    GRU = 1
+    GRU = 0
     LSTM = 1
 
 
@@ -25,7 +24,9 @@ class AttentionModel:
 
 
 class Params:
-    def __init__(self, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest):
+    def __init__(self, model_type, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest, label_size, num_layers):
+
+        self.rnn_type = model_type
         self.feat_size = feat_size
         self.embed_dim = embed_size
         self.rnn_hidden_dim = hidden_size
@@ -33,6 +34,8 @@ class Params:
         self.bidirectional = bidirectional
         self.num_classes = num_classes
         self.ckpt_dest = ckpt_dest
+        self.label_size = label_size
+        self.num_layers = num_layers
 
 
 # Base code provided by Marc Canby; modified by Chase Adams 2021
