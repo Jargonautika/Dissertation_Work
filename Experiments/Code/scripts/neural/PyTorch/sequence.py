@@ -237,7 +237,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Call all of the regression algorithms and consolidate a global report.')
-    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldMFB')
+    parser.add_argument('exp_dir', nargs='?', type=str, help='Temporary experiment directory.', default='/tmp/tmp.withheldRASTA')
     parser.add_argument('data_dir', nargs='?', type=str, help='Location for the map for the scalar score (e.g. MMSE).', default='../Data/ADReSS-IS2020-data/train')
     parser.add_argument('random_state', nargs='?', type=int, help='Affects the ordering of the indices, which controls the randomness of each fold in KFold validation.', default=1)
     parser.add_argument('by_frame', nargs='?', type=str, help='True if we need to run this by frame or False if we are using COMPARE or something else distilled.', default="True")
