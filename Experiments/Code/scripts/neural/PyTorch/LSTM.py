@@ -36,7 +36,7 @@ class LSTM(nn.Module):
         self.loss_arr = list()
 
 
-    def forward(self, x, last_idxes=None): # x: bs x seq length (containg tokens), last_idxes: (seq_length,)
+    def forward(self, x, last_idxes=None): # x: bs x seq length (contaning tokens), last_idxes: (seq_length,)
 
         x = self.linear1(x) # bs x seq length x embed dim
 

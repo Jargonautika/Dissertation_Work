@@ -37,11 +37,13 @@ class Params:
         self.label_size = label_size
         self.num_layers = num_layers
 
+        self.attention_model = 2 # Let's try general purpose math first
 
-# Base code provided by Marc Canby; modified by Chase Adams 2021
+
 class Attention(nn.Module):
-    def __init__(self, method, feat_size, embed_size, hidden_size, dropout, bidirectional, num_classes, ckpt_dest):
+    def __init__(self, device, method, hidden_size):
         super(Attention, self).__init__()
+        self.device = device
 
         self.method = method
         self.hidden_size = hidden_size
@@ -49,36 +51,34 @@ class Attention(nn.Module):
         self.concat_linear = nn.Linear(self.hidden_size * 2, self.hidden_size)
 
         if self.method == AttentionModel.GENERAL:
-            self.attn = nn.Linear(self.hidden_size, self.hidden_size)
+            self.attn = nn.Linear(self.hidden_size, hidden_size)
 
         elif self.method == AttentionModel.CONCAT:
-            self.attn = nn.Linear(self.hidden_size * 2, self.hidden_size)
-            self.other = torch.FloatTensor(1, self.hidden_size)
-
-
+            self.attn = nn.Linear(self.hidden_size * 2, hidden_size)
+            self.other = torch.FloatTensor(1, hidden_size)
 
     def forward(self, rnn_outputs, final_hidden_state):
         # rnn_output.shape:         (batch_size, seq_len, hidden_size)
-        # final_hidden_state.shape: (batch_siqe, hidden_size)
+        # final_hidden_state.shape: (batch_size, hidden_size)
         # NOTE: hidden_size may also reflect bidirectional hidden states (hidden_size = num_directions * hidden_dim)
-
         batch_size, seq_len, _ = rnn_outputs.shape
         if self.method == AttentionModel.DOT:
             attn_weights = torch.bmm(rnn_outputs, final_hidden_state.unsqueeze(2))
         elif self.method == AttentionModel.GENERAL:
-            attn_weights = self.attn(rnn_outputs) # (batch_siqe, seq_len, hidden_dim)
+            attn_weights = self.attn(rnn_outputs) # (batch_size, seq_len, hidden_dim)
             attn_weights = torch.bmm(attn_weights, final_hidden_state.unsqueeze(2))
-        
+        #elif self.method == AttentionModel.CONCAT:
+        #    NOT IMPLEMENTED
         else:
-            raise Exception("[Error] Unknown AttentionModel Type.")
+            raise Exception("[Error] Unknown AttentionModel.")
 
-        attn_weights = F.softmax(attn_weights.squeeze(2), dim = 1)
+        attn_weights = F.softmax(attn_weights.squeeze(2), dim=1)
 
         context = torch.bmm(rnn_outputs.transpose(1, 2), attn_weights.unsqueeze(2)).squeeze(2)
 
-        attn_hidden = torch.tanh(self.concat_linear(torch.cat((context, final_hidden_state), dim = 1)))
+        attn_hidden = torch.tanh(self.concat_linear(torch.cat((context, final_hidden_state), dim=1)))
 
-        return attn_hidden, attn_weights
+        return attn_hidden, 
 
 
 class RnnClassifier(nn.Module):
@@ -88,12 +88,12 @@ class RnnClassifier(nn.Module):
         self.device = device
 
         # Embedding layer
-        self.word_embeddings = nn.Embedding(self.params.feat_size, self.params.embed_dim)
+        self.embeddings = nn.Embedding(self.params.feat_size, self.params.embed_dim)
 
         # Calculate number of directions
         self.num_directions = 2 if self.params.bidirectional == True else 1
 
-        self.linear_dims = [self.params.rnn_hidden_dim * self.num_directions] + self.params.linear_dims
+        self.linear_dims = [self.params.rnn_hidden_dim * self.num_directions] # + self.params.linear_dims
         self.linear_dims.append(self.params.label_size)
 
         # RNN layer
@@ -110,7 +110,6 @@ class RnnClassifier(nn.Module):
                        bidirectional=self.params.bidirectional,
                        dropout=self.params.dropout,
                        batch_first=False)
-
 
         # Define set of fully connected layers (Linear Layer + Activation Layer) * #layers
         self.linears = nn.ModuleList()
@@ -130,8 +129,6 @@ class RnnClassifier(nn.Module):
         if self.params.attention_model != AttentionModel.NONE:
             self.attn = Attention(self.device, self.params.attention_model, self.params.rnn_hidden_dim * self.num_directions)
 
-
-
     def init_hidden(self, batch_size):
         if self.params.rnn_type == RnnType.GRU:
             return torch.zeros(self.params.num_layers * self.num_directions, batch_size, self.params.rnn_hidden_dim).to(self.device)
@@ -145,17 +142,16 @@ class RnnClassifier(nn.Module):
         for param in layer.parameters():
             param.requires_grad = False
 
-
-    def forward(self, inputs):
-        batch_size, seq_len = inputs.shape
+    def forward(self, x, last_idxes=None):
+        batch_size, seq_len, feats = x.shape
 
         # Push through embedding layer
-        X = self.word_embeddings(inputs).transpose(0, 1)
+        X = self.embeddings(x).transpose(0, 1)
 
         # Push through RNN layer
         rnn_output, self.hidden = self.rnn(X, self.hidden)
 
-        # Extract last hidden state
+        # Extract last hidden state # TODO this needs to be shifted to the right hidden state
         if self.params.rnn_type == RnnType.GRU:
             final_state = self.hidden.view(self.params.num_layers, self.num_directions, batch_size, self.params.rnn_hidden_dim)[-1]
         elif self.params.rnn_type == RnnType.LSTM:
@@ -184,7 +180,6 @@ class RnnClassifier(nn.Module):
         log_probs = F.log_softmax(X, dim=1)
 
         return log_probs, attn_weights
-
 
     def init_weights(self, layer):
         if type(layer) == nn.Linear:

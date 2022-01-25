@@ -194,7 +194,7 @@ def main(exp_dir, data_dir, random_state, byFrame, experiment, RUNNUM, model_typ
         net.acc_arr.append(np.mean(total_accuracy))
         net.loss_arr.append(total_loss)
 
-        if epoch % 5 == 0:
+        if epoch % 1 == 0:
             print('Epoch {}: train loss: {}\t train accuracy: {}'.format(epoch, loss.item(), net.acc_arr[-1]))
             torch.save({'epoch'                 : epoch,
                         'model_state_dict'      : net.state_dict(),
