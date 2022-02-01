@@ -66,7 +66,8 @@ class Extractor:
     def getFilterBanks(self, powFrames):
 
         lowFreqMel = 0
-        nfilt = 40
+        nfilt = 40 # TODO check the center frequencies for the filters
+        
         highFreqMel = (2595 * np.log10(1 + (self.fs / 2) / 700))  # Convert Hz to Mel
         melPoints = np.linspace(lowFreqMel, highFreqMel, nfilt + 2)  # Equally spaced in Mel scale
         hzPoints = (700 * (10**(melPoints / 2595) - 1))  # Convert Mel to Hz

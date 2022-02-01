@@ -104,7 +104,6 @@ if [[ $stage -le 0 ]]; then
 	if [ "$algorithm" = "auditory-global" ] || [ "$algorithm" = "auditory-local" ]; then
 		rm /home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/PYTHON/AUDITORY/extractor.py
 	fi
-
 	# exit 0
 	
 fi
@@ -136,7 +135,7 @@ if [[ $stage -le 2 ]]; then
 	# echo "Now working on the feed-forward neural net for $algorithm"
 	# python3 $scripts_dir/neural/Keras/bagOfWords.py $exp_dir $data_dir $algorithm $random_state $byFrame $RUNNUM $crossVal
 
-	model_type=LSTM
+	model_type=GRU # LSTM
 	echo "Now working on the $model_type Neural Net for $algorithm"
 	# python3 $scripts_dir/neural/PyTorch/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal # Old non-working feed forward neural net; replaced with Keras early 2021
 	python3 $scripts_dir/neural/PyTorch/sequence.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $model_type $crossVal
