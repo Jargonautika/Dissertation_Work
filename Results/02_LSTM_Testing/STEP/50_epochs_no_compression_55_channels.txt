@@ -1,0 +1,11 @@
+Epoch 0: train loss: 1.8456014394760132	 train accuracy: 0.5113003493419715
+Epoch 5: train loss: 1.8447645902633667	 train accuracy: 0.5020604256008353
+Epoch 10: train loss: 1.8447710275650024	 train accuracy: 0.5015018167240279
+Epoch 15: train loss: 1.8446975946426392	 train accuracy: 0.4850274606474808
+Epoch 20: train loss: 1.8447688817977905	 train accuracy: 0.5017582268587181
+Epoch 25: train loss: 1.8447686433792114	 train accuracy: 0.4915109777024814
+Epoch 30: train loss: 1.8447688817977905	 train accuracy: 0.4962545612028667
+Epoch 35: train loss: 1.8447673320770264	 train accuracy: 0.5140018197042602
+Epoch 40: train loss: 1.8447661399841309	 train accuracy: 0.5057875333087785
+Epoch 45: train loss: 1.8447686433792114	 train accuracy: 0.4954853334597179
+Test loss after Training tensor(0.5188, device='cuda:0')

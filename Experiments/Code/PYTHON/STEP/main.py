@@ -13,7 +13,7 @@ def pythonCall(wavFolder, destFolder):
         base = os.path.basename(os.path.splitext(wav)[0].strip())
         outpath = os.path.join(destFolder, base + '.csv')
         ext = Extractor(wav)
-        ratemap = ext.mkRateMap(ext.data, ext.fs, nb_ch=55, compression=None, earmodel=None)[0]
+        ratemap = ext.mkRateMap(ext.data, ext.fs, nb_ch=34, compression='log', earmodel=None)[0]
 
         df = pd.DataFrame(ratemap)
         df.to_csv(outpath, index_label = False, header = False)
