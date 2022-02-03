@@ -161,11 +161,11 @@ def main(which):
             for condition in ["cc", "cd"]:
 
                 files = glob.glob(os.path.join(dataDir, partition, which, condition, "*"))
-                X = list()
-                for file in files:
-                    x = getInformation(file, which, partition, condition, "tmpGlobal")
-                    X.append(x)
-                # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, condition, "tmpGlobal") for file in files[:])
+                # X = list()
+                # for file in files:
+                #     x = getInformation(file, which, partition, condition, "tmpGlobal")
+                #     X.append(x)
+                X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, condition, "tmpGlobal") for file in files[:])
 
                 # Get the metadata
                 trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
@@ -187,11 +187,11 @@ def main(which):
             df.ID = df.ID.str.replace(' ', '')
             
             files = glob.glob(os.path.join(dataDir, partition, which, "*"))
-            X = list()
-            for file in files:
-                x = getInformation(file, which, partition, condition, "tmpGlobal")
-                X.append(x)
-            # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, df, "tmpGlobal") for file in files[:])
+            # X = list()
+            # for file in files:
+            #     x = getInformation(file, which, partition, condition, "tmpGlobal")
+            #     X.append(x)
+            X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, df, "tmpGlobal") for file in files[:])
             
             for x in X:
                 id = x[0].split('-')[0]
