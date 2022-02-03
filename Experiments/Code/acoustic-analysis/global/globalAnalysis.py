@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from asyncore import file_dispatcher
 from lib.DSP_Tools import normaliseRMS, energy
 from scipy.signal import butter, sosfilt
 from lib.WAVReader import WAVReader as WR
 import removeInterviewer
+import articulationRate
 import concatenateWords
 import pandas as pd
 import numpy as np
@@ -12,6 +14,13 @@ import shutil
 import glob
 import sys
 import os
+
+
+def getArticulationRate(tmpFile, which, partition, condition):
+
+    rate = articulationRate.main(tmpFile, partition, condition)
+
+    return rate
 
 
 # https://stackoverflow.com/questions/12093594/how-to-implement-band-pass-butterworth-filter-with-scipy-signal-butter
@@ -98,16 +107,20 @@ def getFundamentalFrequency(file):
 
 def getInformation(file, which, partition, condition, destFolder):
 
-    # Get rid of the interviewer in the long files
-    if "Full" in which:
-        tmpFile = getRidOfInterviewer(file, partition, condition, destFolder)
+    # # Get rid of the interviewer in the long files
+    # if "Full" in which:
+    #     file = getRidOfInterviewer(file, partition, condition, destFolder)
 
-    # Get Median F0 per file
-    f0, iqr = getFundamentalFrequency(tmpFile)
+    # # Get Median F0 per file
+    # f0, iqr = getFundamentalFrequency(file)
 
-    # Get Intensity per file
-    intensity = getIntensity(tmpFile, which, partition, condition)
+    # # Get Intensity per file
+    # intensity = getIntensity(file, which, partition, condition)
 
+    # Get articulation rate
+    articulationRate = getArticulationRate(file, which, partition, condition)
+
+    # Get pausing
 
 
 def main(which):
@@ -148,4 +161,4 @@ def main(which):
 
 if __name__ == "__main__":
 
-    main("Full_wave_enhanced_audio")
+    main("Full_wave_enhanced_audio") # TODO multiprocess the calculation across all files since it takes a minute
