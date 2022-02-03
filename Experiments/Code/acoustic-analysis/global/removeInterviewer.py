@@ -99,7 +99,7 @@ def main(file, textGrid, tmpFolder):
         fs = wav.getSamplingRate()
         bits = wav.getBitsPerSample()
 
-    WW(dest, data, fs, bits).write()
+    WW(dest, data.reshape(-1, 1), fs, bits).write()
 
     return dest
 

@@ -11,7 +11,7 @@ import segmentalAnalysis
 def main():
 
     # Choose between Full_wave_enhanced_audio and Normalised_audio-chunks
-    which = "Full_wave_enhanced_audio" # "Normalised_audio-chunks"
+    which = "Full_wave_enhan_audio" # "Normalised_audio-chunks"
 
     # Run Global Acoustic-Phonetic Deprecation Analysis
     globalAnalysis.main(which)

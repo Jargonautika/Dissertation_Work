@@ -1,12 +1,60 @@
 #!/usr/bin/env python3
 
+from lib.DSP_Tools import normaliseRMS, energy
+from scipy.signal import butter, sosfilt
+from lib.WAVReader import WAVReader as WR
 import removeInterviewer
+import concatenateWords
 import pandas as pd
 import numpy as np
 import parselmouth
 import shutil
 import glob
+import sys
 import os
+
+
+# https://stackoverflow.com/questions/12093594/how-to-implement-band-pass-butterworth-filter-with-scipy-signal-butter
+def butter_bandpass(lowcut, highcut, fs, order=5):
+        nyq = 0.5 * fs
+        low = lowcut / nyq
+        high = highcut / nyq
+        sos = butter(order, [low, high], analog=False, btype='band', output='sos')
+        return sos
+
+
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+        sos = butter_bandpass(lowcut, highcut, fs, order=order)
+        y = sosfilt(sos, data)
+        return y
+
+
+def getIntensity(tmpFile, which, partition, condition):
+
+    if "Full" in which:
+        # Concatenate the word segments together
+        wav = WR(tmpFile)
+        sig = wav.getData()
+        fs = wav.getSamplingRate()
+
+        # Get rid of silence and fillers
+        sig = concatenateWords.main(tmpFile, partition, condition, sig, fs)
+
+    else:
+        wav = WR(tmpFile)
+        sig = wav.getData()
+        fs = wav.getSamplingRate()
+
+    # Normalize the signal
+    sig, k = normaliseRMS(sig, tarRMS = 0.075)
+            
+    # Bandpass filter between 1kHz and 3kHz
+    bpFilteredSig = butter_bandpass_filter(sig, 1000, 3000, fs)
+
+    # Calculate the mean energy for the file
+    intensity = energy(bpFilteredSig)
+    
+    return intensity
 
 
 def getRidOfInterviewer(file, partition, condition, tmpFolder = "tmpGlobal"):
@@ -52,12 +100,14 @@ def getInformation(file, which, partition, condition, destFolder):
 
     # Get rid of the interviewer in the long files
     if "Full" in which:
-        singleSpeakerFile = getRidOfInterviewer(file, partition, condition, destFolder)
+        tmpFile = getRidOfInterviewer(file, partition, condition, destFolder)
 
     # Get Median F0 per file
-    f0, iqr = getFundamentalFrequency(singleSpeakerFile)
+    f0, iqr = getFundamentalFrequency(tmpFile)
 
     # Get Intensity per file
+    intensity = getIntensity(tmpFile, which, partition, condition)
+
 
 
 def main(which):
@@ -83,7 +133,7 @@ def main(which):
 
                 files = glob.glob(os.path.join(dataDir, partition, which, condition, "*"))
                 for file in files:
-                    getInformation(file, which, partition, condition)
+                    getInformation(file, which, partition, condition, "tmpGlobal")
 
         else:
             
@@ -91,7 +141,7 @@ def main(which):
             for file in files:
                 basename = os.path.basename(file).split('.')[0]
                 condition = 'cc' if df.loc[df['ID'] == basename].Label.tolist()[0] == 0 else 'cd'
-                getInformation(file, which, partition, condition)
+                getInformation(file, which, partition, condition, "tmpGlobal")
 
     shutil.rmtree("tmpGlobal")
 
