@@ -10,10 +10,18 @@ import concatenateWords
 import pandas as pd
 import numpy as np
 import parselmouth
+import pauseRate
 import shutil
 import glob
 import sys
 import os
+
+
+def getPausingRate(tmpFile, partition, condition):
+
+    rate = pauseRate.main(tmpFile, partition, condition)
+
+    return rate
 
 
 def getArticulationRate(tmpFile, which, partition, condition):
@@ -107,20 +115,23 @@ def getFundamentalFrequency(file):
 
 def getInformation(file, which, partition, condition, destFolder):
 
-    # # Get rid of the interviewer in the long files
-    # if "Full" in which:
-    #     file = getRidOfInterviewer(file, partition, condition, destFolder)
+    # Get rid of the interviewer in the long files
+    if "Full" in which:
+        file = getRidOfInterviewer(file, partition, condition, destFolder)
 
-    # # Get Median F0 per file
-    # f0, iqr = getFundamentalFrequency(file)
+    # Get Median F0 per file
+    f0, iqr = getFundamentalFrequency(file)
 
-    # # Get Intensity per file
-    # intensity = getIntensity(file, which, partition, condition)
+    # Get Intensity per file
+    intensity = getIntensity(file, which, partition, condition)
 
     # Get articulation rate
     articulationRate = getArticulationRate(file, which, partition, condition)
 
     # Get pausing
+    pausingRate = getPausingRate(file, partition, condition)
+
+    print(1)
 
 
 def main(which):

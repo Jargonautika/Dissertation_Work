@@ -25,7 +25,9 @@ def concatenateWords(sig, segments, fs):
 
 # Get a list of tuples with start and end times of all of 
 # the words in the file not spoken by the interviewer
-def findWords(tg, returnString = False):
+def findWords(tg, returnString = 0): # 0 for just the word time stamps
+                                     # 1 for the word time stamps and the word
+                                     # 2 for silence time stamps
 
     startData, wordList, startWord = list(), list(), False
     a, b, counter = 0.0, 0.0, 0
@@ -49,11 +51,18 @@ def findWords(tg, returnString = False):
                     b = float(line.strip())
                     counter += 1
                 elif counter == 12: # Actual word segment, could be silence
-                    if "INV" not in line and "&" not in line and "SIL" not in line: # Remove interviewer and all instances of 'laughs', 'sings', 'uh', 'um', 'clearsthroat', etc.
-                        if returnString:
-                            wordList.append((a, b, line.strip()))
-                        else:
+                    if returnString == 2:
+                        if "SIL" in line: # Get the silences
                             wordList.append((a, b))
+                    else:
+                        # Remove interviewer and all instances of 'laughs', 'sings', 'uh', 'um', 'clearsthroat', etc.
+                        if "INV" not in line and "&" not in line and "SIL" not in line:
+                            if returnString == 0:
+                                wordList.append((a, b))
+                            elif returnString == 1:
+                                wordList.append((a, b, line.strip()))
+
+                            
                     counter = 10 # Reset to the beginning of a new triplet
             else:
                 if line == '"word"\n' and lastLine == '"IntervalTier"\n': # Make sure we skip over the 'phone' IntervalTier

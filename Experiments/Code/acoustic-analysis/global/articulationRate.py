@@ -21,7 +21,7 @@ def getWords(tmpFile, partition, condition):
     else: 
         tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
 
-    wordList = concatenateWords.findWords(tg, returnString = True)
+    wordList = concatenateWords.findWords(tg, returnString = 1)
     return wordList
 
 
@@ -45,3 +45,6 @@ def main(tmpFile, partition, condition):
     return articulationRate
 
 
+if __name__ == "__main_":
+
+    main()
