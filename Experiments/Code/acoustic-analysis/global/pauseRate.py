@@ -8,7 +8,7 @@ import os
 def getSilences(tmpFile, partition, condition):
 
     tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
-    id = os.path.basename(tmpFile).split('.')[0]
+    id = os.path.basename(tmpFile).split('.')[0].split('-')[0]
 
     if partition == "train":
         tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))

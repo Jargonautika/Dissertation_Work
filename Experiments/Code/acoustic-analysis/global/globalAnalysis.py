@@ -4,6 +4,8 @@ from asyncore import file_dispatcher
 from lib.DSP_Tools import normaliseRMS, energy
 from scipy.signal import butter, sosfilt
 from lib.WAVReader import WAVReader as WR
+from joblib import Parallel, delayed
+import multiprocessing as mp
 import removeInterviewer
 import articulationRate
 import concatenateWords
@@ -77,7 +79,7 @@ def getIntensity(tmpFile, which, partition, condition):
 def getRidOfInterviewer(file, partition, condition, tmpFolder = "tmpGlobal"):
 
     tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
-    id = os.path.basename(file).split('.')[0]
+    id = os.path.basename(file).split('.')[0].split('-')[0]
     if partition == "train":
         tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))
 
@@ -103,7 +105,8 @@ def getFundamentalFrequency(file):
     f0ArrayHertz = [z[0] for z in pitch.to_array()[0]]
     # Convert to Semitones re 1 Hz
     # Forced to replace -inf values with 0.0 due to logarithmic conversion
-    f0ArraySemitones = [hertzToSemitones(x) if x != 0.0 else 0.0 for x in f0ArrayHertz]
+    # Explicitly ignore the 0.0 values for the median calculation, otherwise you'll get some 0.0s for F0 and that's wrong
+    f0ArraySemitones = [hertzToSemitones(x) for x in f0ArrayHertz if x != 0.0]
     # Get the median f0 value
     f0 = np.median(f0ArraySemitones)
     # Get the interquartile range of the fundamental frequency for the file
@@ -114,6 +117,12 @@ def getFundamentalFrequency(file):
 
 
 def getInformation(file, which, partition, condition, destFolder):
+
+    id = os.path.basename(file).split('.')[0]
+
+    if not isinstance(condition, str):
+        basename = os.path.basename(file).split('.')[0]
+        condition = 'cc' if condition.loc[condition['ID'] == basename].Label.tolist()[0] == 0 else 'cd'
 
     # Get rid of the interviewer in the long files
     if "Full" in which:
@@ -131,7 +140,7 @@ def getInformation(file, which, partition, condition, destFolder):
     # Get pausing
     pausingRate = getPausingRate(file, partition, condition)
 
-    print(1)
+    return id, f0, iqr, intensity, articulationRate, pausingRate, condition
 
 
 def main(which):
@@ -142,13 +151,9 @@ def main(which):
         shutil.rmtree("tmpGlobal")
         os.mkdir("tmpGlobal")
 
-    # File for knowing in the test partition which condition each participant falls into
-    testMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt"
-    df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
-    df.ID = df.ID.str.replace(' ', '')
-
     # Iterate over the files, maintaining access to metadata
     dataDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/"
+    bigList = list()
     for partition in ["train", "test"]:
 
         if partition == "train":
@@ -156,20 +161,52 @@ def main(which):
             for condition in ["cc", "cd"]:
 
                 files = glob.glob(os.path.join(dataDir, partition, which, condition, "*"))
+                X = list()
                 for file in files:
-                    getInformation(file, which, partition, condition, "tmpGlobal")
+                    x = getInformation(file, which, partition, condition, "tmpGlobal")
+                    X.append(x)
+                # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, condition, "tmpGlobal") for file in files[:])
+
+                # Get the metadata
+                trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
+                df = pd.read_csv(trainMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
+                df.ID = df.ID.str.replace(' ', '')
+                for x in X:
+                    id = x[0].split('-')[0]
+                    row = df.loc[df['ID'] == id]
+                    lilList = [id, row.age.values[0], row.gender.values[0]]
+                    for i in x[1:]:
+                        lilList.append(i)
+                    bigList.append(lilList)
 
         else:
+
+            # File for knowing in the test partition which condition each participant falls into
+            testMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt"
+            df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
+            df.ID = df.ID.str.replace(' ', '')
             
             files = glob.glob(os.path.join(dataDir, partition, which, "*"))
+            X = list()
             for file in files:
-                basename = os.path.basename(file).split('.')[0]
-                condition = 'cc' if df.loc[df['ID'] == basename].Label.tolist()[0] == 0 else 'cd'
-                getInformation(file, which, partition, condition, "tmpGlobal")
+                x = getInformation(file, which, partition, condition, "tmpGlobal")
+                X.append(x)
+            # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, df, "tmpGlobal") for file in files[:])
+            
+            for x in X:
+                id = x[0].split('-')[0]
+                row = df.loc[df['ID'] == id]
+                lilList = [id, row.age.values[0], row.gender.values[0]]
+                for i in x[1:]:
+                    lilList.append(i)
+                bigList.append(lilList)
+
+    DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])
+    DF.to_csv('./global/GlobalMeasures_{}.csv'.format(which), index = False)
 
     shutil.rmtree("tmpGlobal")
 
 
 if __name__ == "__main__":
 
-    main("Full_wave_enhanced_audio") # TODO multiprocess the calculation across all files since it takes a minute
+    main("Full_wave_enhanced_audio")
