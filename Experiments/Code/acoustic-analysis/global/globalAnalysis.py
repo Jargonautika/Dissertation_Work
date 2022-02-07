@@ -68,7 +68,7 @@ def getIntensity(tmpFile, which, partition, condition):
     sig, k = normaliseRMS(sig, tarRMS = 0.075)
             
     # Bandpass filter between 1kHz and 3kHz
-    bpFilteredSig = butter_bandpass_filter(sig, 1000, 3000, fs)
+    bpFilteredSig = butter_bandpass_filter(sig, 1000, 3000, fs) # TODO check this against AD lit (maybe try 4kHz)
 
     # Calculate the mean energy for the file
     intensity = energy(bpFilteredSig)
