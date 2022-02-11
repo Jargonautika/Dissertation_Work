@@ -1,0 +1,50 @@
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                 4077
+Model:                                            GLM   Df Residuals:                     4074
+Model Family:                                Binomial   Df Model:                            2
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -2362.8
+Date:                                Thu, 10 Feb 2022   Deviance:                       4725.5
+Time:                                        14:47:10   Pearson chi2:                 3.89e+03
+No. Iterations:                                     6                                         
+Covariance Type:                            nonrobust                                         
+===============================================================================
+                  coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------
+Intercept       0.9870      0.082     12.051      0.000       0.826       1.148
+Intensity    6.198e+05   1.02e+05      6.071      0.000     4.2e+05     8.2e+05
+PausingRate    -3.5846      0.171    -21.024      0.000      -3.919      -3.250
+===============================================================================
+
+Total number of trials: 4077.0
+
+Parameters: 
+Intercept           0.987025
+Intensity      619783.000842
+PausingRate        -3.584617
+dtype: float64
+
+T-values: 
+Intercept      12.050713
+Intensity       6.070808
+PausingRate   -21.024075
+dtype: float64
+
+Odds Ratio w/ Confidence Intervals: 
+/home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/acoustic-analysis/GLMER/main.py:48: RuntimeWarning: overflow encountered in exp
+  print(np.exp(conf))
+                   5%       95%  Odds Ratio
+Intercept    2.285288  3.150489    2.683240
+Intensity         inf       inf         inf
+PausingRate  0.019865  0.038757    0.027747
+
+_____________________________________________________________________
+NOTES 10 Feb 2022
+
+Assumptions: 
+    Linearity is violated but fixed using the logit of the data
+    Independence of errors is assumed (NOTE there may be an issue in that we're sampling at different points in time (across the interview) but it's really all just one interview)
+    Multicollinearity is asserted for the final group of features
+
+F0, (F0)iqr, and ArticulationRate were all filtered out through a forward/backward stepwise method under the Bayes Information Criterion

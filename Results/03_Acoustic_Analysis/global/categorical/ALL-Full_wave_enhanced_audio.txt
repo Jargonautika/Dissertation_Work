@@ -1,0 +1,61 @@
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      148
+Model Family:                                Binomial   Df Model:                            7
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -92.724
+Date:                                Thu, 10 Feb 2022   Deviance:                       185.45
+Time:                                        14:44:52   Pearson chi2:                     148.
+No. Iterations:                                     6                                         
+Covariance Type:                            nonrobust                                         
+====================================================================================
+                       coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+Intercept            0.0830      5.018      0.017      0.987      -9.753       9.919
+Gender[T.male ]     -0.0595      0.477     -0.125      0.901      -0.995       0.876
+Age                 -0.0187      0.027     -0.683      0.495      -0.073       0.035
+F0                   0.0204      0.052      0.395      0.693      -0.081       0.122
+iqr                 -0.0711      0.048     -1.478      0.139      -0.165       0.023
+Intensity         3.856e+04   3.46e+04      1.114      0.265   -2.93e+04    1.06e+05
+ArticulationRate     0.1373      0.100      1.371      0.170      -0.059       0.334
+PausingRate         -2.5451      0.850     -2.995      0.003      -4.211      -0.879
+====================================================================================
+
+Total number of trials: 156.0
+
+Parameters: 
+Intercept               0.083011
+Gender[T.male ]        -0.059456
+Age                    -0.018743
+F0                      0.020449
+iqr                    -0.071067
+Intensity           38555.519283
+ArticulationRate        0.137327
+PausingRate            -2.545069
+dtype: float64
+
+T-values: 
+Intercept           0.016542
+Gender[T.male ]    -0.124591
+Age                -0.682685
+F0                  0.394903
+iqr                -1.478407
+Intensity           1.114103
+ArticulationRate    1.371374
+PausingRate        -2.994528
+dtype: float64
+
+Odds Ratio w/ Confidence Intervals: 
+/home/chasea2/SPEECH/Dissertation_Work/Experiments/Code/acoustic-analysis/GLMER/main.py:48: RuntimeWarning: overflow encountered in exp
+  print(np.exp(conf))
+                        5%           95%  Odds Ratio
+Intercept         0.000058  2.030788e+04    1.086554
+Gender[T.male ]   0.369810  2.400926e+00    0.942277
+Age               0.930014  1.035690e+00    0.981431
+F0                0.922156  1.129684e+00    1.020659
+iqr               0.847655  1.023418e+00    0.931400
+Intensity         0.000000           inf         inf
+ArticulationRate  0.942763  1.395978e+00    1.147204
+PausingRate       0.014834  4.150804e-01    0.078468
+

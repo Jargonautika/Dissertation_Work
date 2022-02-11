@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from asyncore import file_dispatcher
 from lib.DSP_Tools import normaliseRMS, energy
-from scipy.signal import butter, sosfilt
 from lib.WAVReader import WAVReader as WR
+from scipy.signal import firwin, lfilter
 from joblib import Parallel, delayed
+from scipy.fft import fft
+
 import multiprocessing as mp
 import removeInterviewer
 import articulationRate
@@ -33,19 +34,38 @@ def getArticulationRate(tmpFile, which, partition, condition):
     return rate
 
 
-# https://stackoverflow.com/questions/12093594/how-to-implement-band-pass-butterworth-filter-with-scipy-signal-butter
-def butter_bandpass(lowcut, highcut, fs, order=5):
-        nyq = 0.5 * fs
-        low = lowcut / nyq
-        high = highcut / nyq
-        sos = butter(order, [low, high], analog=False, btype='band', output='sos')
-        return sos
+def filterbank(fs, low, high, order=1000):
+
+    # Get the coefficients from the finite impulse response window
+    bs = firwin(order+1, [low, high], pass_zero = 'bandpass', fs = fs)
+
+    return bs
 
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
-        sos = butter_bandpass(lowcut, highcut, fs, order=order)
-        y = sosfilt(sos, data)
-        return y
+# Bandpass filter between 1kHz and 3kHz # TODO check if it should be 4kHz
+def filterSignal(sig, fs, numSamples):
+
+    # Create the filterbank
+    lowpass = 1000 # Hz
+    highpass = 3000 # Hz
+    bs = filterbank(fs, lowpass, highpass)
+
+    # Apply the filter
+    bpFilteredSig = lfilter(bs, 1, sig, axis = 0)
+
+    # # If you want to see the signal, use this
+    # import matplotlib.pyplot as plt
+    # numFFT = int(2**(np.ceil(np.log2(numSamples))))
+    # ffbin = fft(bpFilteredSig, n = numFFT, axis = 0)
+
+    # frs = np.linspace(0, (fs/2 - fs/numFFT), int(numFFT / 2))
+
+    # plt.figure()
+    # plt.plot(frs, np.abs(ffbin[:int(numFFT / 2)]))
+    # plt.xlim([0, 8000])
+    # plt.savefig('check.png')
+
+    return bpFilteredSig
 
 
 def getIntensity(tmpFile, which, partition, condition):
@@ -55,6 +75,7 @@ def getIntensity(tmpFile, which, partition, condition):
         wav = WR(tmpFile)
         sig = wav.getData()
         fs = wav.getSamplingRate()
+        numSamples = wav.getSampleNO()
 
         # Get rid of silence and fillers
         sig = concatenateWords.main(tmpFile, partition, condition, sig, fs)
@@ -63,15 +84,15 @@ def getIntensity(tmpFile, which, partition, condition):
         wav = WR(tmpFile)
         sig = wav.getData()
         fs = wav.getSamplingRate()
+        numSamples = wav.getSampleNO()
 
     # Normalize the signal
     sig, k = normaliseRMS(sig, tarRMS = 0.075)
-            
-    # Bandpass filter between 1kHz and 3kHz
-    bpFilteredSig = butter_bandpass_filter(sig, 1000, 3000, fs) # TODO check this against AD lit (maybe try 4kHz)
+
+    frequencyResponse = filterSignal(sig, fs, numSamples)
 
     # Calculate the mean energy for the file
-    intensity = energy(bpFilteredSig)
+    intensity = energy(frequencyResponse)
     
     return intensity
 
@@ -118,10 +139,10 @@ def getFundamentalFrequency(file):
 
 def getInformation(file, which, partition, condition, destFolder):
 
-    id = os.path.basename(file).split('.')[0]
+    id = os.path.basename(file).split('.')[0].split('-')[0]
 
     if not isinstance(condition, str):
-        basename = os.path.basename(file).split('.')[0]
+        basename = os.path.basename(file).split('.')[0].split('-')[0]
         condition = 'cc' if condition.loc[condition['ID'] == basename].Label.tolist()[0] == 0 else 'cd'
 
     # Get rid of the interviewer in the long files
@@ -143,7 +164,9 @@ def getInformation(file, which, partition, condition, destFolder):
     return id, f0, iqr, intensity, articulationRate, pausingRate, condition
 
 
-def main(which):
+def main(which, task = 'numerical'):
+
+    sexDict = {0: 'male ', 1: 'female '}
 
     try:
         os.mkdir("tmpGlobal")
@@ -162,7 +185,7 @@ def main(which):
 
                 files = glob.glob(os.path.join(dataDir, partition, which, condition, "*"))
                 # X = list()
-                # for file in files:
+                # for file in files[:2]:
                 #     x = getInformation(file, which, partition, condition, "tmpGlobal")
                 #     X.append(x)
                 X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, condition, "tmpGlobal") for file in files[:])
@@ -171,14 +194,26 @@ def main(which):
                 trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
                 df = pd.read_csv(trainMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
                 df.ID = df.ID.str.replace(' ', '')
+
                 for x in X:
                     id = x[0].split('-')[0]
                     row = df.loc[df['ID'] == id]
                     lilList = [id, row.age.values[0], row.gender.values[0]]
-                    for i in x[1:]:
-                        lilList.append(i)
-                    bigList.append(lilList)
 
+                    if task != 'categorical': # Find MMSE
+                        for i in x[1:-1]:
+                            lilList.append(i)
+                        # Filter out that one NaN guy for MMSE
+                        if np.isnan(row.mmse.values[0]):
+                            continue
+                        else:
+                            mmse = row.mmse.values[0]
+                        lilList.append(mmse)
+                        bigList.append(lilList)
+                    else:
+                        for i in x[1:]:
+                            lilList.append(i)
+                        bigList.append(lilList)
         else:
 
             # File for knowing in the test partition which condition each participant falls into
@@ -188,7 +223,7 @@ def main(which):
             
             files = glob.glob(os.path.join(dataDir, partition, which, "*"))
             # X = list()
-            # for file in files:
+            # for file in files[:2]:
             #     x = getInformation(file, which, partition, condition, "tmpGlobal")
             #     X.append(x)
             X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, df, "tmpGlobal") for file in files[:])
@@ -196,17 +231,31 @@ def main(which):
             for x in X:
                 id = x[0].split('-')[0]
                 row = df.loc[df['ID'] == id]
-                lilList = [id, row.age.values[0], row.gender.values[0]]
-                for i in x[1:]:
-                    lilList.append(i)
-                bigList.append(lilList)
+                lilList = [id, row.age.values[0], sexDict[row.gender.values[0]]]
+                if task != 'categorical': # Find MMSE
+                    for i in x[1:-1]:
+                        lilList.append(i)
+                    # Filter out that one NaN guy for MMSE
+                    if np.isnan(row.mmse.values[0]):
+                        continue
+                    else:
+                        mmse = row.mmse.values[0]
+                    lilList.append(mmse)
+                    bigList.append(lilList)
+                else:
+                    for i in x[1:]:
+                        lilList.append(i)
+                    bigList.append(lilList)
 
-    DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])
-    DF.to_csv('./global/GlobalMeasures_{}.csv'.format(which), index = False)
+    if task == 'categorical':
+        DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])
+    else:
+        DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'MMSE'])
+    DF.to_csv('./global/GlobalMeasures_{}-{}.csv'.format(which, task), index = False)
 
     shutil.rmtree("tmpGlobal")
 
 
 if __name__ == "__main__":
 
-    main("Full_wave_enhanced_audio")
+    main("Normalised_audio-chunks")

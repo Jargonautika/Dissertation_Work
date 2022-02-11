@@ -11,7 +11,7 @@ import pandas as pd
 from patsy import dmatrices
 import statsmodels.api as sm
 
-def runGLMER(df, bestFeats):
+def runLMER(df, bestFeats):
 
     # Create the two design matrices using patsy (https://www.statsmodels.org/dev/gettingstarted.html)
         # y == endog - endogenous variable(s) (i.e. dependent, response, regressand, etc.)
@@ -20,8 +20,6 @@ def runGLMER(df, bestFeats):
     # q = df.drop(['ID', 'Age', 'Gender', 'Condition'], axis = 1) 
     q = df.drop(['ID', 'Condition'], axis = 1) 
     y, X = dmatrices('Condition ~ {}'.format(" + ".join(i for i in q.columns if i in bestFeats)), data = df, return_type = 'dataframe')
-
-    # "Condition ~ F0 + PauseRate * ArticulationRate + (1|whateverFactor) + ...."
 
     # Construct the model
     glm_binom = sm.GLM(y, X, family = sm.families.Binomial())
@@ -53,9 +51,9 @@ def runGLMER(df, bestFeats):
 def loadDataSet(level, which):
 
     if level == "global":
-        df = pd.read_csv("../{}/GlobalMeasures_{}-categorical.csv".format(level, which))
+        df = pd.read_csv("../{}/GlobalMeasures_{}-numerical.csv".format(level, which))
     else:
-        df = pd.read_csv("../{}/SegmentalMeasures_{}-categorical.csv".format(level, which))
+        df = pd.read_csv("../{}/SegmentalMeasures_{}-numerical.csv".format(level, which))
 
     return df
 
@@ -75,7 +73,7 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
     # Run LMER
     print(level, which, bestFeats)
-    runGLMER(df, bestFeats)
+    runLMER(df, bestFeats)
 
 
 

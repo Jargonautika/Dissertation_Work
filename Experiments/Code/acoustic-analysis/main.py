@@ -13,11 +13,13 @@ def main():
     # Choose between Full_wave_enhanced_audio and Normalised_audio-chunks
     for which in ["Normalised_audio-chunks", "Full_wave_enhanced_audio"]:
 
-        # Run Global Acoustic-Phonetic Deprecation Analysis
-        globalAnalysis.main(which)
+        for task in ["categorical", "numerical"]:
 
-        # Run Segmental Acoustic-Phonetic Deprecation Analysis
-        segmentalAnalysis.main(which)
+            # Run Global Acoustic-Phonetic Deprecation Analysis
+            globalAnalysis.main(which, task)
+
+            # Run Segmental Acoustic-Phonetic Deprecation Analysis
+            segmentalAnalysis.main(which)
 
 
 if __name__ == "__main__":
