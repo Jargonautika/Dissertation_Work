@@ -60,6 +60,7 @@ def normIt(files):
     # Follow the same protocol as with the machine learning stuff
     files = glob.glob(os.path.join("filesToNormalize", "*"))
     normalizeRMS(files)
+    files = glob.glob(os.path.join("filesToNormalize", "*")) # Duplicated here because we throw out 66 files as noise
 
     return files
 

@@ -9,6 +9,7 @@ import stepwise
 import numpy as np
 import pandas as pd
 # from patsy import dmatrices
+import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 
@@ -23,20 +24,31 @@ def fixCols(df):
     return df
 
 
-def runLMER(df, formula, printList, which, step):
+def runGLMER(df, formula, printList, which, step):
+
+    # Create the two design matrices using patsy (https://www.statsmodels.org/dev/gettingstarted.html)
+        # y == endog - endogenous variable(s) (i.e. dependent, response, regressand, etc.)
+        # X == exog - exogenous variable(s) (i.e. independent, predictor, regressor, etc.)
+
+    # NOTE: ID, Age and Gender are random effects because they "introduce variance into the data but are not variables of interest" (Granlund, 2012)
+    # NOTE: All other variables measured are fixed effects because they "influence the mean and are of interest to the analyst" (Granlund, 2012)
+
+    # The way to split endogenous and exogenous variables without using the formula option
+    # q = df.drop(['ID', 'Condition'], axis = 1) 
+    # y, X = dmatrices('Condition ~ {}'.format(" + ".join(i for i in q.columns if i in bestFeats)), data = df, return_type = 'dataframe')
 
     df = fixCols(df)
 
     # Construct the model
-    md = smf.mixedlm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']])
+    glm_binom = smf.glm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
 
     # Fit the model
-    res = md.fit(method = ['lbfgs'])
+    res = glm_binom.fit()
 
     # Visualize the summary
     printList.append(res.summary())
     printList.append('')
-    printList.append('Total number of trials: {}'.format(df.shape[0]))
+    printList.append('Total number of trials:\t{}'.format(df.shape[0]))
     printList.append('')
     printList.append('Parameters: ')
     printList.append(res.params.to_string())
@@ -44,9 +56,6 @@ def runLMER(df, formula, printList, which, step):
     printList.append('T-values: ')
     printList.append(res.tvalues.to_string())
     printList.append('')
-    # print('Odds Ratio: ')
-    # print(np.exp(res.params))
-    # print()
     printList.append('Odds Ratio w/ Confidence Intervals: ')
     conf = res.conf_int()
     conf['Odds Ratio'] = res.params
@@ -58,7 +67,7 @@ def runLMER(df, formula, printList, which, step):
         run = "BIC"
     else:
         run = "ALL"
-    with open('../../../Results/03_Acoustic_Analysis/global/numerical/{}-{}.txt'.format(run, which), 'w') as f:
+    with open('../../../Results/03_Acoustic_Analysis/global/categorical/{}-{}.txt'.format(run, which), 'w') as f:
         for item in printList:
             f.write("%s\n" % item)
 
@@ -66,9 +75,9 @@ def runLMER(df, formula, printList, which, step):
 def loadDataSet(level, which):
 
     if level == "global":
-        df = pd.read_csv("../{}/GlobalMeasures_{}-numerical.csv".format(level, which))
+        df = pd.read_csv("./{}/GlobalMeasures_{}-categorical.csv".format(level, which))
     else:
-        df = pd.read_csv("../{}/SegmentalMeasures_{}-numerical.csv".format(level, which))
+        df = pd.read_csv("./{}/SegmentalMeasures_{}-categorical.csv".format(level, which))
 
     return df
 
@@ -80,7 +89,7 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
     # Step-wise feature selection for best model by Bayes Information Criterion
     if step:
-        formula = stepwise.main(df)
+        formula = stepwise.main(df, level)
 
     # Get a baseline with just everything in the model
     else:
@@ -91,10 +100,10 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
         else:
             pass
 
-    # Run LMER
+    # Run GLMER
     printList = list()
     printList.append("Level:    {}      Which:  {}      Formula:  {}".format(level, which, formula))
-    runLMER(df, formula, printList, which, step)
+    runGLMER(df, formula, printList, which, step)
 
 
 if __name__ == "__main__":

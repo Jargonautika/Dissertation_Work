@@ -42,7 +42,7 @@ def computeVIF(X, featList):
     return vif
 
 
-def potentiallyRemoveFeature(newFormula, current_features, base):
+def potentiallyRemoveFeature(df, current_features, base):
 
     features_to_remove = list()
     # Iterate through every column of interest for this run
@@ -79,7 +79,7 @@ def potentiallyRemoveFeature(newFormula, current_features, base):
     return formula, return_features, current_best_bic
 
 
-def next_possible_feature(oldFormula, newFormula, current_features, col, base = 0.0):
+def next_possible_feature(df, oldFormula, newFormula, current_features, col, base = 0.0):
 
     # Fit a model for our target and our selected columns 
     glm_binom = smf.glm(formula = newFormula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
@@ -96,7 +96,7 @@ def next_possible_feature(oldFormula, newFormula, current_features, col, base = 
         current_features = current_features + [col]
 
         # Do a top-down backward pass to see if removing any of the variables improves the model
-        newFormula, current_features, bic = potentiallyRemoveFeature(newFormula, current_features, bic)
+        newFormula, current_features, bic = potentiallyRemoveFeature(df, current_features, bic)
 
         return newFormula, current_features, bic
     
@@ -121,7 +121,7 @@ def bottomUp(df, bestFormula, best, base):
                 formula = bestFormula + " + {}".format(col)
 
             # Add a new column to the best performing column
-            currentFormula, current_features, currentBase = next_possible_feature(bestFormula, formula, current_features = selected_features, col = col, base = base)
+            currentFormula, current_features, currentBase = next_possible_feature(df, bestFormula, formula, current_features = selected_features, col = col, base = base)
 
             # We've added something and therefore need to update things
             if currentFormula != bestFormula: 

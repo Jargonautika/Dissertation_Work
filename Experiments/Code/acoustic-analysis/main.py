@@ -3,12 +3,12 @@
 # This acoustic analysis brought to you by Sonia Granlund via Yan Tang
 import sys
 sys.path.insert(1, './LMER')
-sys.path.insert(1, './LMER')
+sys.path.insert(1, './GLMER')
 sys.path.insert(1, './global')
 sys.path.insert(1, './segmental')
 
-import LMER
-import GLMER
+import runLMER
+import runGLMER
 import globalAnalysis
 import segmentalAnalysis
 
@@ -27,12 +27,12 @@ def globalStuff(which, task):
     globalAnalysis.main(which, task)
 
     # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-    GLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    GLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+    runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
     # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-    LMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    LMER.main(level = 'global', which = which, step = False) # Model all measurements
+    runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+    runLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
 
 def main():
