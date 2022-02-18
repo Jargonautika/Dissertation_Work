@@ -119,7 +119,7 @@ if [[ $stage -le 1 ]]; then
 	python3 $scripts_dir/classification/main.py $exp_dir $data_dir $random_state $byFrame $RUNNUM $crossVal $algorithm
 
 	echo "Done doing basic machine learning with $algorithm for training set"
-	# exit 0
+	exit 0
 
 fi
 

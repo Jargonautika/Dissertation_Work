@@ -1,0 +1,37 @@
+Level:    global      Which:  Normalised_audio-chunks      Formula:  Condition ~ PausingRate + Intensity
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                 4011
+Model:                                            GLM   Df Residuals:                     4008
+Model Family:                                Binomial   Df Model:                            2
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -2337.3
+Date:                                Fri, 18 Feb 2022   Deviance:                       4674.7
+Time:                                        08:55:18   Pearson chi2:                 3.84e+03
+No. Iterations:                                     6                                         
+Covariance Type:                            nonrobust                                         
+===============================================================================
+                  coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------
+Intercept       1.2300      0.068     18.038      0.000       1.096       1.364
+PausingRate    -3.6921      0.172    -21.452      0.000      -4.029      -3.355
+Intensity       0.0064      0.002      3.858      0.000       0.003       0.010
+===============================================================================
+
+Total number of trials:	4011
+
+Parameters: 
+Intercept      1.230036
+PausingRate   -3.692056
+Intensity      0.006443
+
+T-values: 
+Intercept      18.038386
+PausingRate   -21.451910
+Intensity       3.858021
+
+Odds Ratio w/ Confidence Intervals: 
+                   5%       95%  Odds Ratio
+Intercept    2.993330  3.910582    3.421354
+PausingRate  0.017785  0.034919    0.024921
+Intensity    1.003175  1.009764    1.006464

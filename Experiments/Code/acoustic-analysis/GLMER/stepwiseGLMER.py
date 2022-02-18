@@ -15,10 +15,12 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 def fixCols(df):
 
     colList = df.columns.tolist()
-    i = colList.index('F0')
-    colList[i] = 'FundFreq'
+    if 'F0' in colList:
+        i = colList.index('F0')
+        colList[i] = 'FundFreq'
 
-    df.columns = colList
+        df.columns = colList
+        
     return df
 
 
@@ -44,7 +46,7 @@ def computeVIF(X, featList):
 
 def potentiallyRemoveFeature(df, current_features, base):
 
-    features_to_remove = list()
+    features_to_keep = list()
     # Iterate through every column of interest for this run
     for feat in current_features:
 
@@ -55,7 +57,7 @@ def potentiallyRemoveFeature(df, current_features, base):
             formula = "Condition ~ " + " + ".join([x for x in current_features if x != feat])
 
         # Fit a model for our target and our selected columns 
-        glm_binom = smf.glm(formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
+        glm_binom = smf.glm(formula, data = df, groups = df['ID'], family = sm.families.Binomial())
 
         # Fit the model and get the results
         res = glm_binom.fit()
@@ -64,25 +66,23 @@ def potentiallyRemoveFeature(df, current_features, base):
         bic = res.bic_llf
 
         if bic > base:
-            features_to_remove.append(feat)
+            features_to_keep.append(feat)
 
     # Make the formula
-    if "FundFreq*iqr" in current_features and "FundFreq*iqr" not in features_to_remove:
-        formula = "Condition ~ " + " + ".join([x for x in current_features if x not in features_to_remove]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
+    if "FundFreq*iqr" in features_to_keep:
+        formula = "Condition ~ " + " + ".join([x for x in features_to_keep]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
     else:
-        formula = "Condition ~ " + " + ".join([x for x in current_features if x not in features_to_remove])
+        formula = "Condition ~ " + " + ".join([x for x in features_to_keep])
 
-    return_features = [feat for feat in current_features if feat not in features_to_remove]
+    current_best_bic = smf.glm(formula, data = df, groups = df['ID'], family = sm.families.Binomial()).fit().bic_llf
 
-    current_best_bic = smf.glm(formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial()).fit().bic_llf
-
-    return formula, return_features, current_best_bic
+    return formula, features_to_keep, current_best_bic
 
 
 def next_possible_feature(df, oldFormula, newFormula, current_features, col, base = 0.0):
 
     # Fit a model for our target and our selected columns 
-    glm_binom = smf.glm(formula = newFormula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
+    glm_binom = smf.glm(formula = newFormula, data = df, groups = df['ID'], family = sm.families.Binomial())
 
     # Fit the model and get the results
     res = glm_binom.fit()
@@ -177,7 +177,7 @@ def firstPass(df):
             colFormula = "Condition ~ {}".format(col)
 
             # Fit a model for our target and our selected column 
-            glm_binom = smf.glm(formula = colFormula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
+            glm_binom = smf.glm(formula = colFormula, data = df, groups = df['ID'], family = sm.families.Binomial())
 
             # Fit the model and get the results
             res = glm_binom.fit()

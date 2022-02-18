@@ -444,6 +444,8 @@ def main():
     parser.add_argument('algorithm', nargs='?', type=str, help='Which input feature type we are using', default='mfcc')
 
     args = parser.parse_args()
+    print(args)
+    import sys; sys.exit()
     if args.by_frame == "True":
         for experiment in ['raw']:#, 'averaged', 'flattened']: # 'averaged_and_flattened']:
             print('Now working on {}'.format(experiment))

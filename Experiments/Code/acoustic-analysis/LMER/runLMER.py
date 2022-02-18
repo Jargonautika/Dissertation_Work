@@ -5,7 +5,7 @@
 #   Try #1 - with statsmodels
 
 # Load packages
-import stepwise
+import stepwiseLMER
 import numpy as np
 import pandas as pd
 # from patsy import dmatrices
@@ -16,10 +16,12 @@ import statsmodels.formula.api as smf
 def fixCols(df):
 
     colList = df.columns.tolist()
-    i = colList.index('F0')
-    colList[i] = 'FundFreq'
+    if 'F0' in colList:
+        i = colList.index('F0')
+        colList[i] = 'FundFreq'
 
-    df.columns = colList
+        df.columns = colList
+        
     return df
 
 
@@ -28,7 +30,7 @@ def runLMER(df, formula, printList, which, step):
     df = fixCols(df)
 
     # Construct the model
-    md = smf.mixedlm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']])
+    md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
 
     # Fit the model
     res = md.fit(method = ['lbfgs'])
@@ -80,14 +82,14 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
     # Step-wise feature selection for best model by Bayes Information Criterion
     if step:
-        formula = stepwise.main(df)
+        formula = stepwiseLMER.main(df)
 
     # Get a baseline with just everything in the model
     else:
         if level == "global":
             # For global features we've got ['Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate']
             # Fundamental Frequency and its Interquartile Range have an interaction
-            formula = "Condition ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr"
+            formula = "MMSE ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr"
         else:
             pass
 
@@ -99,4 +101,4 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
 if __name__ == "__main__":
 
-    main()
+    main(level = "global", which = "Normalised_audio-chunks", step = True)

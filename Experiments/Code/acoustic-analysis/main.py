@@ -27,12 +27,14 @@ def globalStuff(which, task):
     globalAnalysis.main(which, task)
 
     # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-    runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    if task == "categorical":
+        runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+        runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
     # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-    runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    runLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    elif task == "numerical":
+        runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+        runLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
 
 def main():

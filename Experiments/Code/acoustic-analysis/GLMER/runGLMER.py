@@ -5,7 +5,7 @@
 #   Try #1 - with statsmodels
 
 # Load packages
-import stepwise
+import stepwiseGLMER
 import numpy as np
 import pandas as pd
 # from patsy import dmatrices
@@ -17,10 +17,12 @@ import statsmodels.formula.api as smf
 def fixCols(df):
 
     colList = df.columns.tolist()
-    i = colList.index('F0')
-    colList[i] = 'FundFreq'
+    if 'F0' in colList:
+        i = colList.index('F0')
+        colList[i] = 'FundFreq'
 
-    df.columns = colList
+        df.columns = colList
+        
     return df
 
 
@@ -40,7 +42,8 @@ def runGLMER(df, formula, printList, which, step):
     df = fixCols(df)
 
     # Construct the model
-    glm_binom = smf.glm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
+    # glm_binom = smf.glm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
+    glm_binom = smf.glm(formula = formula, data = df, groups = df['ID'], family = sm.families.Binomial())
 
     # Fit the model
     res = glm_binom.fit()
@@ -89,7 +92,7 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
     # Step-wise feature selection for best model by Bayes Information Criterion
     if step:
-        formula = stepwise.main(df, level)
+        formula = stepwiseGLMER.main(df, level)
 
     # Get a baseline with just everything in the model
     else:
@@ -108,4 +111,4 @@ def main(level = "global", which = "Normalised_audio-chunks", step = False):
 
 if __name__ == "__main__":
 
-    main()
+    main(level = "global", which = "Normalised_audio-chunks", step = False)

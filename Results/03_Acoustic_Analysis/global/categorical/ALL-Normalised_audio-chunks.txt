@@ -1,0 +1,53 @@
+Level:    global      Which:  Normalised_audio-chunks      Formula:  Condition ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                 4011
+Model:                                            GLM   Df Residuals:                     4004
+Model Family:                                Binomial   Df Model:                            6
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -2321.6
+Date:                                Fri, 18 Feb 2022   Deviance:                       4643.2
+Time:                                        09:14:04   Pearson chi2:                 3.83e+03
+No. Iterations:                                     6                                         
+Covariance Type:                            nonrobust                                         
+====================================================================================
+                       coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+Intercept            4.6703      0.791      5.901      0.000       3.119       6.221
+Intensity            0.0072      0.002      4.226      0.000       0.004       0.011
+ArticulationRate     0.0343      0.020      1.709      0.087      -0.005       0.074
+PausingRate         -3.8494      0.188    -20.453      0.000      -4.218      -3.481
+FundFreq            -0.0405      0.009     -4.497      0.000      -0.058      -0.023
+iqr                 -0.2564      0.068     -3.795      0.000      -0.389      -0.124
+FundFreq:iqr         0.0028      0.001      3.619      0.000       0.001       0.004
+====================================================================================
+
+Total number of trials:	4011
+
+Parameters: 
+Intercept           4.670262
+Intensity           0.007224
+ArticulationRate    0.034307
+PausingRate        -3.849419
+FundFreq           -0.040478
+iqr                -0.256408
+FundFreq:iqr        0.002789
+
+T-values: 
+Intercept            5.901431
+Intensity            4.226495
+ArticulationRate     1.709394
+PausingRate        -20.452665
+FundFreq            -4.497148
+iqr                 -3.794588
+FundFreq:iqr         3.618773
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%         95%  Odds Ratio
+Intercept         22.628034  503.374175  106.725667
+Intensity          1.003881    1.010630    1.007250
+ArticulationRate   0.994984    1.076423    1.034903
+PausingRate        0.014724    0.030791    0.021292
+FundFreq           0.943537    0.977422    0.960330
+iqr                0.677838    0.883407    0.773826
+FundFreq:iqr       1.001279    1.004308    1.002793

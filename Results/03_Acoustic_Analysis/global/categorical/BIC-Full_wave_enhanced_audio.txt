@@ -1,0 +1,37 @@
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ PausingRate + ArticulationRate
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                   59
+Model:                                            GLM   Df Residuals:                       56
+Model Family:                                Binomial   Df Model:                            2
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -33.274
+Date:                                Fri, 18 Feb 2022   Deviance:                       66.548
+Time:                                        08:59:05   Pearson chi2:                     55.8
+No. Iterations:                                     5                                         
+Covariance Type:                            nonrobust                                         
+====================================================================================
+                       coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+Intercept           -1.1723      1.553     -0.755      0.450      -4.216       1.872
+PausingRate         -5.5481      2.501     -2.218      0.027     -10.451      -0.646
+ArticulationRate     0.7054      0.363      1.946      0.052      -0.005       1.416
+====================================================================================
+
+Total number of trials:	59
+
+Parameters: 
+Intercept          -1.172271
+PausingRate        -5.548100
+ArticulationRate    0.705443
+
+T-values: 
+Intercept          -0.754774
+PausingRate        -2.218077
+ArticulationRate    1.945589
+
+Odds Ratio w/ Confidence Intervals: 
+                        5%       95%  Odds Ratio
+Intercept         0.014752  6.500194    0.309663
+PausingRate       0.000029  0.524337    0.003895
+ArticulationRate  0.994801  4.121011    2.024744

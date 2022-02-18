@@ -1,0 +1,55 @@
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr
+            Mixed Linear Model Regression Results
+=============================================================
+Model:              MixedLM   Dependent Variable:   MMSE     
+No. Observations:   58        Method:               REML     
+No. Groups:         58        Scale:                18.9685  
+Min. group size:    1         Log-Likelihood:       -189.3737
+Max. group size:    1         Converged:            Yes      
+Mean group size:    1.0                                      
+-------------------------------------------------------------
+                 Coef.  Std.Err.   z    P>|z|  [0.025  0.975]
+-------------------------------------------------------------
+Intercept        78.378   33.116  2.367 0.018  13.473 143.284
+Intensity         0.002    0.004  0.494 0.621  -0.006   0.009
+ArticulationRate  0.804    0.950  0.846 0.398  -1.059   2.666
+PausingRate      -7.801    3.467 -2.250 0.024 -14.595  -1.006
+FundFreq         -0.655    0.385 -1.701 0.089  -1.410   0.100
+iqr              -2.350    2.641 -0.890 0.373  -7.526   2.826
+FundFreq:iqr      0.028    0.032  0.861 0.389  -0.035   0.091
+Group Var        18.969                                      
+=============================================================
+
+
+Total number of trials: 58
+
+Parameters: 
+Intercept           78.378252
+Intensity            0.001869
+ArticulationRate     0.803684
+PausingRate         -7.800500
+FundFreq            -0.655126
+iqr                 -2.350131
+FundFreq:iqr         0.027699
+Group Var            1.000000
+
+T-values: 
+Intercept           2.366808
+Intensity           0.494149
+ArticulationRate    0.845758
+PausingRate        -2.250010
+FundFreq           -1.701052
+iqr                -0.889963
+FundFreq:iqr        0.861120
+Group Var                NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                            5%           95%    Odds Ratio
+Intercept         7.099053e+05  1.687658e+62  1.094567e+34
+Intensity         9.944725e-01  1.009323e+00  1.001870e+00
+ArticulationRate  3.468799e-01  1.438441e+01  2.233755e+00
+PausingRate       4.584354e-07  3.658420e-01  4.095301e-04
+FundFreq          2.441512e-01  1.104856e+00  5.193764e-01
+iqr               5.389863e-04  1.687036e+01  9.535665e-02
+FundFreq:iqr      9.652714e-01  1.094989e+00  1.028086e+00
+Group Var                  NaN           NaN  2.718282e+00

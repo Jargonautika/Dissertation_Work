@@ -14,10 +14,12 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 def fixCols(df):
 
     colList = df.columns.tolist()
-    i = colList.index('F0')
-    colList[i] = 'FundFreq'
+    if 'F0' in colList:
+        i = colList.index('F0')
+        colList[i] = 'FundFreq'
 
-    df.columns = colList
+        df.columns = colList
+        
     return df
 
 
@@ -35,15 +37,14 @@ def computeVIF(X, featList):
 
     # For each column,run a variance_inflaction_factor against all other columns
         # to get a VIF Factor score
-    vif["VIF"] = [variance_inflation_factor(X_new.values, i) \
-                    for i in range(len(X_new.columns))]
+    vif["VIF"] = [variance_inflation_factor(X_new.values, i) for i in range(len(X_new.columns))]
     
     return vif
 
 
 def potentiallyRemoveFeature(df, current_features, base):
 
-    features_to_remove = list()
+    features_to_keep = list()
     # Iterate through every column of interest for this run
     for feat in current_features:
 
@@ -54,7 +55,7 @@ def potentiallyRemoveFeature(df, current_features, base):
             formula = "MMSE ~ " + " + ".join([x for x in current_features if x != feat])
 
         # Fit a model for our target and our selected columns 
-        md = smf.mixedlm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']])
+        md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
 
         # Fit the model and get the results
         res = md.fit()
@@ -63,27 +64,25 @@ def potentiallyRemoveFeature(df, current_features, base):
         bic = -2 * res.llf + np.log(res.nobs) * (res.df_modelwc)
 
         if bic > base:
-            features_to_remove.append(feat)
+            features_to_keep.append(feat)
 
     # Make the formula
-    if "FundFreq*iqr" in current_features and "FundFreq*iqr" not in features_to_remove:
-        formula = "MMSE ~ " + " + ".join([x for x in current_features if x not in features_to_remove]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
+    if "FundFreq*iqr" in features_to_keep:
+        formula = "MMSE ~ " + " + ".join([x for x in features_to_keep]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
     else:
-        formula = "MMSE ~ " + " + ".join([x for x in current_features if x not in features_to_remove])
+        formula = "MMSE ~ " + " + ".join([x for x in features_to_keep])
 
-    return_features = [feat for feat in current_features if feat not in features_to_remove]
-
-    md = smf.mixedlm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']])
+    md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
     res = md.fit()
     current_best_bic = -2 * res.llf + np.log(res.nobs) * (res.df_modelwc)
 
-    return formula, return_features, current_best_bic
+    return formula, features_to_keep, current_best_bic
 
 
 def next_possible_feature(df, oldFormula, newFormula, current_features, col, base = 0.0):
 
     # Fit a model for our target and our selected columns 
-    md = smf.mixedlm(formula = newFormula, data = df, groups = df[['ID', 'Age', 'Gender']])
+    md = smf.mixedlm(formula = newFormula, data = df, groups = df['ID'])
 
     # Fit the model and get the results
     res = md.fit()
@@ -170,7 +169,7 @@ def firstPass(df):
             colFormula = "MMSE ~ {}".format(col)
 
             # Fit a model for our target and our selected column 
-            md = smf.mixedlm(formula = colFormula, data = df, groups = df[['ID', 'Age', 'Gender']])
+            md = smf.mixedlm(colFormula, df, groups = df['ID'])
 
             # Fit the model and get the results
             res = md.fit()
@@ -214,6 +213,6 @@ def main(df, level = "global"):
 
 if __name__ == "__main__":
 
-    df = pd.read_csv("../global/GlobalMeasures_Full_wave_enhanced_audio-numerical.csv")
+    df = pd.read_csv("./global/GlobalMeasures_Full_wave_enhanced_audio-numerical.csv")
 
     bestFormula = main(df)
