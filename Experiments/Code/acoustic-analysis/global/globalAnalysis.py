@@ -2,6 +2,7 @@
 
 from lib.DSP_Tools import normaliseRMS, energy
 from lib.WAVReader import WAVReader as WR
+from lib.WAVWriter import WAVWriter as WW
 from scipy.signal import firwin, lfilter
 from joblib import Parallel, delayed
 from scipy.fft import fft
@@ -18,6 +19,49 @@ import shutil
 import glob
 import sys
 import os
+
+
+def saveWav(i):
+
+    utt, tarRMS = i
+
+    wav = WR(utt)
+    sig = wav.getData()
+    fs = wav.getSamplingRate()
+    bits = wav.getBitsPerSample()
+    # dur = wav.getDuration()
+
+    kx, _ = normaliseRMS(sig, tarRMS)
+
+    if not (kx >= -1).all() or not (kx <= 1).all():
+        os.remove(utt) # I have to remove 66 files here because they are just clipping and noise; I have gone through a handful of them and can confirm that they are just bad
+        # print(utt, '\t', rms(sig), '\t', dur)
+    else:
+        WW(utt, kx, fs, bits).write()
+
+
+def normalizeRMS(files, tarRMS = 0.075):
+
+    Parallel(n_jobs=int(mp.cpu_count()))(delayed(saveWav)((utt, tarRMS)) for utt in files)
+
+
+def normIt(files):
+
+    # Make some temporary copies of these files and then normalize them
+    try:
+        os.mkdir("filesToNormalize")
+    except:
+        shutil.rmtree("filesToNormalize")
+        os.mkdir("filesToNormalize")
+
+    for file in files:
+        shutil.copy(file, "filesToNormalize/{}".format(os.path.basename(file)))
+
+    # Follow the same protocol as with the machine learning stuff
+    files = glob.glob(os.path.join("filesToNormalize", "*"))
+    normalizeRMS(files)
+
+    return files
 
 
 def getPausingRate(tmpFile, partition, condition):
@@ -183,7 +227,7 @@ def main(which, task = 'numerical'):
 
             for condition in ["cc", "cd"]:
 
-                files = glob.glob(os.path.join(dataDir, partition, which, condition, "*"))
+                files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
                 # X = list()
                 # for file in files[:2]:
                 #     x = getInformation(file, which, partition, condition, "tmpGlobal")
@@ -214,6 +258,9 @@ def main(which, task = 'numerical'):
                         for i in x[1:]:
                             lilList.append(i)
                         bigList.append(lilList)
+
+                shutil.rmtree("filesToNormalize")
+
         else:
 
             # File for knowing in the test partition which condition each participant falls into
@@ -221,7 +268,7 @@ def main(which, task = 'numerical'):
             df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
             df.ID = df.ID.str.replace(' ', '')
             
-            files = glob.glob(os.path.join(dataDir, partition, which, "*"))
+            files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
             # X = list()
             # for file in files[:2]:
             #     x = getInformation(file, which, partition, condition, "tmpGlobal")
@@ -246,6 +293,8 @@ def main(which, task = 'numerical'):
                     for i in x[1:]:
                         lilList.append(i)
                     bigList.append(lilList)
+
+            shutil.rmtree("filesToNormalize")
 
     if task == 'categorical':
         DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])

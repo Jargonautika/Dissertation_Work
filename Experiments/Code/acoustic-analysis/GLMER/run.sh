@@ -2,6 +2,6 @@
 
 source /home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Envs/STATS/bin/activate
 
-python3 main.py
+python3 GLMER.py
 
 deactivate

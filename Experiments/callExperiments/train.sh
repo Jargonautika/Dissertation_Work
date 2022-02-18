@@ -87,7 +87,6 @@ if [[ $stage -le 0 ]]; then
 
 	# Normalize the data
 	python3 $scripts_dir/normalize_rms $exp_dir
-	# exit 0
 
 	# Extract features to figure out how big to make the matrix
 	if [ "$algorithm" = "auditory-global" ] || [ "$algorithm" = "auditory-local" ]; then
