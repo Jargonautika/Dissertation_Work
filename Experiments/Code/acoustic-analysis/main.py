@@ -17,7 +17,8 @@ import segmentalAnalysis
 def segmentalStuff(which, task):
 
     # Run Segmental Acoustic-Phonetic Deprecation Analysis
-    segmentalAnalysis.main(which)
+    for i in [True, False][:]: # Do the Vowel Space Degradation model and the Phonemic Contrast Degradation Models
+        segmentalAnalysis.main(which, task, i)
 
 
 # Do the global work
@@ -40,11 +41,12 @@ def globalStuff(which, task):
 def main():
 
     # Choose between Full_wave_enhanced_audio and Normalised_audio-chunks
-    for which in ["Normalised_audio-chunks", "Full_wave_enhanced_audio"]:
+    # for which in ["Normalised_audio-chunks", "Full_wave_enhanced_audio"]:
+    for which in ["Full_wave_enhanced_audio"]: # The analysis is actually the exact same if we're doing Norm or Full here. 
 
         for task in ["categorical", "numerical"]:
 
-            globalStuff(which, task)
+            # globalStuff(which, task)
 
             segmentalStuff(which, task)
 
