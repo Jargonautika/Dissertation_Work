@@ -33,11 +33,14 @@ def saveWav(i):
 
     kx, _ = normaliseRMS(sig, tarRMS)
 
-    if not (kx >= -1).all() or not (kx <= 1).all():
-        os.remove(utt) # I have to remove 66 files here because they are just clipping and noise; I have gone through a handful of them and can confirm that they are just bad
-        # print(utt, '\t', rms(sig), '\t', dur)
-    else:
-        WW(utt, kx, fs, bits).write()
+    WW(utt, kx, fs, bits).write()    
+
+    # NOTE For the full-wave enhanced files this is too aggressive right now; it's removing ~100 of the full files, negating a lot of the possible analysis.
+    # if not (kx >= -1).all() or not (kx <= 1).all():
+    #     os.remove(utt) # I have to remove 66 files here because they are just clipping and noise; I have gone through a handful of them and can confirm that they are just bad
+    #     # print(utt, '\t', rms(sig), '\t', dur)
+    # else:
+    #     WW(utt, kx, fs, bits).write()
 
 
 def normalizeRMS(files, tarRMS = 0.075):
@@ -60,7 +63,7 @@ def normIt(files):
     # Follow the same protocol as with the machine learning stuff
     files = glob.glob(os.path.join("filesToNormalize", "*"))
     normalizeRMS(files)
-    files = glob.glob(os.path.join("filesToNormalize", "*")) # Duplicated here because we throw out 66 files as noise
+    files = glob.glob(os.path.join("filesToNormalize", "*")) # Duplicated here because we throw out 66 files as noise # NOTE see comments above in normalizeRMS
 
     return files
 

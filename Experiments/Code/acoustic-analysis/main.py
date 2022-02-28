@@ -27,15 +27,15 @@ def globalStuff(which, task):
     # Run Global Acoustic-Phonetic Deprecation Analysis
     globalAnalysis.main(which, task)
 
-    # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-    if task == "categorical":
-        runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-        runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    # # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
+    # if task == "categorical":
+    #     runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+    #     runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
-    # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-    elif task == "numerical":
-        runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-        runLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    # # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
+    # elif task == "numerical":
+    #     runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
+    #     runLMER.main(level = 'global', which = which, step = False) # Model all measurements
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
 
         for task in ["categorical", "numerical"]:
 
-            # globalStuff(which, task)
+            globalStuff(which, task)
 
             segmentalStuff(which, task)
 
