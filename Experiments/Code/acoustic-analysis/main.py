@@ -20,6 +20,23 @@ def segmentalStuff(which, task):
     for i in [True, False][:]: # Do the Vowel Space Degradation model and the Phonemic Contrast Degradation Models
         segmentalAnalysis.main(which, task, i)
 
+    # for segmentalModel in ["Phoneme_Category-fricative_categories",
+    #                         "Phoneme_Category-phonetic_contrasts",
+    #                         "Phoneme_Category-plosive_categories",
+    #                         "Phoneme_Category-vowel_dur_categories",
+    #                         "Phoneme_Category-vowel_erb_categories",
+    #                         "Vowel_Space"]:
+
+        # # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
+        # if task == "categorical":
+        #         # runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
+        #         runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
+
+        # # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
+        # elif task == "numerical":
+        #     # runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
+        #     runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
+
 
 # Do the global work
 def globalStuff(which, task):
@@ -29,13 +46,13 @@ def globalStuff(which, task):
 
     # # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
     # if task == "categorical":
-    #     runGLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    #     runGLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    #     runGLMER.main(level = 'global', which = which, segmentalModel = None, step = True) # Use BIC stepwise feature selection
+    #     runGLMER.main(level = 'global', which = which, segmentalModel = None, step = False) # Model all measurements
 
     # # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
     # elif task == "numerical":
-    #     runLMER.main(level = 'global', which = which, step = True) # Use BIC stepwise feature selection
-    #     runLMER.main(level = 'global', which = which, step = False) # Model all measurements
+    #     runLMER.main(level = 'global', which = which, segmentalModel = None, step = True) # Use BIC stepwise feature selection
+    #     runLMER.main(level = 'global', which = which, segmentalModel = None, step = False) # Model all measurements
 
 
 def main():

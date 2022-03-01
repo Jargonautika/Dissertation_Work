@@ -21,6 +21,24 @@ import sys
 import os
 
 
+def removeNaN(DF):
+
+    # Check to make sure ther aren't any totally empty columns
+    nothingList = [DF[mys].isnull().all() for mys in DF]
+    # If there are any columns with no observations
+    if any(nothingList):
+        # Iterate over the columns
+        dropList = list()
+        for i, j in enumerate(nothingList):
+            # Find the completely NaN columns for category
+            if j:
+                print("No values found for {}".format(DF.columns[i]))
+                dropList.append(DF.columns[i])
+        DF.drop(dropList, inplace = True, axis = 1)
+
+    return DF
+
+
 def saveWav(i):
 
     utt, tarRMS = i
@@ -304,6 +322,7 @@ def main(which, task = 'numerical'):
         DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])
     else:
         DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'MMSE'])
+    DF = removeNaN(DF)
     DF.to_csv('./global/GlobalMeasures_{}-{}.csv'.format(which, task), index = False)
 
     shutil.rmtree("tmpGlobal")

@@ -15,6 +15,24 @@ sys.path.insert(1, './global')
 from globalAnalysis import normIt
 
 
+def removeNaN(DF):
+
+    # Check to make sure ther aren't any totally empty columns
+    nothingList = [DF[mys].isnull().all() for mys in DF]
+    # If there are any columns with no observations
+    if any(nothingList):
+        # Iterate over the columns
+        dropList = list()
+        for i, j in enumerate(nothingList):
+            # Find the completely NaN columns for category
+            if j:
+                print("No values found for {}".format(DF.columns[i]))
+                dropList.append(DF.columns[i])
+        DF.drop(dropList, inplace = True, axis = 1)
+
+    return DF
+
+
 def getPhonemicCategoryInformation(file, which, partition, condition, destFolder):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
@@ -205,6 +223,7 @@ def main(which, task = 'numerical', function = True):
 
         columns = ['ID', 'Age', 'Gender'] + specifics + taskList
         DF = pd.DataFrame(bigList, columns = columns)
+        DF = removeNaN(DF)
         DF.to_csv('./segmental/SegmentalMeasures_{}-{}-{}.csv'.format(which, task, saveName), index = False)
     
     # WE have five models using these other segmental features related to phoneme category distinctions
@@ -257,6 +276,7 @@ def main(which, task = 'numerical', function = True):
         for (specifics, start, end), modelName in zip([specifics2, specifics3, specifics4, specifics5, specifics6], ['phonetic_contrasts', 'plosive_categories', 'fricative_categories', 'vowel_erb_categories', 'vowel_dur_categories']):
             columns = ['ID', 'Age', 'Gender'] + specifics + taskList
             DF = pd.DataFrame([bigList[i][:3] + bigList[i][start:end] + [bigList[i][-1]] for i in range(len(bigList))], columns = columns)
+            DF = removeNaN(DF)            
             DF.to_csv('./segmental/SegmentalMeasures_{}-{}-{}-{}.csv'.format(which, task, saveName, modelName), index = False)
 
     shutil.rmtree("tmpGlobal")
