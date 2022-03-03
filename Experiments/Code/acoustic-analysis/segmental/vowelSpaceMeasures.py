@@ -328,13 +328,16 @@ def vowelWork(basename, sound):
     return vowelRate, vowelArea2D, vowelArea3D, np.nanmean(rangeF1), np.nanmean(rangeF2), np.nanmean(rangeF3)
 
 
-def main(file):
+def main(file, wav):
 
     # Get the file's basename
     basename = os.path.basename(file).split('.')[0]
 
     # Create a parselmouth sound object
     sound = parselmouth.Sound(file)
+
+    # Substitute the normalized data for parselmouth's data
+    sound.values = wav.getData().T
 
     vowelRate, vA2D, vA3D, F1, F2, F3 = vowelWork(basename, sound)
 

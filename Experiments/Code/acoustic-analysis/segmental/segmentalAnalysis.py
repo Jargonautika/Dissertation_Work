@@ -100,7 +100,7 @@ def getPhonemicCategoryInformation(file, which, partition, condition, destFolder
             condition
 
 
-def getVowelSpaceInformation(file, which, partition, condition, destFolder):
+def getVowelSpaceInformation(file, wav, which, partition, condition, destFolder):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
 
@@ -111,7 +111,7 @@ def getVowelSpaceInformation(file, which, partition, condition, destFolder):
     ##################################
     # Vowel Space Measures
     ##################################
-    vowelRate, vA2D, vA3D, F1, F2, F3 = vowelSpaceMeasures.main(file)
+    vowelRate, vA2D, vA3D, F1, F2, F3 = vowelSpaceMeasures.main(file, wav)
 
     return id, vowelRate, vA2D, vA3D, F1, F2, F3, condition
 
@@ -142,12 +142,12 @@ def main(which, task = 'numerical', function = True):
 
             for condition in ["cc", "cd"]:
 
-                files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
-                # X = list()
-                # for file in files[:2]:
-                #     x = getInformation(file, which, partition, condition, "tmpGlobal")
-                #     X.append(x)
-                X = Parallel(n_jobs=mp.cpu_count())(delayed(myFunction)(file, which, partition, condition, "tmpGlobal") for file in files[:])
+                wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
+                X = list()
+                for wav, file in zip(wavs, files):
+                    x = myFunction(file, wav, which, partition, condition, "tmpGlobal")
+                    X.append(x)
+                # X = Parallel(n_jobs=mp.cpu_count())(delayed(myFunction)(files[i], which, partition, condition, "tmpGlobal") for file in files[:])
 
                 # Get the metadata
                 trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
@@ -183,12 +183,12 @@ def main(which, task = 'numerical', function = True):
             df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
             df.ID = df.ID.str.replace(' ', '')
             
-            files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
-            # X = list()
-            # for file in files[:2]:
-            #     x = getInformation(file, which, partition, condition, "tmpGlobal")
-            #     X.append(x)
-            X = Parallel(n_jobs=mp.cpu_count())(delayed(myFunction)(file, which, partition, df, "tmpGlobal") for file in files[:])
+            wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
+            X = list()
+            for file in files[:]:
+                x = myFunction(file, which, partition, condition, "tmpGlobal")
+                X.append(x)
+            # X = Parallel(n_jobs=mp.cpu_count())(delayed(myFunction)(file, which, partition, df, "tmpGlobal") for file in files[:])
             
             for x in X:
                 id = x[0].split('-')[0]
@@ -284,4 +284,5 @@ def main(which, task = 'numerical', function = True):
 
 if __name__ == "__main__":
 
-    main("Full_wave_enhanced_audio", "categorical", False)
+    main(which = "Full_wave_enhanced_audio")
+    # main("Full_wave_enhanced_audio", "categorical", False)

@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 
-import os
 import re
-import sys
 import numpy as np
-from lib.WAVReader import WAVReader as WR
-from lib.WAVWriter import WAVWriter as WW
 
-def trimAudio(file, segments):
 
-    wav = WR(file)
+def trimAudio(wav, segments):
+
     data = wav.getData()
     fs = wav.getSamplingRate()
     bits = wav.getBitsPerSample()
@@ -79,9 +75,7 @@ def grepINV(textGrid):
 
 
 # We need to get rid of all speech from "___INV" segments
-def main(file, textGrid, tmpFolder):
-
-    dest = os.path.join(tmpFolder, os.path.basename(file))
+def main(wav, textGrid, tmpFolder):
 
     # Find out if "___INV" is in the file
     if grepINV(textGrid):
@@ -90,18 +84,12 @@ def main(file, textGrid, tmpFolder):
         invList = findInterviewerSegments(textGrid)
 
         # Remove the offending areas
-        data, fs, bits = trimAudio(file, invList)
-    
-    # Copy the file to a temp file
-    else:
-        wav = WR(file)
-        data = wav.getData()
-        fs = wav.getSamplingRate()
-        bits = wav.getBitsPerSample()
+        data, _, _ = trimAudio(wav, invList)
+        
+        # Overwrite the old stuff
+        wav.__data = data
 
-    WW(dest, data.reshape(-1, 1), fs, bits).write()
-
-    return dest
+    return wav
 
 
 if __name__ == "__main__":

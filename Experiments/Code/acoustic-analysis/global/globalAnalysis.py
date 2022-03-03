@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 from lib.DSP_Tools import normaliseRMS, energy
+from joblib import wrap_non_picklable_objects
 from lib.WAVReader import WAVReader as WR
-from lib.WAVWriter import WAVWriter as WW
 from scipy.signal import firwin, lfilter
 from joblib import Parallel, delayed
 from scipy.fft import fft
@@ -15,6 +15,7 @@ import pandas as pd
 import numpy as np
 import parselmouth
 import pauseRate
+import librosa
 import shutil
 import glob
 import sys
@@ -45,13 +46,16 @@ def saveWav(i):
 
     wav = WR(utt)
     sig = wav.getData()
-    fs = wav.getSamplingRate()
-    bits = wav.getBitsPerSample()
-    # dur = wav.getDuration()
 
+    # Scale to target
     kx, _ = normaliseRMS(sig, tarRMS)
 
-    WW(utt, kx, fs, bits).write()    
+    # Overwrite the data
+    wav.__data = kx
+
+    return wav
+
+    # WW(utt, kx, fs, bits).write()    
 
     # NOTE For the full-wave enhanced files this is too aggressive right now; it's removing ~100 of the full files, negating a lot of the possible analysis.
     # if not (kx >= -1).all() or not (kx <= 1).all():
@@ -60,10 +64,10 @@ def saveWav(i):
     # else:
     #     WW(utt, kx, fs, bits).write()
 
-
 def normalizeRMS(files, tarRMS = 0.075):
 
-    Parallel(n_jobs=int(mp.cpu_count()))(delayed(saveWav)((utt, tarRMS)) for utt in files)
+    for utt in files[:]:
+        yield saveWav((utt, tarRMS))
 
 
 def normIt(files):
@@ -75,15 +79,14 @@ def normIt(files):
         shutil.rmtree("filesToNormalize")
         os.mkdir("filesToNormalize")
 
-    for file in files:
+    for file in files[:]:
         shutil.copy(file, "filesToNormalize/{}".format(os.path.basename(file)))
 
     # Follow the same protocol as with the machine learning stuff
     files = glob.glob(os.path.join("filesToNormalize", "*"))
-    normalizeRMS(files)
-    files = glob.glob(os.path.join("filesToNormalize", "*")) # Duplicated here because we throw out 66 files as noise # NOTE see comments above in normalizeRMS
+    wavs = list(normalizeRMS(files))
 
-    return files
+    return wavs, files
 
 
 def getPausingRate(tmpFile, partition, condition):
@@ -134,27 +137,21 @@ def filterSignal(sig, fs, numSamples):
     return bpFilteredSig
 
 
-def getIntensity(tmpFile, which, partition, condition):
+def getIntensity(file, wav, which, partition, condition):
+
+    sig = wav.getData()
+    fs = wav.getSamplingRate()
+    numSamples = wav.getSampleNO()
 
     if "Full" in which:
         # Concatenate the word segments together
-        wav = WR(tmpFile)
-        sig = wav.getData()
-        fs = wav.getSamplingRate()
-        numSamples = wav.getSampleNO()
-
         # Get rid of silence and fillers
-        sig = concatenateWords.main(tmpFile, partition, condition, sig, fs)
-
-    else:
-        wav = WR(tmpFile)
-        sig = wav.getData()
-        fs = wav.getSamplingRate()
-        numSamples = wav.getSampleNO()
+        sig = concatenateWords.main(file, partition, condition, sig, fs)
 
     # Normalize the signal
-    sig, k = normaliseRMS(sig, tarRMS = 0.075)
+    sig, _ = normaliseRMS(sig, tarRMS = 0.075)
 
+    # Calculate the frequency response
     frequencyResponse = filterSignal(sig, fs, numSamples)
 
     # Calculate the mean energy for the file
@@ -163,7 +160,7 @@ def getIntensity(tmpFile, which, partition, condition):
     return intensity
 
 
-def getRidOfInterviewer(file, partition, condition, tmpFolder = "tmpGlobal"):
+def getRidOfInterviewer(file, wav, partition, condition, tmpFolder = "tmpGlobal"):
 
     tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
     id = os.path.basename(file).split('.')[0].split('-')[0]
@@ -173,8 +170,8 @@ def getRidOfInterviewer(file, partition, condition, tmpFolder = "tmpGlobal"):
     else: 
         tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
 
-    tmpFile = removeInterviewer.main(file, tg, tmpFolder)
-    return tmpFile
+    wav = removeInterviewer.main(wav, tg, tmpFolder)
+    return wav
 
 
 def hertzToSemitones(x, re=1):
@@ -182,28 +179,40 @@ def hertzToSemitones(x, re=1):
     return 12 * np.log(x / re) / np.log(2)
 
 
-def getFundamentalFrequency(file):
+# https://stackoverflow.com/questions/43877971/librosa-pitch-tracking-stft
+def detect_pitch(magnitudes, pitches, t):
 
-    # Read in the file
-    sound = parselmouth.Sound(file)
-    # Use Praat's spectral compression model to get the pitch
-    pitch = sound.to_pitch_shs()
-    # Get the strongest candidate's array (0th one in Parselmouth/Praat)
-    f0ArrayHertz = [z[0] for z in pitch.to_array()[0]]
+    index = magnitudes[:, t].argmax()
+    pitch = pitches[index, t]
+
+    return pitch
+
+
+def getFundamentalFrequency(wav):
+
+    sig = wav.getData()
+    fs = wav.getSamplingRate()
+
+    # Use parabolic interpolation of the STFT to find the fundamental frequency
+    pitches, magnitudes = librosa.piptrack(y=sig[:,0], sr=fs, fmin = 75, fmax = 600)
+    f0HzArray = [detect_pitch(magnitudes, pitches, t) for t in range(pitches.shape[-1])]
+
     # Convert to Semitones re 1 Hz
     # Forced to replace -inf values with 0.0 due to logarithmic conversion
     # Explicitly ignore the 0.0 values for the median calculation, otherwise you'll get some 0.0s for F0 and that's wrong
-    f0ArraySemitones = [hertzToSemitones(x) for x in f0ArrayHertz if x != 0.0]
+    f0SemiArray = [hertzToSemitones(x) for x in f0HzArray if x != 0.0]
+
     # Get the median f0 value
-    f0 = np.median(f0ArraySemitones)
+    f0Semi = np.median(f0SemiArray)
+
     # Get the interquartile range of the fundamental frequency for the file
-    q3, q1 = np.percentile(f0ArraySemitones, [75, 25])
+    q3, q1 = np.percentile(f0SemiArray, [75, 25])
     iqr = q3 - q1
 
-    return f0, iqr
+    return f0Semi, iqr
 
 
-def getInformation(file, which, partition, condition, destFolder):
+def getInformation(file, wav, which, partition, condition, destFolder):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
 
@@ -213,13 +222,13 @@ def getInformation(file, which, partition, condition, destFolder):
 
     # Get rid of the interviewer in the long files
     if "Full" in which:
-        file = getRidOfInterviewer(file, partition, condition, destFolder)
+        wav = getRidOfInterviewer(file, wav, partition, condition, destFolder)
 
     # Get Median F0 per file
-    f0, iqr = getFundamentalFrequency(file)
+    f0, iqr = getFundamentalFrequency(wav)
 
     # Get Intensity per file
-    intensity = getIntensity(file, which, partition, condition)
+    intensity = getIntensity(file, wav, which, partition, condition)
 
     # Get articulation rate
     articulationRate = getArticulationRate(file, which, partition, condition)
@@ -249,12 +258,12 @@ def main(which, task = 'numerical'):
 
             for condition in ["cc", "cd"]:
 
-                files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
-                # X = list()
-                # for file in files[:2]:
-                #     x = getInformation(file, which, partition, condition, "tmpGlobal")
-                #     X.append(x)
-                X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, condition, "tmpGlobal") for file in files[:])
+                wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
+                X = list()
+                for wav, file in zip(wavs, files):
+                    x = getInformation(file, wav, which, partition, condition, "tmpGlobal")
+                    X.append(x)
+                # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], wavs[i], which, partition, condition, "tmpGlobal") for i in range(len(wavs)))
 
                 # Get the metadata
                 trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
@@ -290,12 +299,12 @@ def main(which, task = 'numerical'):
             df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
             df.ID = df.ID.str.replace(' ', '')
             
-            files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
-            # X = list()
-            # for file in files[:2]:
-            #     x = getInformation(file, which, partition, condition, "tmpGlobal")
-            #     X.append(x)
-            X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(file, which, partition, df, "tmpGlobal") for file in files[:])
+            wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
+            X = list()
+            for wav, file in zip(wavs, files):
+                x = getInformation(file, wav, which, partition, condition, "tmpGlobal")
+                X.append(x)
+            # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], wavs[i], which, partition, df, "tmpGlobal") for i in range(len(wavs)))
             
             for x in X:
                 id = x[0].split('-')[0]
