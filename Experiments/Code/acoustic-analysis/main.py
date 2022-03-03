@@ -27,15 +27,15 @@ def segmentalStuff(which, task):
     #                         "Phoneme_Category-vowel_erb_categories",
     #                         "Vowel_Space"]:
 
-        # # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-        # if task == "categorical":
-        #         # runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
-        #         runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
+    #     # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
+    #     if task == "categorical":
+    #             # runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
+    #             runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
 
-        # # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-        # elif task == "numerical":
-        #     # runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
-        #     runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
+    #     # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
+    #     elif task == "numerical":
+    #         # runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
+    #         runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
 
 
 # Do the global work
@@ -63,7 +63,7 @@ def main():
 
         for task in ["categorical", "numerical"]:
 
-            globalStuff(which, task)
+            # globalStuff(which, task)
 
             segmentalStuff(which, task)
 
