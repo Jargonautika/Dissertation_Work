@@ -40,20 +40,20 @@ def removeNaN(DF):
     return DF
 
 
-def saveWav(i):
+def saveWav(utt, tarRMS):
 
-    utt, tarRMS = i
-
+    # Read the data
     wav = WR(utt)
+
+    # Get the signal
     sig = wav.getData()
+    fs = wav.getSamplingRate()
+    assert fs == 44100, "Not all files have the same sampling rate"
 
     # Scale to target
     kx, _ = normaliseRMS(sig, tarRMS)
 
-    # Overwrite the data
-    wav.__data = kx
-
-    return wav
+    return kx
 
     # WW(utt, kx, fs, bits).write()    
 
@@ -66,8 +66,7 @@ def saveWav(i):
 
 def normalizeRMS(files, tarRMS = 0.075):
 
-    for utt in files[:5]:
-        yield saveWav((utt, tarRMS))
+    return Parallel(n_jobs=mp.cpu_count())(delayed(saveWav)(utt, tarRMS) for utt in files[:])
 
 
 def normIt(files):
@@ -84,9 +83,9 @@ def normIt(files):
 
     # Follow the same protocol as with the machine learning stuff
     files = glob.glob(os.path.join("filesToNormalize", "*"))
-    wavs = list(normalizeRMS(files))
+    signals = normalizeRMS(files)
 
-    return wavs, files
+    return signals, files
 
 
 def getPausingRate(tmpFile, partition, condition):
@@ -188,10 +187,7 @@ def detect_pitch(magnitudes, pitches, t):
     return pitch
 
 
-def getFundamentalFrequency(wav):
-
-    sig = wav.getData()
-    fs = wav.getSamplingRate()
+def getFundamentalFrequency(sig, fs=44100):
 
     # Use parabolic interpolation of the STFT to find the fundamental frequency
     pitches, magnitudes = librosa.piptrack(y=sig[:,0], sr=fs, fmin = 75, fmax = 600)
@@ -212,9 +208,12 @@ def getFundamentalFrequency(wav):
     return f0Semi, iqr
 
 
-def getInformation(file, wav, which, partition, condition, destFolder):
+def getInformation(file, sig, which, partition, condition, destFolder):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
+
+    wav = WR(file)
+    wav.__data = sig
 
     if not isinstance(condition, str):
         basename = os.path.basename(file).split('.')[0].split('-')[0]
@@ -225,7 +224,7 @@ def getInformation(file, wav, which, partition, condition, destFolder):
         wav = getRidOfInterviewer(file, wav, partition, condition, destFolder)
 
     # Get Median F0 per file
-    f0, iqr = getFundamentalFrequency(wav)
+    f0, iqr = getFundamentalFrequency(sig)
 
     # Get Intensity per file
     intensity = getIntensity(file, wav, which, partition, condition)
@@ -239,7 +238,7 @@ def getInformation(file, wav, which, partition, condition, destFolder):
     return id, f0, iqr, intensity, articulationRate, pausingRate, condition
 
 
-def main(which, task = 'numerical'):
+def main(which):
 
     sexDict = {0: 'male ', 1: 'female '}
 
@@ -251,19 +250,19 @@ def main(which, task = 'numerical'):
 
     # Iterate over the files, maintaining access to metadata
     dataDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/"
-    bigList = list()
+    categoricalList, numericalList = list(), list()
     for partition in ["train", "test"]:
 
         if partition == "train":
 
             for condition in ["cc", "cd"]:
 
-                wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
-                X = list()
-                for wav, file in zip(wavs, files):
-                    x = getInformation(file, wav, which, partition, condition, "tmpGlobal")
-                    X.append(x)
-                # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], wavs[i], which, partition, condition, "tmpGlobal") for i in range(len(wavs)))
+                signals, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
+                # X = list()
+                # for sig, file in zip(signals, files):
+                #     x = getInformation(file, sig, which, partition, condition, "tmpGlobal")
+                #     X.append(x)
+                X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, condition, "tmpGlobal") for i in range(len(signals)))
 
                 # Get the metadata
                 trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
@@ -275,20 +274,22 @@ def main(which, task = 'numerical'):
                     row = df.loc[df['ID'] == id]
                     lilList = [id, row.age.values[0], row.gender.values[0]]
 
-                    if task != 'categorical': # Find MMSE
-                        for i in x[1:-1]:
-                            lilList.append(i)
-                        # Filter out that one NaN guy for MMSE
-                        if np.isnan(row.mmse.values[0]):
-                            continue
-                        else:
-                            mmse = row.mmse.values[0]
-                        lilList.append(mmse)
-                        bigList.append(lilList)
+                    # Find MMSE
+                    for i in x[1:-1]:
+                        lilList.append(i)
+                    # Filter out that one NaN guy for MMSE
+                    if np.isnan(row.mmse.values[0]):
+                        continue
                     else:
-                        for i in x[1:]:
-                            lilList.append(i)
-                        bigList.append(lilList)
+                        mmse = row.mmse.values[0]
+                    lilList.append(mmse)
+                    numericalList.append(lilList)
+                    lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
+
+                    # Find Categorical Labels
+                    for i in x[1:]:
+                        lilList.append(i)
+                    categoricalList.append(lilList)
 
                 shutil.rmtree("filesToNormalize")
 
@@ -299,40 +300,41 @@ def main(which, task = 'numerical'):
             df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
             df.ID = df.ID.str.replace(' ', '')
             
-            wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
-            X = list()
-            for wav, file in zip(wavs, files):
-                x = getInformation(file, wav, which, partition, condition, "tmpGlobal")
-                X.append(x)
-            # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], wavs[i], which, partition, df, "tmpGlobal") for i in range(len(wavs)))
+            signals, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
+            # X = list()
+            # for sig, file in zip(signals, files):
+            #     x = getInformation(file, sig, which, partition, condition, "tmpGlobal")
+            #     X.append(x)
+            X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, df, "tmpGlobal") for i in range(len(signals)))
             
             for x in X:
                 id = x[0].split('-')[0]
                 row = df.loc[df['ID'] == id]
                 lilList = [id, row.age.values[0], sexDict[row.gender.values[0]]]
-                if task != 'categorical': # Find MMSE
-                    for i in x[1:-1]:
-                        lilList.append(i)
-                    # Filter out that one NaN guy for MMSE
-                    if np.isnan(row.mmse.values[0]):
-                        continue
-                    else:
-                        mmse = row.mmse.values[0]
-                    lilList.append(mmse)
-                    bigList.append(lilList)
+                
+                # Find MMSE
+                for i in x[1:-1]:
+                    lilList.append(i)
+                # Filter out that one NaN guy for MMSE
+                if np.isnan(row.mmse.values[0]):
+                    continue
                 else:
-                    for i in x[1:]:
-                        lilList.append(i)
-                    bigList.append(lilList)
+                    mmse = row.mmse.values[0]
+                lilList.append(mmse)
+                numericalList.append(lilList)
+                lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
+
+                # Get Categorical labels
+                for i in x[1:]:
+                    lilList.append(i)
+                categoricalList.append(lilList)
 
             shutil.rmtree("filesToNormalize")
 
-    if task == 'categorical':
-        DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'Condition'])
-    else:
-        DF = pd.DataFrame(bigList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', 'MMSE'])
-    DF = removeNaN(DF)
-    DF.to_csv('./global/GlobalMeasures_{}-{}.csv'.format(which, task), index = False)
+    for task, taskList, target in [('categorical', categoricalList, 'Condition'), ('numerical', numericalList, 'MMSE')]:
+        DF = pd.DataFrame(taskList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', target])
+        DF = removeNaN(DF)
+        DF.to_csv('./global/GlobalMeasures_{}-{}.csv'.format(which, task), index = False)
 
     shutil.rmtree("tmpGlobal")
 
