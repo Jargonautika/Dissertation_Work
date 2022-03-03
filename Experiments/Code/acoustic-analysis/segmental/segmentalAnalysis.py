@@ -33,7 +33,7 @@ def removeNaN(DF):
     return DF
 
 
-def getPhonemicCategoryInformation(file, which, partition, condition, destFolder):
+def getPhonemicCategoryInformation(file, wav, which, partition, condition, destFolder):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
 
@@ -44,7 +44,7 @@ def getPhonemicCategoryInformation(file, which, partition, condition, destFolder
     ##################################
     # Phoneme Category Distinctions
     ##################################
-    plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD = phonemeCategoryMeasures.main(file)
+    plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD = phonemeCategoryMeasures.main(file, wav)
 
     # Model 2 Features
     P_VOT, B_VOT, T_VOT, D_VOT, K_VOT, G_VOT = plosiveVOTMeans
@@ -185,8 +185,8 @@ def main(which, task = 'numerical', function = True):
             
             wavs, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
             X = list()
-            for file in files[:]:
-                x = myFunction(file, which, partition, condition, "tmpGlobal")
+            for wav, file in zip(wavs, files):
+                x = myFunction(file, wav, which, partition, condition, "tmpGlobal")
                 X.append(x)
             # X = Parallel(n_jobs=mp.cpu_count())(delayed(myFunction)(file, which, partition, df, "tmpGlobal") for file in files[:])
             
@@ -284,5 +284,5 @@ def main(which, task = 'numerical', function = True):
 
 if __name__ == "__main__":
 
-    main(which = "Full_wave_enhanced_audio")
-    # main("Full_wave_enhanced_audio", "categorical", False)
+    # main(which = "Full_wave_enhanced_audio")
+    main("Full_wave_enhanced_audio", "categorical", False)

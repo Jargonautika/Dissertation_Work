@@ -66,7 +66,7 @@ def saveWav(i):
 
 def normalizeRMS(files, tarRMS = 0.075):
 
-    for utt in files[:]:
+    for utt in files[:5]:
         yield saveWav((utt, tarRMS))
 
 

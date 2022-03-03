@@ -63,7 +63,7 @@ def main():
 
         for task in ["categorical", "numerical"]:
 
-            # globalStuff(which, task)
+            globalStuff(which, task)
 
             segmentalStuff(which, task)
 

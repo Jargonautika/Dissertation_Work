@@ -467,13 +467,16 @@ def contrastWork(basename, sound):
     return plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD
 
 
-def main(file):
+def main(file, wav):
 
     # Get the file's basename
     basename = os.path.basename(file).split('.')[0]
 
     # Create a parselmouth sound object
     sound = parselmouth.Sound(file)
+
+    # Substitute the normalized data for parselmouth's data
+    sound.values = wav.getData().T
 
     # Phonemic Distinction Work
     plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD = contrastWork(basename, sound)
