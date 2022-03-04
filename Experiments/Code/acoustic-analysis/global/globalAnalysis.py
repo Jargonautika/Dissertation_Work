@@ -274,6 +274,12 @@ def main(which):
                     row = df.loc[df['ID'] == id]
                     lilList = [id, row.age.values[0], row.gender.values[0]]
 
+                    # Find Categorical Labels
+                    for i in x[1:]:
+                        lilList.append(i)
+                    categoricalList.append(lilList)
+                    lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
+
                     # Find MMSE
                     for i in x[1:-1]:
                         lilList.append(i)
@@ -284,12 +290,6 @@ def main(which):
                         mmse = row.mmse.values[0]
                     lilList.append(mmse)
                     numericalList.append(lilList)
-                    lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
-
-                    # Find Categorical Labels
-                    for i in x[1:]:
-                        lilList.append(i)
-                    categoricalList.append(lilList)
 
                 shutil.rmtree("filesToNormalize")
 
@@ -311,6 +311,12 @@ def main(which):
                 id = x[0].split('-')[0]
                 row = df.loc[df['ID'] == id]
                 lilList = [id, row.age.values[0], sexDict[row.gender.values[0]]]
+
+                # Get Categorical labels
+                for i in x[1:]:
+                    lilList.append(i)
+                categoricalList.append(lilList)
+                lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
                 
                 # Find MMSE
                 for i in x[1:-1]:
@@ -322,12 +328,6 @@ def main(which):
                     mmse = row.mmse.values[0]
                 lilList.append(mmse)
                 numericalList.append(lilList)
-                lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
-
-                # Get Categorical labels
-                for i in x[1:]:
-                    lilList.append(i)
-                categoricalList.append(lilList)
 
             shutil.rmtree("filesToNormalize")
 
