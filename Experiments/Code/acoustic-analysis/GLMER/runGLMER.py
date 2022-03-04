@@ -85,12 +85,6 @@ def runGLMER(df, formula, printList, which, step):
     # q = df.drop(['ID', 'Condition'], axis = 1) 
     # y, X = dmatrices('Condition ~ {}'.format(" + ".join(i for i in q.columns if i in bestFeats)), data = df, return_type = 'dataframe')
 
-    df = fixCols(df)
-
-    # We get exact separation in the glm models if the 'cd' condition has NaN values resulting in a (-)inf columnwise mean for any particular factor
-    if df.isnull().sum().sum() > 0:
-        df = imputeMissingData(df)
-
     # Construct the model
     # glm_binom = smf.glm(formula = formula, data = df, groups = df[['ID', 'Age', 'Gender']], family = sm.families.Binomial())
     glm_binom = smf.glm(formula = formula, data = df, groups = df['ID'], family = sm.families.Binomial())
@@ -132,17 +126,23 @@ def loadDataSet(level, which, segmentalModel):
     else:
         df = pd.read_csv("./{}/SegmentalMeasures_{}-categorical-{}.csv".format(level, which, segmentalModel))
 
+    df = fixCols(df)
+
+    # We get exact separation in the glm models if the 'cd' condition has NaN values resulting in a (-)inf columnwise mean for any particular factor
+    if df.isnull().sum().sum() > 0:
+        df = imputeMissingData(df)
+
     return df
 
 
-def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-fricative_categories", step = False):
+def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-fricative_categories", step = False, interaction = None):
 
     # Load the data
     df = loadDataSet(level, which, segmentalModel)
 
     # Step-wise feature selection for best model by Bayes Information Criterion
     if step:
-        formula = stepwiseGLMER.main(df, level)
+        formula = stepwiseGLMER.main(df, level, interaction)
 
     # Get a baseline with just everything in the model
     else:

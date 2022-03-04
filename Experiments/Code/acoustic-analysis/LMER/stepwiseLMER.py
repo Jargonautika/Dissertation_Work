@@ -10,19 +10,6 @@ import statsmodels.formula.api as smf
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
-# Patsy doesn't accept numerals in pandas DataFrame column strings
-def fixCols(df):
-
-    colList = df.columns.tolist()
-    if 'F0' in colList:
-        i = colList.index('F0')
-        colList[i] = 'FundFreq'
-
-        df.columns = colList
-        
-    return df
-
-
 # Scores less than 5 are good scores
 def computeVIF(X, featList):
 
@@ -42,7 +29,7 @@ def computeVIF(X, featList):
     return vif
 
 
-def potentiallyRemoveFeature(df, current_features, base):
+def potentiallyRemoveFeature(df, current_features, base, interaction):
 
     features_to_keep = list()
     # Iterate through every column of interest for this run
@@ -50,7 +37,7 @@ def potentiallyRemoveFeature(df, current_features, base):
 
         # Make the formula
         if any(['*' in x for x in current_features]):
-            formula = "MMSE ~ " + " + ".join([x for x in current_features if x != feat]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
+            formula = "MMSE ~ " + " + ".join([x for x in current_features if x != feat]).replace(" + {}".format(interaction[0]), "").replace(" {}".format(interaction[0]), "") + " + {}".format(interaction[0])
         else:
             formula = "MMSE ~ " + " + ".join([x for x in current_features if x != feat])
 
@@ -67,8 +54,8 @@ def potentiallyRemoveFeature(df, current_features, base):
             features_to_keep.append(feat)
 
     # Make the formula
-    if "FundFreq*iqr" in features_to_keep:
-        formula = "MMSE ~ " + " + ".join([x for x in features_to_keep]).replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + FundFreq*iqr"
+    if (not isinstance(interaction, type(None))) and interaction[0] in features_to_keep:
+        formula = "MMSE ~ " + " + ".join([x for x in features_to_keep]).replace(" + {}".format(interaction[0]), "").replace(" {}".format(interaction[0]), "") + " + {}".format(interaction[0])
     else:
         formula = "MMSE ~ " + " + ".join([x for x in features_to_keep])
 
@@ -79,7 +66,7 @@ def potentiallyRemoveFeature(df, current_features, base):
     return formula, features_to_keep, current_best_bic
 
 
-def next_possible_feature(df, oldFormula, newFormula, current_features, col, base = 0.0):
+def next_possible_feature(df, oldFormula, newFormula, current_features, col, base = 0.0, interaction = None):
 
     # Fit a model for our target and our selected columns 
     md = smf.mixedlm(formula = newFormula, data = df, groups = df['ID'])
@@ -96,7 +83,7 @@ def next_possible_feature(df, oldFormula, newFormula, current_features, col, bas
         current_features = current_features + [col]
 
         # Do a top-down backward pass to see if removing any of the variables improves the model
-        newFormula, current_features, bic = potentiallyRemoveFeature(df, current_features, bic)
+        newFormula, current_features, bic = potentiallyRemoveFeature(df, current_features, bic, interaction)
 
         return newFormula, current_features, bic
     
@@ -105,23 +92,28 @@ def next_possible_feature(df, oldFormula, newFormula, current_features, col, bas
         return oldFormula, current_features, base
 
 
-def bottomUp(df, bestFormula, best, base):
+def bottomUp(df, bestFormula, best, base, interaction):
 
     # Start with the first predictor, and see all possibilities for our second.
     selected_features = [best]
 
-    for col in df.columns.tolist()[:-1] + ["FundFreq*iqr"]:
+    #Iterate through every column in X (skip the constant 'Intercept' column)
+    if not isinstance(interaction, type(None)): # We have relevant interactions presented as a list
+        relevantColumns = df.columns.tolist()[:-1] + interaction
+    else: 
+        relevantColumns = df.columns.tolist()[:-1]
+    for col in relevantColumns:
 
         if col not in ['ID', 'Age', 'Gender'] and col not in best:
 
             # Make the new formula; make sure that the interaction comes at the end
-            if "FundFreq*iqr" in bestFormula:
-                formula = bestFormula.replace(" + FundFreq*iqr", "").replace(" FundFreq*iqr", "") + " + {}".format(col) + " + FundFreq*iqr"
+            if (not isinstance(interaction, type(None))) and interaction[0] in bestFormula:
+                formula = bestFormula.replace(" + {}".format(interaction[0]), "").replace(" {}".format(interaction[0]), "") + " + {}".format(col) + " + {}".format(interaction[0])
             else:
                 formula = bestFormula + " + {}".format(col)
 
             # Add a new column to the best performing column
-            currentFormula, current_features, currentBase = next_possible_feature(df, bestFormula, formula, current_features = selected_features, col = col, base = base)
+            currentFormula, current_features, currentBase = next_possible_feature(df, bestFormula, formula, current_features = selected_features, col = col, base = base, interaction = interaction)
 
             # We've added something and therefore need to update things
             if currentFormula != bestFormula: 
@@ -149,19 +141,20 @@ def bottomUp(df, bestFormula, best, base):
     return bestFormula
 
 
-def firstPass(df):
+def firstPass(df, interaction):
 
     #Create an empty dictionary that will be used to store our results
     function_dict = {'predictor': [], 'formula':[], 'BIC': []}
-
-    # Fix the column names
-    df = fixCols(df)
 
     # baseModel = smf.mixedlm(formula, df, groups = df['ID']).fit()
     # base = -2 * baseModel.llf + np.log(baseModel.nobs) * (baseModel.df_modelwc) # https://stackoverflow.com/questions/69172584/mixedlmresults-object-return-nan-bic-what-can-be-the-reason
 
     #Iterate through every column in X (skip the constant 'Intercept' column)
-    for col in df.columns.tolist()[:-1] + ["FundFreq*iqr"]:
+    if not isinstance(interaction, type(None)): # We have relevant interactions presented as a list
+        relevantColumns = df.columns.tolist()[:-1] + interaction
+    else: 
+        relevantColumns = df.columns.tolist()[:-1]
+    for col in relevantColumns:
 
         if col not in ['ID', 'Age', 'Gender']:
 
@@ -200,13 +193,13 @@ def firstPass(df):
     return best, bestFormula, newBase
     
 
-def main(df, level = "global"):
+def main(df, level = "global", interaction = None):
 
     # First pass
-    best, bestFormula, base = firstPass(df)
+    best, bestFormula, base = firstPass(df, interaction)
 
     # Bottom-up, hierarchical approach to feature selection
-    bestFormula = bottomUp(df, bestFormula, best, base)
+    bestFormula = bottomUp(df, bestFormula, best, base, interaction)
 
     return bestFormula
 

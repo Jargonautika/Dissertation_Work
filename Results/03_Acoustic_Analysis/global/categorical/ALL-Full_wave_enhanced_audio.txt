@@ -1,77 +1,93 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD
                          Generalized Linear Model Regression Results                          
 ==============================================================================================
 Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
-Model:                                            GLM   Df Residuals:                      152
-Model Family:                                Binomial   Df Model:                            3
+Model:                                            GLM   Df Residuals:                      139
+Model Family:                                Binomial   Df Model:                           16
 Link Function:                                  logit   Scale:                          1.0000
-Method:                                          IRLS   Log-Likelihood:                -99.754
-Date:                                Wed, 02 Mar 2022   Deviance:                       199.51
-Time:                                        10:33:46   Pearson chi2:                     154.
-No. Iterations:                                   100                                         
+Method:                                          IRLS   Log-Likelihood:                -39.017
+Date:                                Thu, 03 Mar 2022   Deviance:                       78.034
+Time:                                        23:10:00   Pearson chi2:                     246.
+No. Iterations:                                     9                                         
 Covariance Type:                            nonrobust                                         
-=================================================================================
-                    coef    std err          z      P>|z|      [0.025      0.975]
----------------------------------------------------------------------------------
-Intercept        -0.2375      0.489     -0.486      0.627      -1.195       0.720
-IY_IH_BCD_DUR     2.0239      7.146      0.283      0.777     -11.981      16.029
-UW_UH_BCD_DUR     5.9427      8.342      0.712      0.476     -10.407      22.292
-AA_AE_BCD_DUR     9.2060      5.979      1.540      0.124      -2.512      20.924
-IY_IH_WCD_DUR    -4.3825      9.348     -0.469      0.639     -22.705      13.940
-UW_UH_WCD_DUR    -6.1969     18.077     -0.343      0.732     -41.628      29.234
-AA_AE_WCD_DUR   -11.7898      9.105     -1.295      0.195     -29.636       6.056
-IY_IH_CO_DUR     -2.4428      2.447     -0.998      0.318      -7.239       2.354
-UW_UH_CO_DUR      9.3408      8.050      1.160      0.246      -6.437      25.119
-AA_AE_CO_DUR      4.4876      2.387      1.880      0.060      -0.191       9.166
-IY_IH_CD_DUR      0.2843      0.442      0.643      0.520      -0.582       1.150
-UW_UH_CD_DUR       2e-14   2.91e-14      0.687      0.492   -3.71e-14    7.71e-14
-AA_AE_CD_DUR      0.0673      0.344      0.196      0.845      -0.607       0.742
-=================================================================================
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      3.8918      1.567      2.484      0.013       0.821       6.963
+F_V_BCD        0.0007      0.001      1.076      0.282      -0.001       0.002
+S_Z_BCD        0.0016      0.001      1.496      0.135      -0.000       0.004
+SH_ZH_BCD      0.0032      0.001      5.626      0.000       0.002       0.004
+TH_DH_BCD      0.0009      0.000      1.942      0.052   -7.69e-06       0.002
+F_V_WCD       -0.0004      0.001     -0.255      0.799      -0.003       0.002
+S_Z_WCD       -0.0011      0.002     -0.671      0.502      -0.004       0.002
+SH_ZH_WCD     -0.0011      0.001     -1.699      0.089      -0.002       0.000
+TH_DH_WCD     -0.0022      0.001     -1.733      0.083      -0.005       0.000
+F_V_CO        -0.0010      0.001     -1.913      0.056      -0.002    2.37e-05
+S_Z_CO      5.415e-05      0.000      0.124      0.901      -0.001       0.001
+SH_ZH_CO       0.0018      0.002      1.121      0.262      -0.001       0.005
+TH_DH_CO      -0.0001      0.000     -0.436      0.663      -0.001       0.000
+F_V_CD        -0.0224      0.018     -1.277      0.202      -0.057       0.012
+S_Z_CD        -2.1741      1.290     -1.685      0.092      -4.703       0.355
+SH_ZH_CD      -0.5066      0.170     -2.974      0.003      -0.840      -0.173
+TH_DH_CD      -0.1432      0.106     -1.345      0.179      -0.352       0.065
+==============================================================================
 
 Total number of trials:	156
 
 Parameters: 
-Intercept       -2.375175e-01
-IY_IH_BCD_DUR    2.023867e+00
-UW_UH_BCD_DUR    5.942715e+00
-AA_AE_BCD_DUR    9.206000e+00
-IY_IH_WCD_DUR   -4.382454e+00
-UW_UH_WCD_DUR   -6.196927e+00
-AA_AE_WCD_DUR   -1.178977e+01
-IY_IH_CO_DUR    -2.442837e+00
-UW_UH_CO_DUR     9.340832e+00
-AA_AE_CO_DUR     4.487646e+00
-IY_IH_CD_DUR     2.842910e-01
-UW_UH_CD_DUR     1.999882e-14
-AA_AE_CD_DUR     6.734661e-02
+Intercept    3.891816
+F_V_BCD      0.000665
+S_Z_BCD      0.001595
+SH_ZH_BCD    0.003243
+TH_DH_BCD    0.000853
+F_V_WCD     -0.000358
+S_Z_WCD     -0.001079
+SH_ZH_WCD   -0.001076
+TH_DH_WCD   -0.002201
+F_V_CO      -0.000973
+S_Z_CO       0.000054
+SH_ZH_CO     0.001788
+TH_DH_CO    -0.000126
+F_V_CD      -0.022396
+S_Z_CD      -2.174105
+SH_ZH_CD    -0.506551
+TH_DH_CD    -0.143208
 
 T-values: 
-Intercept       -0.486023
-IY_IH_BCD_DUR    0.283232
-UW_UH_BCD_DUR    0.712407
-AA_AE_BCD_DUR    1.539814
-IY_IH_WCD_DUR   -0.468793
-UW_UH_WCD_DUR   -0.342798
-AA_AE_WCD_DUR   -1.294810
-IY_IH_CO_DUR    -0.998203
-UW_UH_CO_DUR     1.160350
-AA_AE_CO_DUR     1.879991
-IY_IH_CD_DUR     0.643355
-UW_UH_CD_DUR     0.686623
-AA_AE_CD_DUR     0.195643
+Intercept    2.483855
+F_V_BCD      1.075708
+S_Z_BCD      1.495593
+SH_ZH_BCD    5.625578
+TH_DH_BCD    1.942464
+F_V_WCD     -0.254540
+S_Z_WCD     -0.670661
+SH_ZH_WCD   -1.699146
+TH_DH_WCD   -1.732659
+F_V_CO      -1.913335
+S_Z_CO       0.124158
+SH_ZH_CO     1.121363
+TH_DH_CO    -0.435805
+F_V_CD      -1.277170
+S_Z_CD      -1.684939
+SH_ZH_CD    -2.973714
+TH_DH_CD    -1.345323
 
 Odds Ratio w/ Confidence Intervals: 
-                         5%           95%    Odds Ratio
-Intercept      3.025996e-01  2.055070e+00      0.788583
-IY_IH_BCD_DUR  6.260367e-06  9.147625e+06      7.567529
-UW_UH_BCD_DUR  3.022604e-05  4.801702e+09    380.967764
-AA_AE_BCD_DUR  8.111166e-02  1.222212e+09   9956.689176
-IY_IH_WCD_DUR  1.378370e-10  1.132616e+06      0.012495
-UW_UH_WCD_DUR  8.339557e-19  4.969064e+12      0.002036
-AA_AE_WCD_DUR  1.346568e-13  4.268787e+02      0.000008
-IY_IH_CO_DUR   7.177930e-04  1.052398e+01      0.086914
-UW_UH_CO_DUR   1.601366e-03  8.106864e+10  11393.881639
-AA_AE_CO_DUR   8.262143e-01  9.568134e+03     88.911919
-IY_IH_CD_DUR   5.588945e-01  3.159382e+00      1.328820
-UW_UH_CD_DUR   1.000000e+00  1.000000e+00      1.000000
-AA_AE_CD_DUR   5.448004e-01  2.100193e+00      1.069666
+                 5%          95%  Odds Ratio
+Intercept  2.272444  1056.561551   48.999767
+F_V_BCD    0.999454     1.001878    1.000665
+S_Z_BCD    0.999505     1.003691    1.001596
+SH_ZH_BCD  1.002115     1.004382    1.003248
+TH_DH_BCD  0.999992     1.001716    1.000854
+F_V_WCD    0.996890     1.002401    0.999642
+S_Z_WCD    0.995777     1.002076    0.998922
+SH_ZH_WCD  0.997686     1.000165    0.998925
+TH_DH_WCD  0.995320     1.000289    0.997801
+F_V_CO     0.998033     1.000024    0.999028
+S_Z_CO     0.999200     1.000909    1.000054
+SH_ZH_CO   0.998663     1.004926    1.001790
+TH_DH_CO   0.999310     1.000439    0.999874
+F_V_CD     0.944816     1.012045    0.977853
+S_Z_CD     0.009067     1.425995    0.113710
+SH_ZH_CD   0.431530     0.841402    0.602570
+TH_DH_CD   0.703391     1.067615    0.866574

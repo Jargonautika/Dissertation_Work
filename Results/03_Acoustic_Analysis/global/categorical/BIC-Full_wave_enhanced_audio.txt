@@ -1,37 +1,45 @@
-Level:    global      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ PausingRate + ArticulationRate
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ SH_ZH_BCD + F_V_WCD + SH_ZH_WCD + SH_ZH_CO
                          Generalized Linear Model Regression Results                          
 ==============================================================================================
-Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                   59
-Model:                                            GLM   Df Residuals:                       56
-Model Family:                                Binomial   Df Model:                            2
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      151
+Model Family:                                Binomial   Df Model:                            4
 Link Function:                                  logit   Scale:                          1.0000
-Method:                                          IRLS   Log-Likelihood:                -33.274
-Date:                                Fri, 18 Feb 2022   Deviance:                       66.548
-Time:                                        10:29:22   Pearson chi2:                     55.8
-No. Iterations:                                     5                                         
+Method:                                          IRLS   Log-Likelihood:                -58.276
+Date:                                Thu, 03 Mar 2022   Deviance:                       116.55
+Time:                                        23:10:05   Pearson chi2:                     242.
+No. Iterations:                                     6                                         
 Covariance Type:                            nonrobust                                         
-====================================================================================
-                       coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------------
-Intercept           -1.1723      1.553     -0.755      0.450      -4.216       1.872
-PausingRate         -5.5481      2.501     -2.218      0.027     -10.451      -0.646
-ArticulationRate     0.7054      0.363      1.946      0.052      -0.005       1.416
-====================================================================================
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.8663      0.504      1.720      0.085      -0.121       1.853
+SH_ZH_BCD      0.0024      0.000      6.419      0.000       0.002       0.003
+F_V_WCD       -0.0020      0.001     -3.687      0.000      -0.003      -0.001
+SH_ZH_WCD     -0.0014      0.000     -3.051      0.002      -0.002      -0.001
+SH_ZH_CO       0.0024      0.001      3.864      0.000       0.001       0.004
+==============================================================================
 
-Total number of trials:	59
+Total number of trials:	156
 
 Parameters: 
-Intercept          -1.172271
-PausingRate        -5.548100
-ArticulationRate    0.705443
+Intercept    0.866324
+SH_ZH_BCD    0.002352
+F_V_WCD     -0.002016
+SH_ZH_WCD   -0.001402
+SH_ZH_CO     0.002442
 
 T-values: 
-Intercept          -0.754774
-PausingRate        -2.218077
-ArticulationRate    1.945589
+Intercept    1.720397
+SH_ZH_BCD    6.419275
+F_V_WCD     -3.687192
+SH_ZH_WCD   -3.051319
+SH_ZH_CO     3.863996
 
 Odds Ratio w/ Confidence Intervals: 
-                        5%       95%  Odds Ratio
-Intercept         0.014752  6.500194    0.309663
-PausingRate       0.000029  0.524337    0.003895
-ArticulationRate  0.994801  4.121011    2.024744
+                 5%       95%  Odds Ratio
+Intercept  0.886356  6.380749    2.378154
+SH_ZH_BCD  1.001635  1.003074    1.002354
+F_V_WCD    0.996916  0.999056    0.997986
+SH_ZH_WCD  0.997699  0.999499    0.998599
+SH_ZH_CO   1.001204  1.003688    1.002445

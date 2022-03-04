@@ -76,11 +76,6 @@ def fixCols(df):
 
 def runLMER(df, formula, printList, which, step):
 
-    df = fixCols(df)
-
-    if df.isnull().sum().sum() > 0:
-        df = imputeMissingData(df)
-
     # Construct the model
     md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
 
@@ -124,17 +119,23 @@ def loadDataSet(level, which, segmentalModel):
     else:
         df = pd.read_csv("./{}/SegmentalMeasures_{}-numerical-{}.csv".format(level, which, segmentalModel))
 
+    df = fixCols(df)
+
+    # We get exact separation in the glm models if the 'cd' condition has NaN values resulting in a (-)inf columnwise mean for any particular factor
+    if df.isnull().sum().sum() > 0:
+        df = imputeMissingData(df)
+
     return df
 
 
-def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-fricative_categories", step = False):
+def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-fricative_categories", step = False, interaction = None):
 
     # Load the data
     df = loadDataSet(level, which, segmentalModel)
 
     # Step-wise feature selection for best model by Bayes Information Criterion
     if step:
-        formula = stepwiseLMER.main(df)
+        formula = stepwiseLMER.main(df, interaction)
 
     # Get a baseline with just everything in the model
     else:
@@ -143,7 +144,7 @@ def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel
             # Fundamental Frequency and its Interquartile Range have an interaction
             formula = "MMSE ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr"
         else:
-            assert not isinstance(segmentalModel, type(None)), "You're not passing the right model for segmental GLMER."
+            assert not isinstance(segmentalModel, type(None)), "You're not passing the right model for segmental LMER."
             if segmentalModel == "Phoneme_Category-fricative_categories":
                 formula = "MMSE ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
             elif segmentalModel == "Phoneme_Category-phonetic_contrasts":

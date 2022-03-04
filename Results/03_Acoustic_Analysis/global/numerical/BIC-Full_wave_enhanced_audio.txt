@@ -1,35 +1,35 @@
-Level:    global      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ PausingRate
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ S_Z_CD
          Mixed Linear Model Regression Results
 =======================================================
 Model:            MixedLM Dependent Variable: MMSE     
-No. Observations: 58      Method:             REML     
-No. Groups:       58      Scale:              19.3587  
-Min. group size:  1       Log-Likelihood:     -184.5249
+No. Observations: 155     Method:             REML     
+No. Groups:       155     Scale:              23.5427  
+Min. group size:  1       Log-Likelihood:     -516.7478
 Max. group size:  1       Converged:          Yes      
 Mean group size:  1.0                                  
 -------------------------------------------------------
-            Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+            Coef.  Std.Err.    z    P>|z| [0.025 0.975]
 -------------------------------------------------------
-Intercept   25.605    1.202 21.303 0.000  23.249 27.960
-PausingRate -6.118    3.222 -1.899 0.058 -12.434  0.198
-Group Var   19.359                                     
+Intercept   22.363    0.049 455.923 0.000 22.267 22.459
+S_Z_CD       0.950    0.364   2.611 0.009  0.237  1.663
+Group Var   23.543                                     
 =======================================================
 
 
-Total number of trials: 58
+Total number of trials: 155
 
 Parameters: 
-Intercept      25.604590
-PausingRate    -6.117749
-Group Var       1.000000
+Intercept    22.362909
+S_Z_CD        0.949897
+Group Var     1.000000
 
 T-values: 
-Intercept      21.303101
-PausingRate    -1.898502
-Group Var            NaN
+Intercept    455.923085
+S_Z_CD         2.610613
+Group Var           NaN
 
 Odds Ratio w/ Confidence Intervals: 
-                       5%           95%    Odds Ratio
-Intercept    1.249848e+10  1.389975e+12  1.318051e+11
-PausingRate  3.982686e-06  1.219031e+00  2.203411e-03
-Group Var             NaN           NaN  2.718282e+00
+                     5%           95%    Odds Ratio
+Intercept  4.680979e+09  5.673344e+09  5.153330e+09
+S_Z_CD     1.267118e+00  5.275374e+00  2.585444e+00
+Group Var           NaN           NaN  2.718282e+00
