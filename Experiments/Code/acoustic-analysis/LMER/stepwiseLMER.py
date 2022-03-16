@@ -130,7 +130,7 @@ def bottomUp(df, bestFormula, best, base, interaction):
 
                     print("Multicollinearity detected.")
                     print(vifDF)
-                    raise AssertionError
+                    # raise AssertionError
 
                 else:
 
