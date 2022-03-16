@@ -14,77 +14,6 @@ sys.path.append('./global')
 from globalAnalysis import filterbank
 
 
-def categoryDiscriminability(first: list, second: list):
-
-    return (np.nanmean(first) - np.nanmean(second)) * np.sqrt(2) / np.sqrt((np.std(first) ** 2) + (np.std(second) ** 2))
-
-
-def categoryOverlap(first: list, second: list):
-
-    if len(first) > 0 and len(second) > 0:
-        return np.max(second) - np.min(first)
-    else:
-        return 0 # Sometimes we don't have a particular phoneme produced for a speaker
-
-
-def withinCategoryDispersion(first: list, second: list):
-
-    return np.nanmean([np.std(first), np.std(second)])
-
-
-def betweenCategoryDistance(first: list, second: list):
-
-    return np.nanmean(first) - np.nanmean(second)
-
-
-def distinctions(plosives, fricatives, vowelsERB, vowelsDur):
-
-    plosivePairs = [('P', 'B'), ('T', 'D'), ('K', 'G')]                     # Voiceless and then voiced
-    fricativePairs = [('F', 'V'), ('S', 'Z'), ('SH', 'ZH'), ('TH', 'DH')]   # Voiceless and then voiced
-    vowelPairs = [('IY', 'IH'), ('UW', 'UH'), ('AA', 'AE')]                 # Tense and then lax
-
-    plosiveBCD, plosiveWCD, plosiveCO, plosiveCD = list(), list(), list(), list()
-    for voiceless, voiced in plosivePairs:
-        first, second = plosives[voiceless], plosives[voiced]
-        # Calculate Between-Category Distance
-        plosiveBCD.append(betweenCategoryDistance(first, second))
-        # Calculate Within-Category Dispersion
-        plosiveWCD.append(withinCategoryDispersion(first, second))
-        # Calculate Category Overlap
-        plosiveCO.append(categoryOverlap(first, second))
-        # Calculate Category Discriminability
-        plosiveCD.append(categoryDiscriminability(first, second))
-
-    fricativeBCD, fricativeWCD, fricativeCO, fricativeCD = list(), list(), list(), list()
-    for voiceless, voiced in fricativePairs:
-        first, second = fricatives[voiceless], fricatives[voiced]
-        fricativeBCD.append(betweenCategoryDistance(first, second))
-        fricativeWCD.append(withinCategoryDispersion(first, second))
-        fricativeCO.append(categoryOverlap(first, second))
-        fricativeCD.append(categoryDiscriminability(first, second))
-
-    vowelERBBCD, vowelERBWCD, vowelERBCO, vowelERBCD = list(), list(), list(), list()
-    for tense, lax in vowelPairs:
-        first, second = vowelsERB[tense], vowelsERB[lax]
-        vowelERBBCD.append(betweenCategoryDistance(first, second))
-        vowelERBWCD.append(withinCategoryDispersion(first, second))
-        vowelERBCO.append(categoryOverlap(first, second))
-        vowelERBCD.append(categoryDiscriminability(first, second))
-
-    vowelDurBCD, vowelDurWCD, vowelDurCO, vowelDurCD = list(), list(), list(), list()
-    for tense, lax in vowelPairs:
-        first, second = vowelsDur[tense], vowelsDur[lax]
-        vowelDurBCD.append(betweenCategoryDistance(first, second))
-        vowelDurWCD.append(withinCategoryDispersion(first, second))
-        vowelDurCO.append(categoryOverlap(first, second))
-        vowelDurCD.append(categoryDiscriminability(first, second))
-
-    return [plosiveBCD, plosiveWCD, plosiveCO, plosiveCD], \
-           [fricativeBCD, fricativeWCD, fricativeCO, fricativeCD], \
-           [vowelERBBCD, vowelERBWCD, vowelERBCO, vowelERBCD], \
-           [vowelDurBCD, vowelDurWCD, vowelDurCO, vowelDurCD]
-
-
 # ERB means "Equivalent retangular band(-width)"
 def herzToERB(frequency):
 
@@ -166,7 +95,7 @@ def getParticularVowels(basename, particulars):
                 lastLine = line
 
 
-def lenisFortis(basename, sound):
+def lenisFortis(basename, sound, gender):
 
     # arpabetVocalicList = ['AA', 'AE', 'AH', 'AO', 'AW', 'AX', 'AXR', 'AY',
     #                       'EH', 'ER', 'EY', 'IH', 'IX', 'IY', 'OW', 'OY', 
@@ -180,8 +109,17 @@ def lenisFortis(basename, sound):
 
     vowels = getParticularVowels(basename, vowelsOfInterest)
 
-    for vowel in vowels:
-        for start, end in vowels[vowel]:
+    # Determine schwa formant values sexDict = {0: 'male ', 1: 'female '}
+    if gender == 0:
+        schwaF1, schwaF2 = herzToERB(500), herzToERB(1500)
+    elif gender == 1:
+        schwaF1, schwaF2 = herzToERB(665), herzToERB(1772)
+    else:
+        raise AssertionError
+
+
+    for vowel in vowels: # [IY, IH]
+        for start, end in vowels[vowel]: #[(3.6,3.8)]
 
             spaces = np.linspace(0, end - start, num = 7)
             part = sound.extract_part(from_time = start, to_time = end)
@@ -189,24 +127,29 @@ def lenisFortis(basename, sound):
             burg = part.to_formant_burg()
             formants = np.array([getVocalicFormants(burg, i) for i in spaces[1:-1]]).flatten().tolist()
 
-            F1s = formants[::3]
-            F2s = formants[1::3]
+            F1s = formants[::3] # [75, 34, 56, 90, 125]
+            F2s = formants[1::3] # [600, 750, 900, 754, 400]
 
-            F1MidpointERB = herzToERB(F1s[3])
-            F2MidpointERB = herzToERB(F2s[3])
+            F1MidpointERB = herzToERB(F1s[3]) # 75.43,50 Hz
+            F2MidpointERB = herzToERB(F2s[3]) # 650.74,1000 Hz
 
-            # Calculate the euclidean distance between the points
-            dist = np.sqrt((F1MidpointERB - F2MidpointERB) ** 2)
+            # Calculate the difference between the points # NOTE this is what Sonia was doing; I'm now doing something else detailed below
+            # dist = F1MidpointERB - F2MidpointERB
+
+            # Calculate the *magnitude* of a vector for this unique vowel given 500,1500 (schwa) is the initial point for males and
+            # 665, 1772 is the inital point for females (http://web.mit.edu/flemming/www/paper/schwaphonetics.pdf) and the ERB-scaled
+            # F1 and F2 make up the terminal point
+            mag = np.sqrt(np.square(F1MidpointERB - schwaF1) + np.square(F2MidpointERB - schwaF2))
 
             # Save out this spectral measure
-            vowelsERBDict[vowel].append(dist)
+            vowelsERBDict[vowel].append(mag)
 
             vowelsDURDict[vowel].append(end - start)
 
             # vowelsDict[vowel]['F1'].append(F1MidpointERB)
             # vowelsDict[vowel]['F2'].append(F2MidpointERB)
 
-    return [np.nanmean(vowelsERBDict[v]) for v in vowelsOfInterest], vowelsERBDict, [np.nanmean(vowelsDURDict[v]) for v in vowelsOfInterest], vowelsDURDict
+    return vowelsERBDict, vowelsDURDict
 
 
 def getParticularConsonants(basename, particulars):
@@ -311,7 +254,7 @@ def getSpectralContrast(basename, sound):
 
             fricativesDict[fricative].append(COG)
 
-    return [np.nanmean(fricativesDict[fricative]) for fricative in fricativesOfInterest], fricativesDict
+    return fricativesDict
 
 
 def getPlosivesBeforeVowels(basename, plosives):
@@ -403,7 +346,7 @@ def getPlosivesBeforeVowels(basename, plosives):
 def getVoiceOnsetTime(basename, sound):
 
     # Get the stop voicing 
-    # plosives = ['B', 'D', 'DX', 'G', 'K', 'P', 'Q', 'T']
+    # plosives = ['B', 'D', 'DX', 'G', 'K', 'P', 'Q', 'T'] # ARPABET plosive
     plosivesOfInterest = ['P', 'B', 'T', 'D', 'K', 'G']
     plosivesDict = {key: list() for key in plosivesOfInterest}
 
@@ -448,26 +391,24 @@ def getVoiceOnsetTime(basename, sound):
 
             plosivesDict[orth1].append(VOT)
 
-    return [np.nanmean(plosivesDict[plosive]) for plosive in plosivesOfInterest], plosivesDict
+    return plosivesDict
 
 
-def contrastWork(basename, sound):
+def contrastWork(basename, sound, gender):
 
     # Get the voice onset timings
-    plosiveVOTMeans, plosiveVOTDict = getVoiceOnsetTime(basename, sound)
+    plosiveVOTDict = getVoiceOnsetTime(basename, sound) # dict with ['P', 'B', 'T', 'D', 'K', 'G'] as keys and lists of VOT for each key as values
 
     # Get the spectral contrast of certain fricative pairs
-    fricativeCOGMeans, fricativeSpectralContrastDict = getSpectralContrast(basename, sound)
+    fricativeSpectralContrastDict = getSpectralContrast(basename, sound) # dict with ['F', 'V', 'S', 'Z', 'SH', 'ZH', 'TH', 'DH'] as keys and lists of COG for each key as values
 
     # Get the tense-lax distinction between certain vowel pairs
-    vowelsERBMeans, vowelsERBDict, vowelsDURMeans, vowelsDURDict = lenisFortis(basename, sound)
+    vowelsERBDict, vowelsDURDict = lenisFortis(basename, sound, gender) # dict, dict with ['IY', 'IH', 'UW', 'UH', 'AA', 'AE'] as keys and lists of magnitudes from schwa as values
 
-    pD, fD, vERBD, vDurD = distinctions(plosiveVOTDict, fricativeSpectralContrastDict, vowelsERBDict, vowelsDURDict)
-
-    return plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD
+    return plosiveVOTDict, fricativeSpectralContrastDict, vowelsERBDict, vowelsDURDict # dict, dict, dict, dict
 
 
-def main(file, sig):
+def main(file, sig, gender):
 
     # Get the file's basename
     basename = os.path.basename(file).split('.')[0]
@@ -479,9 +420,9 @@ def main(file, sig):
     sound.values = sig.T
 
     # Phonemic Distinction Work
-    plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD = contrastWork(basename, sound)
+    plosiveVOTDict, fricativeCOGDict, vowelsERBDict, vowelsDURDict = contrastWork(basename, sound, gender) # dict, dict, dict, dict
 
-    return plosiveVOTMeans, fricativeCOGMeans, vowelsERBMeans, vowelsDURMeans, pD, fD, vERBD, vDurD
+    return plosiveVOTDict, fricativeCOGDict, vowelsERBDict, vowelsDURDict # dict, dict, dict, dict
 
 
 if __name__ == "__main__":

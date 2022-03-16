@@ -66,6 +66,10 @@ def saveWav(utt, tarRMS):
 
 def normalizeRMS(files, tarRMS = 0.075):
 
+    # X = list()
+    # for utt in files[:5]:
+    #     X.append(saveWav(utt, tarRMS))
+    # return X
     return Parallel(n_jobs=mp.cpu_count())(delayed(saveWav)(utt, tarRMS) for utt in files[:])
 
 

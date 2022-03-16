@@ -314,18 +314,18 @@ def vowelWork(basename, sound):
     vowels = getVowels(basename)
 
     # Vowel Midpoints (5) F1, F2, and F3 values
-    vowelRate, F1, F2, F3 = getVowelMidpoints(basename, sound, vowels)
+    vowelRate, F1, F2, F3 = getVowelMidpoints(basename, sound, vowels) # float, dict, dict, dict
 
     # 2D Vowel Space Area
-    vowelArea2D = getVowelArea2D(F1, F2)
+    vowelArea2D = getVowelArea2D(F1, F2) # list
 
     # 3D Vowel Space Area
-    vowelArea3D = getVowelArea3D(F1, F2, F3)
+    vowelArea3D = getVowelArea3D(F1, F2, F3) # list
 
     # Ranges from first three formants
-    rangeF1, rangeF2, rangeF3 = getFormantRanges(F1, F2, F3)
+    rangeF1, rangeF2, rangeF3 = getFormantRanges(F1, F2, F3) # list, list, list
 
-    return vowelRate, vowelArea2D, vowelArea3D, np.nanmean(rangeF1), np.nanmean(rangeF2), np.nanmean(rangeF3)
+    return vowelRate, vowelArea2D, vowelArea3D, rangeF1, rangeF2, rangeF3 # float, list, list, list, list, list
 
 
 def main(file, sig):
@@ -339,9 +339,9 @@ def main(file, sig):
     # Substitute the normalized data for parselmouth's data
     sound.values = sig.T
 
-    vowelRate, vA2D, vA3D, F1, F2, F3 = vowelWork(basename, sound)
+    vowelRate, vA2D, vA3D, F1, F2, F3 = vowelWork(basename, sound) # float, list, list, list, list, list
 
-    return vowelRate, np.nanmean(vA2D), np.nanmean(vA3D), F1, F2, F3
+    return vowelRate, vA2D, vA3D, F1, F2, F3 # float, list, list, list, list, list
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@
 #   Try #1 - with statsmodels
 
 # Load packages
+import warnings
+
 import stepwiseLMER
 import numpy as np
 import pandas as pd
@@ -12,6 +14,83 @@ import pandas as pd
 import statsmodels.formula.api as smf
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer, SimpleImputer
+
+from joblib import Parallel, delayed
+import multiprocessing as mp
+
+from itertools import chain, combinations
+
+
+from tqdm import tqdm
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+
+def parallel_process(array, function, n_jobs=32, use_kwargs=False, front_num=5):
+    """
+        A parallel version of the map function with a progress bar. 
+
+        Args:
+            array (array-like): An array to iterate over.
+            function (function): A python function to apply to the elements of array
+            n_jobs (int, default=16): The number of cores to use
+            use_kwargs (boolean, default=False): Whether to consider the elements of array as dictionaries of 
+                keyword arguments to function 
+            front_num (int, default=3): The number of iterations to run serially before kicking off the parallel job. 
+                Useful for catching bugs
+        Returns:
+            [function(array[0]), function(array[1]), ...]
+    """
+    #We run the first few iterations serially to catch bugs
+    if front_num > 0:
+        front = [function(**a) if use_kwargs else function(a) for a in array[:front_num]]
+    #If we set n_jobs to 1, just run a list comprehension. This is useful for benchmarking and debugging.
+    if n_jobs==1:
+        return front + [function(**a) if use_kwargs else function(a) for a in tqdm(array[front_num:])]
+    #Assemble the workers
+    with ProcessPoolExecutor(max_workers=n_jobs) as pool:
+        #Pass the elements of array into function
+        if use_kwargs:
+            futures = [pool.submit(function, **a) for a in array[front_num:]]
+        else:
+            futures = [pool.submit(function, a) for a in array[front_num:]]
+        kwargs = {
+            'total': len(futures),
+            'unit': 'it',
+            'unit_scale': True,
+            'leave': True
+        }
+        #Print out the progress as tasks complete
+        for f in tqdm(as_completed(futures), **kwargs):
+            pass
+    out = []
+    #Get the results from the futures. 
+    for i, future in tqdm(enumerate(futures)):
+        try:
+            out.append(future.result())
+        except Exception as e:
+            out.append(e)
+    return front + out
+
+
+def handler(df, miniFormula, which, step, level):
+
+    if len(miniFormula) > 1:
+
+        f = "MMSE ~ " + " + ".join(miniFormula)
+        printList = list()
+
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            try:
+                runLMER(df, f, printList, which, step, False)
+                # return None
+                return "SUCCESS:\t\tLevel:    {}      Which:  {}      Formula:  {}".format(level, which, f)
+            except:
+                return "FAILURE:\t\tLevel:    {}      Which:  {}      Formula:  {}".format(level, which, f)
+
+
+def all_subsets(ss):
+    return chain(*map(lambda x: combinations(ss, x), range(0, len(ss)+1)))
 
 
 def imputeMissingData(df):
@@ -74,7 +153,7 @@ def fixCols(df):
     return df
 
 
-def runLMER(df, formula, printList, which, step):
+def runLMER(df, formula, printList, which, step, print = False):
 
     # Construct the model
     md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
@@ -103,13 +182,14 @@ def runLMER(df, formula, printList, which, step):
     printList.append(np.exp(conf).to_string())
 
     # Save it out
-    if step:
-        run = "BIC"
-    else:
-        run = "ALL"
-    with open('../../../Results/03_Acoustic_Analysis/global/numerical/{}-{}.txt'.format(run, which), 'w') as f:
-        for item in printList:
-            f.write("%s\n" % item)
+    if print:
+        if step:
+            run = "BIC"
+        else:
+            run = "ALL"
+        with open('../../../Results/03_Acoustic_Analysis/global/numerical/{}-{}.txt'.format(run, which), 'w') as f:
+            for item in printList:
+                f.write("%s\n" % item)
 
 
 def loadDataSet(level, which, segmentalModel):
@@ -128,7 +208,7 @@ def loadDataSet(level, which, segmentalModel):
     return df
 
 
-def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-fricative_categories", step = False, interaction = None):
+def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-vowel_dur_categories", step = False, interaction = None):
 
     # Load the data
     df = loadDataSet(level, which, segmentalModel)
@@ -154,9 +234,9 @@ def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel
             elif segmentalModel == "Phoneme_Category-vowel_dur_categories":
                 formula = "MMSE ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
             elif segmentalModel == "Phoneme_Category-vowel_erb_categories":
-                formula = "MMSE ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + IY_IH_CO_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + IY_IH_CD_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
+                formula = "MMSE ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
             elif segmentalModel == "Vowel_Space":
-                formula = "Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range"
+                formula = "MMSE ~ Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range"
                                
             else:
                 raise AssertionError
@@ -164,7 +244,41 @@ def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel
     # Run LMER
     printList = list()
     printList.append("Level:    {}      Which:  {}      Formula:  {}".format(level, which, formula))
+    print(printList)
     runLMER(df, formula, printList, which, step)
+    return
+
+    # Brute force appraoch to figuring out which formulae do/don't work
+    formulaChunks = formula.split(' + ')
+    formulaChunks[0] = formulaChunks[0].split(' ~ ')[-1]
+
+    # Parallelization with progress bar
+    myArr = [{"df": df, "miniFormula": miniFormula, "which": which, "step": step, "level": level} for miniFormula in all_subsets(formulaChunks[:])]
+    failures = parallel_process(myArr, handler, use_kwargs = True)
+
+    for i in failures:
+        # if isinstance(i, str):
+        print(i)
+
+    # # Parallelization version
+    # X = Parallel(n_jobs=mp.cpu_count())(delayed(handler)(df, miniFormula, which, step, level) for miniFormula in all_subsets(formulaChunks))
+    # for x in X:
+    #     if isinstance(x, str):
+    #         print(x)
+
+    # Iteration version
+    # for miniFormula in all_subsets(formulaChunks):
+    #     if len(miniFormula) > 1:
+
+    #         f = "MMSE ~ " + " + ".join(miniFormula)
+
+    #         printList = list()
+            
+    #         try:
+    #             runLMER(df, f, printList, which, step, False)
+    #             # print("SUCCESS:\t\tLevel:    {}      Which:  {}      Formula:  {}".format(level, which, f))
+    #         except:
+    #             print("FAILURE:\t\tLevel:    {}      Which:  {}      Formula:  {}".format(level, which, f))
 
 
 if __name__ == "__main__":
