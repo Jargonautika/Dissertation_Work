@@ -1,0 +1,61 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ P_VOT + B_VOT + T_VOT + G_VOT + V_COG + ZH_COG + TH_COG + UW_DUR
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      147
+Model Family:                                Binomial   Df Model:                            8
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -99.266
+Date:                                Fri, 18 Mar 2022   Deviance:                       198.53
+Time:                                        14:13:23   Pearson chi2:                     159.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      1.0595      0.905      1.171      0.242      -0.715       2.834
+P_VOT         14.9636     14.587      1.026      0.305     -13.626      43.553
+B_VOT         -0.9576     12.236     -0.078      0.938     -24.939      23.024
+T_VOT         -0.7794      7.213     -0.108      0.914     -14.917      13.358
+G_VOT          9.1005     15.768      0.577      0.564     -21.804      40.005
+V_COG         -0.0012      0.000     -2.557      0.011      -0.002      -0.000
+ZH_COG        -0.0002      0.000     -1.703      0.089      -0.001    3.69e-05
+TH_COG        -0.0004      0.000     -2.175      0.030      -0.001   -3.93e-05
+UW_DUR         3.7091      3.080      1.204      0.228      -2.327       9.745
+==============================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept     1.059534
+P_VOT        14.963576
+B_VOT        -0.957613
+T_VOT        -0.779421
+G_VOT         9.100505
+V_COG        -0.001240
+ZH_COG       -0.000244
+TH_COG       -0.000397
+UW_DUR        3.709077
+
+T-values: 
+Intercept    1.170540
+P_VOT        1.025836
+B_VOT       -0.078264
+T_VOT       -0.108054
+G_VOT        0.577147
+V_COG       -2.556545
+ZH_COG      -1.702845
+TH_COG      -2.175231
+UW_DUR       1.204387
+
+Odds Ratio w/ Confidence Intervals: 
+                     5%           95%    Odds Ratio
+Intercept  4.894071e-01  1.700705e+01  2.885025e+00
+P_VOT      1.208829e-06  8.219241e+18  3.152088e+06
+B_VOT      1.475887e-11  9.981020e+09  3.838080e-01
+T_VOT      3.323478e-07  6.330104e+05  4.586715e-01
+G_VOT      3.392162e-10  2.366584e+17  8.959819e+03
+V_COG      9.978112e-01  9.997106e-01  9.987604e-01
+ZH_COG     9.994746e-01  1.000037e+00  9.997557e-01
+TH_COG     9.992454e-01  9.999607e-01  9.996030e-01
+UW_DUR     9.759756e-02  1.706964e+04  4.081611e+01

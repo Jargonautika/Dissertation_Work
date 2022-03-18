@@ -153,7 +153,7 @@ def fixCols(df):
     return df
 
 
-def runLMER(df, formula, printList, which, step, print = False):
+def runLMER(df, formula, printList, which, step, level, segmentalModel, ttype, print = True):
 
     # Construct the model
     md = smf.mixedlm(formula = formula, data = df, groups = df['ID'])
@@ -187,7 +187,11 @@ def runLMER(df, formula, printList, which, step, print = False):
             run = "BIC"
         else:
             run = "ALL"
-        with open('../../../Results/03_Acoustic_Analysis/global/numerical/{}-{}.txt'.format(run, which), 'w') as f:
+        if not isinstance(segmentalModel, type(None)):
+            out = '../../../Results/03_Acoustic_Analysis/{}/{}/{}-{}-{}.txt'.format(level, ttype, run, which, segmentalModel)
+        else:
+            out = '../../../Results/03_Acoustic_Analysis/{}/{}/{}-{}.txt'.format(level, ttype, run, which)
+out        with open(out, 'w') as f:
             for item in printList:
                 f.write("%s\n" % item)
 
@@ -208,7 +212,7 @@ def loadDataSet(level, which, segmentalModel):
     return df
 
 
-def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-vowel_dur_categories", step = False, interaction = None):
+def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-vowel_dur_categories", step = False, interaction = None):
 
     # Load the data
     df = loadDataSet(level, which, segmentalModel)
@@ -245,7 +249,7 @@ def main(level = "segmental", which = "Full_wave_enhanced_audio", segmentalModel
     printList = list()
     printList.append("Level:    {}      Which:  {}      Formula:  {}".format(level, which, formula))
     print(printList)
-    runLMER(df, formula, printList, which, step)
+    runLMER(df, formula, printList, which, step, level, segmentalModel, ttype)
     return
 
     # Brute force appraoch to figuring out which formulae do/don't work

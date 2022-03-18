@@ -1,0 +1,39 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ SH_ZH_CD + S_Z_CD
+          Mixed Linear Model Regression Results
+=========================================================
+Model:              MixedLM Dependent Variable: MMSE     
+No. Observations:   155     Method:             REML     
+No. Groups:         155     Scale:              18.9605  
+Min. group size:    1       Log-Likelihood:     -500.0524
+Max. group size:    1       Converged:          Yes      
+Mean group size:    1.0                                  
+---------------------------------------------------------
+          Coef.     Std.Err.     z    P>|z| [0.025 0.975]
+---------------------------------------------------------
+Intercept 17.439         1.104 15.804 0.000 15.277 19.602
+SH_ZH_CD   1.859         0.299  6.218 0.000  1.273  2.445
+S_Z_CD     1.193         0.496  2.407 0.016  0.222  2.165
+Group Var 18.960 584432924.617                           
+=========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept    17.439489
+SH_ZH_CD      1.859225
+S_Z_CD        1.193199
+Group Var     1.000000
+
+T-values: 
+Intercept    1.580367e+01
+SH_ZH_CD     6.218041e+00
+S_Z_CD       2.407393e+00
+Group Var    7.450581e-09
+
+Odds Ratio w/ Confidence Intervals: 
+                     5%           95%    Odds Ratio
+Intercept  4.310873e+06  3.259734e+08  3.748639e+07
+SH_ZH_CD   3.572216e+00  1.153360e+01  6.418761e+00
+S_Z_CD     1.248276e+00  8.711422e+00  3.297614e+00
+Group Var  0.000000e+00           inf  2.718282e+00

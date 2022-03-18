@@ -1,0 +1,65 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      146
+Model Family:                                Binomial   Df Model:                            9
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -95.023
+Date:                                Fri, 18 Mar 2022   Deviance:                       190.05
+Time:                                        14:13:53   Pearson chi2:                     157.
+No. Iterations:                                     7                                         
+Covariance Type:                            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept     -1.6037      0.544     -2.948      0.003      -2.670      -0.538
+P_B_BCD      -14.5417     12.037     -1.208      0.227     -38.134       9.050
+T_D_BCD       11.9786     10.730      1.116      0.264      -9.051      33.009
+K_G_BCD       13.7794     13.038      1.057      0.291     -11.775      39.334
+P_B_WCD       71.2377     25.375      2.807      0.005      21.504     120.971
+T_D_CO         1.4811      6.773      0.219      0.827     -11.795      14.757
+K_G_CO        16.5522      9.286      1.782      0.075      -1.649      34.753
+P_B_CD         0.2097      0.081      2.593      0.010       0.051       0.368
+T_D_CD        -0.5461      0.300     -1.821      0.069      -1.134       0.042
+K_G_CD         0.1242      0.240      0.518      0.605      -0.346       0.595
+==============================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept    -1.603744
+P_B_BCD     -14.541697
+T_D_BCD      11.978629
+K_G_BCD      13.779427
+P_B_WCD      71.237738
+T_D_CO        1.481111
+K_G_CO       16.552153
+P_B_CD        0.209740
+T_D_CD       -0.546091
+K_G_CD        0.124183
+
+T-values: 
+Intercept   -2.948292
+P_B_BCD     -1.208097
+T_D_BCD      1.116386
+K_G_BCD      1.056849
+P_B_WCD      2.807420
+T_D_CO       0.218664
+K_G_CO       1.782436
+P_B_CD       2.592896
+T_D_CD      -1.820816
+K_G_CD       0.517505
+
+Odds Ratio w/ Confidence Intervals: 
+                     5%           95%    Odds Ratio
+Intercept  6.926053e-02  5.841438e-01  2.011420e-01
+P_B_BCD    2.746776e-17  8.519602e+03  4.837503e-07
+T_D_BCD    1.172216e-04  2.165199e+14  1.593135e+05
+K_G_BCD    7.694497e-06  1.209144e+17  9.645599e+05
+P_B_WCD    2.183137e+09  3.445341e+52  8.672745e+30
+T_D_CO     7.545071e-06  2.563380e+06  4.397827e+00
+K_G_CO     1.923239e-01  1.238752e+15  1.543508e+07
+P_B_CD     1.052531e+00  1.445250e+00  1.233357e+00
+T_D_CD     3.217714e-01  1.042616e+00  5.792097e-01
+K_G_CD     7.074133e-01  1.812137e+00  1.132223e+00

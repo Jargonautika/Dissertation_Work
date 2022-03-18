@@ -1,0 +1,95 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD
+         Mixed Linear Model Regression Results
+=======================================================
+Model:            MixedLM Dependent Variable: MMSE     
+No. Observations: 155     Method:             REML     
+No. Groups:       155     Scale:              16.2621  
+Min. group size:  1       Log-Likelihood:     -557.7734
+Max. group size:  1       Converged:          Yes      
+Mean group size:  1.0                                  
+-------------------------------------------------------
+             Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+-------------------------------------------------------
+Intercept    16.798    2.421  6.937 0.000 12.052 21.544
+F_V_BCD       0.002    0.001  1.441 0.150 -0.001  0.005
+S_Z_BCD       0.000    0.001  0.197 0.844 -0.002  0.003
+SH_ZH_BCD     0.003    0.001  1.864 0.062 -0.000  0.005
+TH_DH_BCD     0.003    0.001  2.594 0.009  0.001  0.005
+F_V_WCD      -0.003    0.003 -0.937 0.349 -0.010  0.003
+S_Z_WCD      -0.001    0.002 -0.381 0.703 -0.005  0.004
+SH_ZH_WCD    -0.001    0.001 -0.950 0.342 -0.003  0.001
+TH_DH_WCD    -0.008    0.002 -3.672 0.000 -0.012 -0.004
+F_V_CO        0.001    0.001  0.943 0.345 -0.001  0.004
+S_Z_CO       -0.000    0.001 -0.404 0.686 -0.001  0.001
+SH_ZH_CO      0.003    0.003  0.968 0.333 -0.003  0.008
+TH_DH_CO      0.003    0.001  3.684 0.000  0.001  0.004
+F_V_CD       -0.006    0.009 -0.760 0.447 -0.023  0.010
+S_Z_CD        1.236    1.440  0.859 0.391 -1.586  4.059
+SH_ZH_CD      0.973    0.891  1.092 0.275 -0.774  2.720
+TH_DH_CD     -0.132    0.135 -0.978 0.328 -0.396  0.132
+Group Var    16.262                                    
+=======================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept    16.798155
+F_V_BCD       0.001961
+S_Z_BCD       0.000262
+SH_ZH_BCD     0.002574
+TH_DH_BCD     0.002644
+F_V_WCD      -0.003165
+S_Z_WCD      -0.000874
+SH_ZH_WCD    -0.001033
+TH_DH_WCD    -0.007983
+F_V_CO        0.001197
+S_Z_CO       -0.000251
+SH_ZH_CO      0.002776
+TH_DH_CO      0.002710
+F_V_CD       -0.006481
+S_Z_CD        1.236404
+SH_ZH_CD      0.973206
+TH_DH_CD     -0.131789
+Group Var     1.000000
+
+T-values: 
+Intercept    6.937290
+F_V_BCD      1.440524
+S_Z_BCD      0.197060
+SH_ZH_BCD    1.863741
+TH_DH_BCD    2.594167
+F_V_WCD     -0.937251
+S_Z_WCD     -0.381198
+SH_ZH_WCD   -0.949952
+TH_DH_WCD   -3.672209
+F_V_CO       0.943449
+S_Z_CO      -0.404127
+SH_ZH_CO     0.967656
+TH_DH_CO     3.683811
+F_V_CD      -0.759797
+S_Z_CD       0.858656
+SH_ZH_CD     1.091750
+TH_DH_CD    -0.977541
+Group Var         NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                      5%           95%    Odds Ratio
+Intercept  171483.306606  2.272323e+09  1.973995e+07
+F_V_BCD         0.999293  1.004640e+00  1.001963e+00
+S_Z_BCD         0.997659  1.002872e+00  1.000262e+00
+SH_ZH_BCD       0.999867  1.005295e+00  1.002578e+00
+TH_DH_BCD       1.000647  1.004653e+00  1.002648e+00
+F_V_WCD         0.990264  1.003460e+00  9.968398e-01
+S_Z_WCD         0.994649  1.003625e+00  9.991268e-01
+SH_ZH_WCD       0.996841  1.001099e+00  9.989677e-01
+TH_DH_WCD       0.987831  9.962848e-01  9.920490e-01
+F_V_CO          0.998712  1.003689e+00  1.001197e+00
+S_Z_CO          0.998533  1.000966e+00  9.997491e-01
+SH_ZH_CO        0.997158  1.008433e+00  1.002780e+00
+TH_DH_CO        1.001269  1.004160e+00  1.002714e+00
+F_V_CD          0.977068  1.010290e+00  9.935400e-01
+S_Z_CD          0.204783  5.789401e+01  3.443210e+00
+SH_ZH_CD        0.461192  1.518570e+01  2.646416e+00
+TH_DH_CD        0.672989  1.141619e+00  8.765257e-01
+Group Var            NaN           NaN  2.718282e+00

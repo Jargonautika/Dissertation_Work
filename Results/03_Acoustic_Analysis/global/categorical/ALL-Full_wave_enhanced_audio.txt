@@ -1,93 +1,53 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr
                          Generalized Linear Model Regression Results                          
 ==============================================================================================
 Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
-Model:                                            GLM   Df Residuals:                      139
-Model Family:                                Binomial   Df Model:                           16
+Model:                                            GLM   Df Residuals:                      149
+Model Family:                                Binomial   Df Model:                            6
 Link Function:                                  logit   Scale:                          1.0000
-Method:                                          IRLS   Log-Likelihood:                -39.017
-Date:                                Thu, 03 Mar 2022   Deviance:                       78.034
-Time:                                        23:10:00   Pearson chi2:                     246.
-No. Iterations:                                     9                                         
+Method:                                          IRLS   Log-Likelihood:                -93.338
+Date:                                Fri, 18 Mar 2022   Deviance:                       186.68
+Time:                                        14:11:49   Pearson chi2:                     147.
+No. Iterations:                                     6                                         
 Covariance Type:                            nonrobust                                         
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-Intercept      3.8918      1.567      2.484      0.013       0.821       6.963
-F_V_BCD        0.0007      0.001      1.076      0.282      -0.001       0.002
-S_Z_BCD        0.0016      0.001      1.496      0.135      -0.000       0.004
-SH_ZH_BCD      0.0032      0.001      5.626      0.000       0.002       0.004
-TH_DH_BCD      0.0009      0.000      1.942      0.052   -7.69e-06       0.002
-F_V_WCD       -0.0004      0.001     -0.255      0.799      -0.003       0.002
-S_Z_WCD       -0.0011      0.002     -0.671      0.502      -0.004       0.002
-SH_ZH_WCD     -0.0011      0.001     -1.699      0.089      -0.002       0.000
-TH_DH_WCD     -0.0022      0.001     -1.733      0.083      -0.005       0.000
-F_V_CO        -0.0010      0.001     -1.913      0.056      -0.002    2.37e-05
-S_Z_CO      5.415e-05      0.000      0.124      0.901      -0.001       0.001
-SH_ZH_CO       0.0018      0.002      1.121      0.262      -0.001       0.005
-TH_DH_CO      -0.0001      0.000     -0.436      0.663      -0.001       0.000
-F_V_CD        -0.0224      0.018     -1.277      0.202      -0.057       0.012
-S_Z_CD        -2.1741      1.290     -1.685      0.092      -4.703       0.355
-SH_ZH_CD      -0.5066      0.170     -2.974      0.003      -0.840      -0.173
-TH_DH_CD      -0.1432      0.106     -1.345      0.179      -0.352       0.065
-==============================================================================
+====================================================================================
+                       coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+Intercept          -24.3410     22.708     -1.072      0.284     -68.848      20.166
+Intensity            0.0001      0.000      0.370      0.712      -0.001       0.001
+ArticulationRate     0.1276      0.095      1.342      0.180      -0.059       0.314
+PausingRate         -2.9413      0.871     -3.377      0.001      -4.648      -1.234
+FundFreq             0.2577      0.244      1.057      0.290      -0.220       0.735
+iqr                  1.7005      1.619      1.051      0.293      -1.472       4.873
+FundFreq:iqr        -0.0176      0.017     -1.009      0.313      -0.052       0.017
+====================================================================================
 
 Total number of trials:	156
 
 Parameters: 
-Intercept    3.891816
-F_V_BCD      0.000665
-S_Z_BCD      0.001595
-SH_ZH_BCD    0.003243
-TH_DH_BCD    0.000853
-F_V_WCD     -0.000358
-S_Z_WCD     -0.001079
-SH_ZH_WCD   -0.001076
-TH_DH_WCD   -0.002201
-F_V_CO      -0.000973
-S_Z_CO       0.000054
-SH_ZH_CO     0.001788
-TH_DH_CO    -0.000126
-F_V_CD      -0.022396
-S_Z_CD      -2.174105
-SH_ZH_CD    -0.506551
-TH_DH_CD    -0.143208
+Intercept          -24.340985
+Intensity            0.000141
+ArticulationRate     0.127585
+PausingRate         -2.941347
+FundFreq             0.257677
+iqr                  1.700472
+FundFreq:iqr        -0.017551
 
 T-values: 
-Intercept    2.483855
-F_V_BCD      1.075708
-S_Z_BCD      1.495593
-SH_ZH_BCD    5.625578
-TH_DH_BCD    1.942464
-F_V_WCD     -0.254540
-S_Z_WCD     -0.670661
-SH_ZH_WCD   -1.699146
-TH_DH_WCD   -1.732659
-F_V_CO      -1.913335
-S_Z_CO       0.124158
-SH_ZH_CO     1.121363
-TH_DH_CO    -0.435805
-F_V_CD      -1.277170
-S_Z_CD      -1.684939
-SH_ZH_CD    -2.973714
-TH_DH_CD    -1.345323
+Intercept          -1.071900
+Intensity           0.369514
+ArticulationRate    1.341647
+PausingRate        -3.377314
+FundFreq            1.057050
+iqr                 1.050517
+FundFreq:iqr       -1.009359
 
 Odds Ratio w/ Confidence Intervals: 
-                 5%          95%  Odds Ratio
-Intercept  2.272444  1056.561551   48.999767
-F_V_BCD    0.999454     1.001878    1.000665
-S_Z_BCD    0.999505     1.003691    1.001596
-SH_ZH_BCD  1.002115     1.004382    1.003248
-TH_DH_BCD  0.999992     1.001716    1.000854
-F_V_WCD    0.996890     1.002401    0.999642
-S_Z_WCD    0.995777     1.002076    0.998922
-SH_ZH_WCD  0.997686     1.000165    0.998925
-TH_DH_WCD  0.995320     1.000289    0.997801
-F_V_CO     0.998033     1.000024    0.999028
-S_Z_CO     0.999200     1.000909    1.000054
-SH_ZH_CO   0.998663     1.004926    1.001790
-TH_DH_CO   0.999310     1.000439    0.999874
-F_V_CD     0.944816     1.012045    0.977853
-S_Z_CD     0.009067     1.425995    0.113710
-SH_ZH_CD   0.431530     0.841402    0.602570
-TH_DH_CD   0.703391     1.067615    0.866574
+                            5%           95%    Odds Ratio
+Intercept         1.257606e-30  5.729864e+08  2.684383e-11
+Intensity         9.993918e-01  1.000892e+00  1.000141e+00
+ArticulationRate  9.428961e-01  1.368847e+00  1.136081e+00
+PausingRate       9.577827e-03  2.910126e-01  5.279458e-02
+FundFreq          8.024363e-01  2.086434e+00  1.293920e+00
+iqr               2.294380e-01  1.307210e+02  5.476529e+00
+FundFreq:iqr      9.496782e-01  1.016667e+00  9.826019e-01

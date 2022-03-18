@@ -1,0 +1,71 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB
+         Mixed Linear Model Regression Results
+========================================================
+Model:             MixedLM Dependent Variable: MMSE     
+No. Observations:  155     Method:             REML     
+No. Groups:        155     Scale:              22.1521  
+Min. group size:   1       Log-Likelihood:     -502.1563
+Max. group size:   1       Converged:          Yes      
+Mean group size:   1.0                                  
+--------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+--------------------------------------------------------
+Intercept     23.767    1.804 13.176 0.000 20.232 27.303
+IY_IH_BCD_ERB -0.359    0.701 -0.512 0.608 -1.732  1.014
+UW_UH_BCD_ERB -3.636    1.098 -3.311 0.001 -5.789 -1.484
+AA_AE_BCD_ERB  1.667    1.376  1.212 0.226 -1.029  4.364
+IY_IH_WCD_ERB  0.941    1.757  0.535 0.592 -2.503  4.385
+UW_UH_WCD_ERB  5.301    2.300  2.304 0.021  0.792  9.809
+AA_AE_WCD_ERB  1.497    3.656  0.410 0.682 -5.668  8.662
+UW_UH_CO_ERB  -2.927    1.078 -2.716 0.007 -5.040 -0.814
+AA_AE_CO_ERB  -0.362    1.171 -0.309 0.757 -2.656  1.932
+UW_UH_CD_ERB   0.001    0.114  0.008 0.993 -0.223  0.225
+AA_AE_CD_ERB  -1.013    0.422 -2.404 0.016 -1.840 -0.187
+Group Var     22.152                                    
+========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        23.767457
+IY_IH_BCD_ERB    -0.358916
+UW_UH_BCD_ERB    -3.636467
+AA_AE_BCD_ERB     1.667429
+IY_IH_WCD_ERB     0.940915
+UW_UH_WCD_ERB     5.300565
+AA_AE_WCD_ERB     1.497412
+UW_UH_CO_ERB     -2.927291
+AA_AE_CO_ERB     -0.361941
+UW_UH_CD_ERB      0.000957
+AA_AE_CD_ERB     -1.013496
+Group Var         1.000000
+
+T-values: 
+Intercept        13.175572
+IY_IH_BCD_ERB    -0.512345
+UW_UH_BCD_ERB    -3.310768
+AA_AE_BCD_ERB     1.211860
+IY_IH_WCD_ERB     0.535457
+UW_UH_WCD_ERB     2.304169
+AA_AE_WCD_ERB     0.409608
+UW_UH_CO_ERB     -2.715526
+AA_AE_CO_ERB     -0.309209
+UW_UH_CD_ERB      0.008384
+AA_AE_CD_ERB     -2.404127
+Group Var              NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      6.117727e+08  7.203782e+11  2.099304e+10
+IY_IH_BCD_ERB  1.769407e-01  2.756904e+00  6.984330e-01
+UW_UH_BCD_ERB  3.060295e-03  2.267992e-01  2.634526e-02
+AA_AE_BCD_ERB  3.572447e-01  7.858585e+01  5.298526e+00
+IY_IH_WCD_ERB  8.182492e-02  8.023857e+01  2.562326e+00
+UW_UH_WCD_ERB  2.207402e+00  1.820247e+04  2.004499e+02
+AA_AE_WCD_ERB  3.455889e-03  5.781970e+03  4.470106e+00
+UW_UH_CO_ERB   6.473107e-03  4.428684e-01  5.354189e-02
+AA_AE_CO_ERB   7.021749e-02  6.905204e+00  6.963233e-01
+UW_UH_CD_ERB   8.002644e-01  1.251982e+00  1.000958e+00
+AA_AE_CD_ERB   1.588575e-01  8.292417e-01  3.629480e-01
+Group Var               NaN           NaN  2.718282e+00

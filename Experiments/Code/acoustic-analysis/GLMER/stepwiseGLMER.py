@@ -126,14 +126,16 @@ def bottomUp(df, bestFormula, best, base, interaction):
                     tmp_features = selected_features + col.split('*')
                 else:
                     tmp_features = selected_features + [col]
-                vifDF = computeVIF(df, tmp_features)
 
-                # If all is right in the world, add the next best to the good list
-                if any(vifDF.VIF > 5):
+                if len(tmp_features) > 1:
+                    vifDF = computeVIF(df, tmp_features)
 
-                    print("Multicollinearity detected.")
-                    print(vifDF)
-                    raise AssertionError
+                    # If all is right in the world, add the next best to the good list
+                    if any(vifDF.VIF > 5):
+
+                        print("Multicollinearity detected.")
+                        print(vifDF)
+                        raise AssertionError
 
                 else:
 

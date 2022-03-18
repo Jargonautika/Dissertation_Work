@@ -1,0 +1,35 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ AA_AE_WCD_ERB
+         Mixed Linear Model Regression Results
+========================================================
+Model:             MixedLM Dependent Variable: MMSE     
+No. Observations:  155     Method:             REML     
+No. Groups:        155     Scale:              23.5105  
+Min. group size:   1       Log-Likelihood:     -515.6757
+Max. group size:   1       Converged:          Yes      
+Mean group size:   1.0                                  
+--------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+--------------------------------------------------------
+Intercept     21.745    1.115 19.508 0.000 19.560 23.930
+AA_AE_WCD_ERB  2.598    1.552  1.674 0.094 -0.443  5.640
+Group Var     23.511                                    
+========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        21.745101
+AA_AE_WCD_ERB     2.598264
+Group Var         1.000000
+
+T-values: 
+Intercept        19.507623
+AA_AE_WCD_ERB     1.674349
+Group Var              NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      3.125683e+08  2.469503e+10  2.778288e+09
+AA_AE_WCD_ERB  6.419666e-01  2.813918e+02  1.344039e+01
+Group Var               NaN           NaN  2.718282e+00

@@ -1,35 +1,35 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ S_Z_CD
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ PausingRate
          Mixed Linear Model Regression Results
 =======================================================
 Model:            MixedLM Dependent Variable: MMSE     
 No. Observations: 155     Method:             REML     
-No. Groups:       155     Scale:              23.5427  
-Min. group size:  1       Log-Likelihood:     -516.7478
+No. Groups:       155     Scale:              22.5528  
+Min. group size:  1       Log-Likelihood:     -512.8518
 Max. group size:  1       Converged:          Yes      
 Mean group size:  1.0                                  
 -------------------------------------------------------
             Coef.  Std.Err.    z    P>|z| [0.025 0.975]
 -------------------------------------------------------
-Intercept   22.363    0.049 455.923 0.000 22.267 22.459
-S_Z_CD       0.950    0.364   2.611 0.009  0.237  1.663
-Group Var   23.543                                     
+Intercept   24.865    0.087 285.284 0.000 24.694 25.036
+PausingRate -3.262    0.697  -4.678 0.000 -4.629 -1.895
+Group Var   22.553                                     
 =======================================================
 
 
 Total number of trials: 155
 
 Parameters: 
-Intercept    22.362909
-S_Z_CD        0.949897
-Group Var     1.000000
+Intercept      24.864731
+PausingRate    -3.262058
+Group Var       1.000000
 
 T-values: 
-Intercept    455.923085
-S_Z_CD         2.610613
-Group Var           NaN
+Intercept      285.283784
+PausingRate     -4.678374
+Group Var             NaN
 
 Odds Ratio w/ Confidence Intervals: 
-                     5%           95%    Odds Ratio
-Intercept  4.680979e+09  5.673344e+09  5.153330e+09
-S_Z_CD     1.267118e+00  5.275374e+00  2.585444e+00
-Group Var           NaN           NaN  2.718282e+00
+                       5%           95%    Odds Ratio
+Intercept    5.301838e+10  7.461125e+10  6.289489e+10
+PausingRate  9.767760e-03  1.502511e-01  3.830949e-02
+Group Var             NaN           NaN  2.718282e+00

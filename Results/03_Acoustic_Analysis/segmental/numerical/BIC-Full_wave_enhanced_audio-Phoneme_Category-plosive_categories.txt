@@ -1,0 +1,55 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ P_B_WCD + P_B_BCD + T_D_BCD + K_G_BCD + T_D_WCD + K_G_WCD
+         Mixed Linear Model Regression Results
+=======================================================
+Model:            MixedLM Dependent Variable: MMSE     
+No. Observations: 155     Method:             REML     
+No. Groups:       155     Scale:              23.4273  
+Min. group size:  1       Log-Likelihood:     -487.1680
+Max. group size:  1       Converged:          Yes      
+Mean group size:  1.0                                  
+-------------------------------------------------------
+           Coef.  Std.Err.   z    P>|z|  [0.025  0.975]
+-------------------------------------------------------
+Intercept  21.107    1.200 17.597 0.000  18.756  23.458
+P_B_WCD   123.873   73.366  1.688 0.091 -19.921 267.667
+P_B_BCD    51.437   28.782  1.787 0.074  -4.975 107.848
+T_D_BCD    11.667   23.007  0.507 0.612 -33.425  56.759
+K_G_BCD     5.809   27.131  0.214 0.830 -47.368  58.985
+T_D_WCD    14.792    6.229  2.375 0.018   2.583  27.001
+K_G_WCD    33.399   57.695  0.579 0.563 -79.681 146.479
+Group Var  23.427                                      
+=======================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept     21.107152
+P_B_WCD      123.873329
+P_B_BCD       51.436577
+T_D_BCD       11.667135
+K_G_BCD        5.808571
+T_D_WCD       14.791834
+K_G_WCD       33.398839
+Group Var      1.000000
+
+T-values: 
+Intercept    17.596603
+P_B_WCD       1.688437
+P_B_BCD       1.787116
+T_D_BCD       0.507120
+K_G_BCD       0.214090
+T_D_WCD       2.374582
+K_G_WCD       0.578888
+Group Var          NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                     5%            95%    Odds Ratio
+Intercept  1.398627e+08   1.540768e+10  1.467978e+09
+P_B_WCD    2.231214e-09  1.763865e+116  6.273405e+53
+P_B_BCD    6.909343e-03   6.883453e+46  2.180829e+22
+T_D_BCD    3.045610e-15   4.469620e+24  1.166736e+05
+K_G_BCD    2.680810e-21   4.139943e+25  3.331426e+02
+T_D_WCD    1.323352e+01   5.325350e+11  2.654677e+06
+K_G_WCD    2.483002e-35   4.119893e+63  3.198391e+14
+Group Var           NaN            NaN  2.718282e+00

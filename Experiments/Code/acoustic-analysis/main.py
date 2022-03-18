@@ -3,6 +3,7 @@
 # This acoustic analysis brought to you by Sonia Granlund via Yan Tang
 import sys
 import glob
+import numpy as np
 import pandas as pd
 sys.path.insert(1, './LMER')
 sys.path.insert(1, './GLMER')
@@ -18,6 +19,9 @@ import segmentalAnalysis
 def fix():
 
     catDF = pd.read_csv("segmental/SegmentalMeasures_Full_wave_enhanced_audio-categorical-Vowel_Space.csv")
+    if len(list(set(catDF['Condition']))) > 2:
+        catDF['Condition'] = catDF['Condition'].replace(np.nan, 'cc') # That one NaN guy
+        catDF.to_csv("segmental/SegmentalMeasures_Full_wave_enhanced_audio-categorical-Vowel_Space.csv", index = None)
     csvList = glob.glob("segmental/*categorical-P*.csv")
     badDFs = [pd.read_csv(csv) for csv in csvList]
 
@@ -27,7 +31,8 @@ def fix():
         assert df.shape[0] == numSpeakers, "We have a mismatched number of speakers in {}".format(csv)
 
         df['Condition'] = conditionList
-        df.drop('Unnamed: 0', axis = 1, inplace = True)
+        if 'Unnamed: 0' in df.columns:
+            df.drop('Unnamed: 0', axis = 1, inplace = True)
         df.to_csv(csv, index = None)
         
 
@@ -49,14 +54,13 @@ def segmentalStuff(which):
                             "Vowel_Space"]:
     # for segmentalModel in ["Phoneme_Category-vowel_erb_categories"]:
 
-
         # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-        runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
-        # runGLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
+        runGLMER.main(level = 'segmental', ttype = 'categorical', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
+        runGLMER.main(level = 'segmental', ttype = 'categorical', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
 
         # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-        runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
-        # runLMER.main(level = 'segmental', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
+        runLMER.main(level = 'segmental', ttype = 'numerical', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
+        runLMER.main(level = 'segmental', ttype = 'numerical', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
 
 
 # Do the global work
@@ -66,12 +70,12 @@ def globalStuff(which):
     # globalAnalysis.main(which)
 
     # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-    runGLMER.main(level = 'global', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
-    # runGLMER.main(level = 'global', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
+    runGLMER.main(level = 'global', ttype = 'categorical', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
+    runGLMER.main(level = 'global', ttype = 'categorical', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
 
     # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-    runLMER.main(level = 'global', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
-    # runLMER.main(level = 'global', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
+    runLMER.main(level = 'global', ttype = 'numerical', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
+    runLMER.main(level = 'global', ttype = 'numerical', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
 
 
 def main():

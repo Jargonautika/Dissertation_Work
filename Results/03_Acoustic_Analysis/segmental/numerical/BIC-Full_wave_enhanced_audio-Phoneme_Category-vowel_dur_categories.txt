@@ -1,0 +1,51 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ UW_UH_WCD_DUR + IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_CO_DUR
+          Mixed Linear Model Regression Results
+=========================================================
+Model:              MixedLM Dependent Variable: MMSE     
+No. Observations:   155     Method:             REML     
+No. Groups:         155     Scale:              23.3421  
+Min. group size:    1       Log-Likelihood:     -496.6472
+Max. group size:    1       Converged:          Yes      
+Mean group size:    1.0                                  
+---------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+---------------------------------------------------------
+Intercept     20.207    1.602 12.610 0.000  17.066 23.348
+UW_UH_WCD_DUR 42.243   27.917  1.513 0.130 -12.472 96.959
+IY_IH_BCD_DUR  0.845   13.352  0.063 0.950 -25.325 27.015
+UW_UH_BCD_DUR  8.325   10.238  0.813 0.416 -11.740 28.390
+AA_AE_BCD_DUR  5.783   11.740  0.493 0.622 -17.227 28.794
+IY_IH_CO_DUR  17.380   15.054  1.155 0.248 -12.126 46.886
+Group Var     23.342                                     
+=========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        20.207168
+UW_UH_WCD_DUR    42.243425
+IY_IH_BCD_DUR     0.844800
+UW_UH_BCD_DUR     8.325306
+AA_AE_BCD_DUR     5.783441
+IY_IH_CO_DUR     17.380276
+Group Var         1.000000
+
+T-values: 
+Intercept        12.610138
+UW_UH_WCD_DUR     1.513205
+IY_IH_BCD_DUR     0.063270
+UW_UH_BCD_DUR     0.813215
+AA_AE_BCD_DUR     0.492610
+IY_IH_CO_DUR      1.154505
+Group Var              NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      2.581368e+07  1.379980e+10  5.968447e+08
+UW_UH_WCD_DUR  3.832631e-06  1.284327e+42  2.218637e+18
+IY_IH_BCD_DUR  1.003217e-11  5.399943e+11  2.327512e+00
+UW_UH_BCD_DUR  7.969622e-06  2.137133e+12  4.127002e+03
+AA_AE_BCD_DUR  3.298105e-08  3.200134e+12  3.248750e+02
+IY_IH_CO_DUR   5.418817e-06  2.303621e+20  3.533115e+07
+Group Var               NaN           NaN  2.718282e+00

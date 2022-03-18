@@ -1,0 +1,33 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ UW_UH_WCD_DUR
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      154
+Model Family:                                Binomial   Df Model:                            1
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -103.68
+Date:                                Fri, 18 Mar 2022   Deviance:                       207.36
+Time:                                        14:14:11   Pearson chi2:                     157.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+=================================================================================
+                    coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------
+Intercept        -0.6855      0.288     -2.378      0.017      -1.250      -0.120
+UW_UH_WCD_DUR    22.0844      7.706      2.866      0.004       6.981      37.188
+=================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept        -0.685476
+UW_UH_WCD_DUR    22.084398
+
+T-values: 
+Intercept       -2.377866
+UW_UH_WCD_DUR    2.865937
+
+Odds Ratio w/ Confidence Intervals: 
+                        5%           95%    Odds Ratio
+Intercept         0.286367  8.865037e-01  5.038504e-01
+UW_UH_WCD_DUR  1076.279314  1.413641e+16  3.900606e+09

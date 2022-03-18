@@ -1,0 +1,55 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range
+         Mixed Linear Model Regression Results
+========================================================
+Model:             MixedLM Dependent Variable: MMSE     
+No. Observations:  155     Method:             REML     
+No. Groups:        155     Scale:              19.8370  
+Min. group size:   1       Log-Likelihood:     -534.7349
+Max. group size:   1       Converged:          Yes      
+Mean group size:   1.0                                  
+--------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+--------------------------------------------------------
+Intercept     26.738    4.200  6.366 0.000 18.506 34.970
+Vowel_Rate    35.686    6.886  5.182 0.000 22.190 49.182
+Vowel_Area_2D  0.000    0.000  1.195 0.232 -0.000  0.000
+Vowel_Area_3D -0.000    0.000 -2.338 0.019 -0.000 -0.000
+F1_Range       0.003    0.002  1.116 0.264 -0.002  0.007
+F2_Range      -0.003    0.001 -6.092 0.000 -0.004 -0.002
+F3_Range      -0.003    0.002 -1.372 0.170 -0.007  0.001
+Group Var     19.837                                    
+========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        26.738426
+Vowel_Rate       35.685939
+Vowel_Area_2D     0.000021
+Vowel_Area_3D    -0.000027
+F1_Range          0.002666
+F2_Range         -0.003282
+F3_Range         -0.002806
+Group Var         1.000000
+
+T-values: 
+Intercept        6.366175
+Vowel_Rate       5.182434
+Vowel_Area_2D    1.195387
+Vowel_Area_3D   -2.338040
+F1_Range         1.116412
+F2_Range        -6.092027
+F3_Range        -1.371778
+Group Var             NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      1.089529e+08  1.539795e+15  4.095915e+11
+Vowel_Rate     4.333935e+09  2.288390e+21  3.149243e+15
+Vowel_Area_2D  9.999863e-01  1.000057e+00  1.000021e+00
+Vowel_Area_3D  9.999511e-01  9.999957e-01  9.999734e-01
+F1_Range       9.979876e-01  1.007374e+00  1.002670e+00
+F2_Range       9.956709e-01  9.977761e-01  9.967229e-01
+F3_Range       9.932085e-01  1.001204e+00  9.971981e-01
+Group Var               NaN           NaN  2.718282e+00

@@ -1,0 +1,35 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ Vowel_Rate
+         Mixed Linear Model Regression Results
+=======================================================
+Model:            MixedLM Dependent Variable: MMSE     
+No. Observations: 155     Method:             REML     
+No. Groups:       155     Scale:              20.7820  
+Min. group size:  1       Log-Likelihood:     -504.8719
+Max. group size:  1       Converged:          Yes      
+Mean group size:  1.0                                  
+-------------------------------------------------------
+             Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+-------------------------------------------------------
+Intercept    17.860    0.615 29.020 0.000 16.654 19.067
+Vowel_Rate   27.600    0.499 55.300 0.000 26.622 28.578
+Group Var    20.782                                    
+=======================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept     17.860475
+Vowel_Rate    27.600270
+Group Var      1.000000
+
+T-values: 
+Intercept     29.020038
+Vowel_Rate    55.299711
+Group Var           NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                      5%           95%    Odds Ratio
+Intercept   1.709350e+07  1.908010e+08  5.710917e+07
+Vowel_Rate  3.645922e+11  2.579184e+12  9.697167e+11
+Group Var            NaN           NaN  2.718282e+00

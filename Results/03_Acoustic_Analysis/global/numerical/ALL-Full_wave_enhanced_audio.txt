@@ -1,95 +1,55 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD
-         Mixed Linear Model Regression Results
-=======================================================
-Model:            MixedLM Dependent Variable: MMSE     
-No. Observations: 155     Method:             REML     
-No. Groups:       155     Scale:              16.7677  
-Min. group size:  1       Log-Likelihood:     -566.3623
-Max. group size:  1       Converged:          Yes      
-Mean group size:  1.0                                  
--------------------------------------------------------
-             Coef.  Std.Err.   z    P>|z| [0.025 0.975]
--------------------------------------------------------
-Intercept    22.187    1.994 11.125 0.000 18.278 26.096
-F_V_BCD       0.002    0.001  2.830 0.005  0.001  0.004
-S_Z_BCD       0.001    0.001  1.123 0.261 -0.001  0.003
-SH_ZH_BCD     0.006    0.001  6.824 0.000  0.004  0.008
-TH_DH_BCD     0.001    0.001  1.740 0.082 -0.000  0.002
-F_V_WCD      -0.004    0.002 -2.066 0.039 -0.008 -0.000
-S_Z_WCD      -0.003    0.001 -2.808 0.005 -0.004 -0.001
-SH_ZH_WCD    -0.000    0.001 -0.473 0.636 -0.002  0.001
-TH_DH_WCD    -0.003    0.001 -1.960 0.050 -0.005  0.000
-F_V_CO        0.001    0.001  1.271 0.204 -0.001  0.002
-S_Z_CO       -0.000    0.000 -0.153 0.879 -0.001  0.001
-SH_ZH_CO     -0.003    0.002 -1.598 0.110 -0.007  0.001
-TH_DH_CO      0.001    0.000  2.174 0.030  0.000  0.002
-F_V_CD       -0.001    0.008 -0.094 0.925 -0.017  0.016
-S_Z_CD        0.549    1.250  0.439 0.661 -1.901  2.998
-SH_ZH_CD     -1.285    0.197 -6.532 0.000 -1.670 -0.899
-TH_DH_CD     -0.217    0.121 -1.790 0.073 -0.454  0.021
-Group Var    16.768                                    
-=======================================================
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr
+            Mixed Linear Model Regression Results
+=============================================================
+Model:              MixedLM   Dependent Variable:   MMSE     
+No. Observations:   155       Method:               REML     
+No. Groups:         155       Scale:                23.0117  
+Min. group size:    1         Log-Likelihood:       -521.8728
+Max. group size:    1         Converged:            Yes      
+Mean group size:    1.0                                      
+-------------------------------------------------------------
+                  Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+-------------------------------------------------------------
+Intercept        -10.371   19.410 -0.534 0.593 -48.415 27.673
+Intensity          0.000    0.001  0.337 0.736  -0.002  0.003
+ArticulationRate   0.191    0.255  0.750 0.453  -0.309  0.692
+PausingRate       -3.263    1.194 -2.733 0.006  -5.603 -0.923
+FundFreq           0.346    0.212  1.632 0.103  -0.069  0.761
+iqr                2.746    2.512  1.093 0.274  -2.178  7.670
+FundFreq:iqr      -0.028    0.027 -1.033 0.302  -0.081  0.025
+Group Var         23.012                                     
+=============================================================
 
 
 Total number of trials: 155
 
 Parameters: 
-Intercept    22.186959
-F_V_BCD       0.002484
-S_Z_BCD       0.000972
-SH_ZH_BCD     0.005893
-TH_DH_BCD     0.001031
-F_V_WCD      -0.004350
-S_Z_WCD      -0.002605
-SH_ZH_WCD    -0.000367
-TH_DH_WCD    -0.002598
-F_V_CO        0.000973
-S_Z_CO       -0.000064
-SH_ZH_CO     -0.003186
-TH_DH_CO      0.000860
-F_V_CD       -0.000792
-S_Z_CD        0.548706
-SH_ZH_CD     -1.284553
-TH_DH_CD     -0.216896
-Group Var     1.000000
+Intercept          -10.371035
+Intensity            0.000412
+ArticulationRate     0.191410
+PausingRate         -3.262705
+FundFreq             0.345617
+iqr                  2.746146
+FundFreq:iqr        -0.027856
+Group Var            1.000000
 
 T-values: 
-Intercept    11.125217
-F_V_BCD       2.829857
-S_Z_BCD       1.123422
-SH_ZH_BCD     6.824413
-TH_DH_BCD     1.740386
-F_V_WCD      -2.066090
-S_Z_WCD      -2.808460
-SH_ZH_WCD    -0.472680
-TH_DH_WCD    -1.959788
-F_V_CO        1.270604
-S_Z_CO       -0.152615
-SH_ZH_CO     -1.598074
-TH_DH_CO      2.174216
-F_V_CD       -0.094099
-S_Z_CD        0.439050
-SH_ZH_CD     -6.531892
-TH_DH_CD     -1.789944
-Group Var          NaN
+Intercept          -0.534301
+Intensity           0.337471
+ArticulationRate    0.749989
+PausingRate        -2.732604
+FundFreq            1.632335
+iqr                 1.093155
+FundFreq:iqr       -1.032912
+Group Var                NaN
 
 Odds Ratio w/ Confidence Intervals: 
-                     5%           95%    Odds Ratio
-Intercept  8.672160e+07  2.153875e+11  4.321892e+09
-F_V_BCD    1.000764e+00  1.004213e+00  1.002487e+00
-S_Z_BCD    9.992767e-01  1.002671e+00  1.000972e+00
-SH_ZH_BCD  1.004210e+00  1.007615e+00  1.005911e+00
-TH_DH_BCD  9.998699e-01  1.002195e+00  1.001032e+00
-F_V_WCD    9.915589e-01  9.997766e-01  9.956592e-01
-S_Z_WCD    9.955866e-01  9.992133e-01  9.973983e-01
-SH_ZH_WCD  9.981116e-01  1.001156e+00  9.996328e-01
-TH_DH_WCD  9.948176e-01  1.000000e+00  9.974056e-01
-F_V_CO     9.994724e-01  1.002476e+00  1.000973e+00
-S_Z_CO     9.991185e-01  1.000755e+00  9.999363e-01
-SH_ZH_CO   9.929309e-01  1.000722e+00  9.968188e-01
-TH_DH_CO   1.000085e+00  1.001636e+00  1.000860e+00
-F_V_CD     9.828617e-01  1.015827e+00  9.992084e-01
-S_Z_CD     1.494524e-01  2.004920e+01  1.731012e+00
-SH_ZH_CD   1.882476e-01  4.069319e-01  2.767742e-01
-TH_DH_CD   6.348320e-01  1.020816e+00  8.050134e-01
-Group Var           NaN           NaN  2.718282e+00
+                            5%           95%  Odds Ratio
+Intercept         9.412369e-22  1.042640e+12    0.000031
+Intensity         9.980190e-01  1.002812e+00    1.000413
+ArticulationRate  7.343232e-01  1.996959e+00    1.210956
+PausingRate       3.687211e-03  3.975139e-01    0.038285
+FundFreq          9.329820e-01  2.139565e+00    1.412861
+iqr               1.133205e-01  2.142713e+03   15.582469
+FundFreq:iqr      9.224594e-01  1.025316e+00    0.972529
+Group Var                  NaN           NaN    2.718282

@@ -1,45 +1,33 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ SH_ZH_BCD + F_V_WCD + SH_ZH_WCD + SH_ZH_CO
+Level:    global      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ PausingRate
                          Generalized Linear Model Regression Results                          
 ==============================================================================================
 Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
-Model:                                            GLM   Df Residuals:                      151
-Model Family:                                Binomial   Df Model:                            4
+Model:                                            GLM   Df Residuals:                      154
+Model Family:                                Binomial   Df Model:                            1
 Link Function:                                  logit   Scale:                          1.0000
-Method:                                          IRLS   Log-Likelihood:                -58.276
-Date:                                Thu, 03 Mar 2022   Deviance:                       116.55
-Time:                                        23:10:05   Pearson chi2:                     242.
+Method:                                          IRLS   Log-Likelihood:                -95.633
+Date:                                Fri, 18 Mar 2022   Deviance:                       191.27
+Time:                                        14:11:56   Pearson chi2:                     149.
 No. Iterations:                                     6                                         
 Covariance Type:                            nonrobust                                         
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-Intercept      0.8663      0.504      1.720      0.085      -0.121       1.853
-SH_ZH_BCD      0.0024      0.000      6.419      0.000       0.002       0.003
-F_V_WCD       -0.0020      0.001     -3.687      0.000      -0.003      -0.001
-SH_ZH_WCD     -0.0014      0.000     -3.051      0.002      -0.002      -0.001
-SH_ZH_CO       0.0024      0.001      3.864      0.000       0.001       0.004
-==============================================================================
+===============================================================================
+                  coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------
+Intercept       1.0838      0.305      3.553      0.000       0.486       1.682
+PausingRate    -2.7373      0.720     -3.803      0.000      -4.148      -1.327
+===============================================================================
 
 Total number of trials:	156
 
 Parameters: 
-Intercept    0.866324
-SH_ZH_BCD    0.002352
-F_V_WCD     -0.002016
-SH_ZH_WCD   -0.001402
-SH_ZH_CO     0.002442
+Intercept      1.083841
+PausingRate   -2.737253
 
 T-values: 
-Intercept    1.720397
-SH_ZH_BCD    6.419275
-F_V_WCD     -3.687192
-SH_ZH_WCD   -3.051319
-SH_ZH_CO     3.863996
+Intercept      3.553476
+PausingRate   -3.803460
 
 Odds Ratio w/ Confidence Intervals: 
-                 5%       95%  Odds Ratio
-Intercept  0.886356  6.380749    2.378154
-SH_ZH_BCD  1.001635  1.003074    1.002354
-F_V_WCD    0.996916  0.999056    0.997986
-SH_ZH_WCD  0.997699  0.999499    0.998599
-SH_ZH_CO   1.001204  1.003688    1.002445
+                   5%       95%  Odds Ratio
+Intercept    1.625857  5.374405    2.956013
+PausingRate  0.015799  0.265347    0.064748

@@ -1,0 +1,55 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ G_VOT + P_VOT + B_VOT + T_VOT + D_VOT + UW_DUR
+         Mixed Linear Model Regression Results
+=======================================================
+Model:            MixedLM Dependent Variable: MMSE     
+No. Observations: 155     Method:             REML     
+No. Groups:       155     Scale:              24.1420  
+Min. group size:  1       Log-Likelihood:     -490.7114
+Max. group size:  1       Converged:          Yes      
+Mean group size:  1.0                                  
+-------------------------------------------------------
+           Coef.  Std.Err.   z    P>|z|  [0.025  0.975]
+-------------------------------------------------------
+Intercept  23.341    2.588  9.019 0.000   18.269 28.414
+G_VOT     -33.736   51.507 -0.655 0.512 -134.688 67.216
+P_VOT      -0.136   36.917 -0.004 0.997  -72.491 72.220
+B_VOT      -2.869   34.621 -0.083 0.934  -70.725 64.986
+T_VOT      10.860   22.770  0.477 0.633  -33.768 55.487
+D_VOT     -31.137   29.608 -1.052 0.293  -89.169 26.894
+UW_DUR     12.936    8.292  1.560 0.119   -3.317 29.188
+Group Var  24.142                                      
+=======================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept    23.341450
+G_VOT       -33.736271
+P_VOT        -0.135826
+B_VOT        -2.869301
+T_VOT        10.859943
+D_VOT       -31.137364
+UW_DUR       12.935545
+Group Var     1.000000
+
+T-values: 
+Intercept    9.018897
+G_VOT       -0.654983
+P_VOT       -0.003679
+B_VOT       -0.082878
+T_VOT        0.476950
+D_VOT       -1.051639
+UW_DUR       1.559925
+Group Var         NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                     5%           95%    Odds Ratio
+Intercept  8.592153e+07  2.187883e+12  1.371081e+10
+G_VOT      3.203146e-59  1.554071e+29  2.231124e-15
+P_VOT      3.292070e-32  2.315016e+31  8.729945e-01
+B_VOT      1.925458e-31  1.671948e+28  5.673858e-02
+T_VOT      2.162441e-15  1.252803e+24  5.204914e+04
+D_VOT      1.881387e-39  4.785761e+11  3.000644e-14
+UW_DUR     3.625108e-02  4.746247e+12  4.147971e+05
+Group Var           NaN           NaN  2.718282e+00
