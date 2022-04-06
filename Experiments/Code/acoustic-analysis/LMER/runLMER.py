@@ -191,7 +191,7 @@ def runLMER(df, formula, printList, which, step, level, segmentalModel, ttype, p
             out = '../../../Results/03_Acoustic_Analysis/{}/{}/{}-{}-{}.txt'.format(level, ttype, run, which, segmentalModel)
         else:
             out = '../../../Results/03_Acoustic_Analysis/{}/{}/{}-{}.txt'.format(level, ttype, run, which)
-out        with open(out, 'w') as f:
+        with open(out, 'w') as f:
             for item in printList:
                 f.write("%s\n" % item)
 
@@ -200,16 +200,24 @@ def loadDataSet(level, which, segmentalModel):
 
     if level == "global":
         df = pd.read_csv("./{}/GlobalMeasures_{}-numerical.csv".format(level, which))
+    elif level == "segmental":
+        # To avoid multicollinearity issues, only compare all Between-Category-Distance measures at a time 
+        # (since SH_ZH_BCD and SH_ZH_WCD are going to correlate; they're only mathematical functions on top of the numbers)
+        if segmentalModel in ["BCD", "WCD", "CO", "CD"]:
+            dfList = [pd.read_csv('./{}/SegmentalMeasures_{}-numerical-Phoneme_Category-{}_categories.csv'.format(level, which, feature)) for feature in ['fricative', 'plosive', 'vowel_dur', 'vowel_erb']]
+            df = dfList[0]
+            for i in dfList[1:]:
+                df = pd.merge(df, i, on = ['ID', 'Age', 'Gender', 'MMSE'])
+            df = df[['ID', 'Age', 'Gender'] + [col for col in df.columns if segmentalModel in col] + ['MMSE']]
+        else:
+            df = pd.read_csv("./{}/SegmentalMeasures_{}-numerical-{}.csv".format(level, which, segmentalModel))
     else:
-        df = pd.read_csv("./{}/SegmentalMeasures_{}-numerical-{}.csv".format(level, which, segmentalModel))
+        raise AssertionError
 
-    df = fixCols(df)
-
-    # We get exact separation in the glm models if the 'cd' condition has NaN values resulting in a (-)inf columnwise mean for any particular factor
     if df.isnull().sum().sum() > 0:
         df = imputeMissingData(df)
 
-    return df
+    return fixCols(df)
 
 
 def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced_audio", segmentalModel = "Phoneme_Category-vowel_dur_categories", step = False, interaction = None):
@@ -229,19 +237,18 @@ def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced
             formula = "MMSE ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr"
         else:
             assert not isinstance(segmentalModel, type(None)), "You're not passing the right model for segmental LMER."
-            if segmentalModel == "Phoneme_Category-fricative_categories":
-                formula = "MMSE ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
+            if segmentalModel == "Vowel_Space":
+                formula = "MMSE ~ Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range"
             elif segmentalModel == "Phoneme_Category-phonetic_contrasts":
                 formula = "MMSE ~ P_VOT + B_VOT + T_VOT + D_VOT + K_VOT + G_VOT + F_COG + V_COG + S_COG + Z_COG + SH_COG + ZH_COG + TH_COG + DH_COG + IY_ERB + IH_ERB + UW_ERB + UH_ERB + AA_ERB + AE_ERB + IY_DUR + IH_DUR + UW_DUR + UH_DUR + AA_DUR + AE_DUR"
-            elif segmentalModel == "Phoneme_Category-plosive_categories":
-                formula = "MMSE ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_WCD + K_G_WCD + P_B_CO + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD"
-            elif segmentalModel == "Phoneme_Category-vowel_dur_categories":
-                formula = "MMSE ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
-            elif segmentalModel == "Phoneme_Category-vowel_erb_categories":
-                formula = "MMSE ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
-            elif segmentalModel == "Vowel_Space":
-                formula = "MMSE ~ Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range"
-                               
+            elif segmentalModel == "BCD":
+                formula = "MMSE ~ " + " + ".join(col for col in df if 'BCD' in col)
+            elif segmentalModel == "WCD":
+                formula = "MMSE ~ " + " + ".join(col for col in df if 'WCD' in col)
+            elif segmentalModel == "CD":
+                formula = "MMSE ~ " + " + ".join(col for col in df if '_CD' in col)
+            elif segmentalModel == "CO":
+                formula = "MMSE ~ " + " + ".join(col for col in df if 'CO' in col)             
             else:
                 raise AssertionError
 

@@ -220,8 +220,19 @@ def loadDataSet(level, which, segmentalModel):
 
     if level == "global":
         df = pd.read_csv("./{}/GlobalMeasures_{}-categorical.csv".format(level, which))
+    elif level == "segmental":
+        # To avoid multicollinearity issues, only compare all Between-Category-Distance measures at a time 
+        # (since SH_ZH_BCD and SH_ZH_WCD are going to correlate; they're only mathematical functions on top of the numbers)
+        if segmentalModel in ["BCD", "WCD", "CO", "CD"]:
+            dfList = [pd.read_csv('./{}/SegmentalMeasures_{}-categorical-Phoneme_Category-{}_categories.csv'.format(level, which, feature)) for feature in ['fricative', 'plosive', 'vowel_dur', 'vowel_erb']]
+            df = dfList[0]
+            for i in dfList[1:]:
+                df = pd.merge(df, i, on = ['ID', 'Age', 'Gender', 'Condition'])
+            df = df[['ID', 'Age', 'Gender'] + [col for col in df.columns if segmentalModel in col] + ['Condition']]
+        else:
+            df = pd.read_csv("./{}/SegmentalMeasures_{}-categorical-{}.csv".format(level, which, segmentalModel))
     else:
-        df = pd.read_csv("./{}/SegmentalMeasures_{}-categorical-{}.csv".format(level, which, segmentalModel))
+        raise AssertionError
 
     df = fixCols(df)
 
@@ -247,21 +258,11 @@ def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced
             # For global features we've got ['Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate']
             # Fundamental Frequency and its Interquartile Range have an interaction
             # Brute force 16; 4
+            formula = "Intensity ~  Condition/MMSE (?) + Age + Gender (?)" # NOTE use other cues as random effects
             formula = "Condition ~ Intensity + ArticulationRate + PausingRate + FundFreq*iqr" 
         else:
             assert not isinstance(segmentalModel, type(None)), "You're not passing the right model for segmental GLMER."
-            if segmentalModel == "Phoneme_Category-fricative_categories":
-                # Brute force 65536; 16
-                # formula = "Condition ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
-                # Items that were multicollinear: 
-                    # F_V_WCD  35.183721
-                    # S_Z_WCD  28.977337
-                    # SH_ZH_BCD  15.549044
-                    # TH_DH_WCD  15.181886
-                    # S_Z_BCD  14.930329
-                    # S_Z_CO  5.951997
-                formula = "Condition ~ F_V_BCD + TH_DH_BCD + SH_ZH_WCD + F_V_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
-            elif segmentalModel == "Phoneme_Category-phonetic_contrasts":
+            if segmentalModel == "Phoneme_Category-phonetic_contrasts":
                 # Brute force 67108864; 26
                 # formula = "Condition ~ P_VOT + B_VOT + T_VOT + D_VOT + K_VOT + G_VOT + F_COG + V_COG + S_COG + Z_COG + SH_COG + ZH_COG + TH_COG + DH_COG + IY_ERB + IH_ERB + UW_ERB + UH_ERB + AA_ERB + AE_ERB + IY_DUR + IH_DUR + UW_DUR + UH_DUR + AA_DUR + AE_DUR"
                 # Items that were multicollinear:
@@ -284,33 +285,31 @@ def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced
                     # Z_COG  6.983581
                     # D_VOT  5.061954
                 formula = "Condition ~ P_VOT + B_VOT + T_VOT + G_VOT + V_COG + ZH_COG + TH_COG + UW_DUR"
-            elif segmentalModel == "Phoneme_Category-plosive_categories":
-                # Brute force 4096; 12
-                # formula = "Condition ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_WCD + K_G_WCD + P_B_CO + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD"
-                # Items that were multicollinear:
-                    # K_G_WCD  31.074230
-                    # P_B_CO  17.244600
-                    # T_D_WCD  14.411502
-                formula = "Condition ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD"
-            elif segmentalModel == "Phoneme_Category-vowel_dur_categories":
-                # Brute force 4096; 12
-                # formula = "Condition ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
-                # Items that were multicollinear:
-                    # UW_UH_WCD_DUR  36.918048
-                    # IY_IH_WCD_DUR  36.602800
-                    # AA_AE_WCD_DUR  16.787520
-                    # IY_IH_CD_DUR  7.509463
-                    # AA_AE_BCD_DUR  6.590251
-                    # AA_AE_CO_DUR  6.110035
-                formula = "Condition ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
-            elif segmentalModel == "Phoneme_Category-vowel_erb_categories":
-                # Brute force 1024; 10
-                # formula = "Condition ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
-                # Items that were multicollinear:
-                    # UW_UH_WCD_ERB  39.920944
-                    # AA_AE_WCD_ERB  33.389921
-                    # IY_IH_WCD_ERB  6.117303
-                formula = "Condition ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
+            elif segmentalModel == "BCD":
+                # formula = 'Condition ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + P_B_BCD + T_D_BCD + K_G_BCD + IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB'
+                # SH_ZH_BCD  8.421546
+                formula = 'Condition ~ F_V_BCD + S_Z_BCD + TH_DH_BCD + P_B_BCD + T_D_BCD + K_G_BCD + IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB'
+
+            elif segmentalModel == "WCD":
+                # formula = 'Condition ~ F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + P_B_WCD + T_D_WCD + K_G_WCD + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB'
+                # AA_AE_WCD_DUR  10.920330
+                # S_Z_WCD  9.186114
+                # IY_IH_WCD_ERB  8.263611
+                # IY_IH_WCD_DUR  6.595875
+                formula = 'Condition ~ F_V_WCD + SH_ZH_WCD + TH_DH_WCD + P_B_WCD + T_D_WCD + K_G_WCD + UW_UH_WCD_DUR + UW_UH_WCD_ERB + AA_AE_WCD_ERB'
+            
+            elif segmentalModel == "CD":
+                # TODO start here
+                # formula = 'Condition ~ F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD + P_B_CD + T_D_CD + K_G_CD + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR + IY_IH_CD_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB'
+                # UW_UH_CD_DUR  1298.187928
+                # UW_UH_CD_ERB  12.746253
+                formula = 'Condition ~ F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD + P_B_CD + T_D_CD + K_G_CD + IY_IH_CD_DUR + AA_AE_CD_DUR + IY_IH_CD_ERB + AA_AE_CD_ERB'
+            
+            elif segmentalModel == "CO":
+                # formula = 'Condition ~ F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + P_B_CO + T_D_CO + K_G_CO + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CO_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB'
+                # IY_IH_CO_DUR  5.990306
+                formula = 'Condition ~ F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + P_B_CO + T_D_CO + K_G_CO + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CO_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB'
+
             elif segmentalModel == "Vowel_Space":
                 # Brute force 64; 6
                 # formula = "Condition ~ Vowel_Rate + Vowel_Area_2D + Vowel_Area_3D + F1_Range + F2_Range + F3_Range"
@@ -320,8 +319,7 @@ def main(level = "segmental", ttype = 'categorical', which = "Full_wave_enhanced
                     # Vowel_Range_3D  7.137960
                     # Vowel_Area_2D  6.581394
                 formula = "Condition ~ Vowel_Rate + F1_Range"
-
-                               
+                
             else:
                 raise AssertionError
 
@@ -379,3 +377,48 @@ if __name__ == "__main__":
 
     main()
     # main(level = "global", which = "Full_wave_enhanced_audio", segmentalModel = None, step = False)
+
+# NOTES
+
+            # if segmentalModel == "Phoneme_Category-fricative_categories":
+                # Brute force 65536; 16
+                # formula = "Condition ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
+                # Items that were multicollinear: 
+                    # F_V_WCD  35.183721
+                    # S_Z_WCD  28.977337
+                    # SH_ZH_BCD  15.549044
+                    # TH_DH_WCD  15.181886
+                    # S_Z_BCD  14.930329
+                    # S_Z_CO  5.951997
+                # formula = "Condition ~ F_V_BCD + TH_DH_BCD + SH_ZH_WCD + F_V_CO + SH_ZH_CO + TH_DH_CO + F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD"
+
+
+            # elif segmentalModel == "Phoneme_Category-plosive_categories":
+                # Brute force 4096; 12
+                # formula = "Condition ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_WCD + K_G_WCD + P_B_CO + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD"
+                # Items that were multicollinear:
+                    # K_G_WCD  31.074230
+                    # P_B_CO  17.244600
+                    # T_D_WCD  14.411502
+                # formula = "Condition ~ P_B_BCD + T_D_BCD + K_G_BCD + P_B_WCD + T_D_CO + K_G_CO + P_B_CD + T_D_CD + K_G_CD"
+
+            # elif segmentalModel == "Phoneme_Category-vowel_dur_categories":
+                # Brute force 4096; 12
+                # formula = "Condition ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CD_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
+                # Items that were multicollinear:
+                    # UW_UH_WCD_DUR  36.918048
+                    # IY_IH_WCD_DUR  36.602800
+                    # AA_AE_WCD_DUR  16.787520
+                    # IY_IH_CD_DUR  7.509463
+                    # AA_AE_BCD_DUR  6.590251
+                    # AA_AE_CO_DUR  6.110035
+                # formula = "Condition ~ IY_IH_BCD_DUR + UW_UH_BCD_DUR + IY_IH_CO_DUR + UW_UH_CO_DUR + UW_UH_CD_DUR + AA_AE_CD_DUR"
+
+            # elif segmentalModel == "Phoneme_Category-vowel_erb_categories":
+                # Brute force 1024; 10
+                # formula = "Condition ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
+                # Items that were multicollinear:
+                    # UW_UH_WCD_ERB  39.920944
+                    # AA_AE_WCD_ERB  33.389921
+                    # IY_IH_WCD_ERB  6.117303
+                # formula = "Condition ~ IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB + UW_UH_CD_ERB + AA_AE_CD_ERB"
