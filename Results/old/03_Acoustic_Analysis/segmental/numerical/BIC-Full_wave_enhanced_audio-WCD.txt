@@ -1,0 +1,47 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ UW_UH_WCD_DUR + P_B_WCD + T_D_WCD + K_G_WCD
+          Mixed Linear Model Regression Results
+==========================================================
+Model:             MixedLM  Dependent Variable:  MMSE     
+No. Observations:  155      Method:              REML     
+No. Groups:        155      Scale:               23.1884  
+Min. group size:   1        Log-Likelihood:      -495.9127
+Max. group size:   1        Converged:           Yes      
+Mean group size:   1.0                                    
+----------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z|  [0.025  0.975]
+----------------------------------------------------------
+Intercept     20.195    1.142 17.682 0.000  17.957  22.434
+UW_UH_WCD_DUR 48.829   25.059  1.949 0.051  -0.285  97.943
+P_B_WCD       91.634   68.464  1.338 0.181 -42.552 225.821
+T_D_WCD       12.944   16.748  0.773 0.440 -19.881  45.770
+K_G_WCD       25.018   52.407  0.477 0.633 -77.697 127.733
+Group Var     23.188                                      
+==========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        20.195406
+UW_UH_WCD_DUR    48.829172
+P_B_WCD          91.634338
+T_D_WCD          12.944467
+K_G_WCD          25.017894
+Group Var         1.000000
+
+T-values: 
+Intercept        17.681557
+UW_UH_WCD_DUR     1.948601
+P_B_WCD           1.338434
+T_D_WCD           0.772899
+K_G_WCD           0.477380
+Group Var              NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      6.288306e+07  5.533163e+09  5.898662e+08
+UW_UH_WCD_DUR  7.522077e-01  3.436707e+42  1.607830e+21
+P_B_WCD        3.309320e-19  1.182596e+98  6.255868e+39
+T_D_WCD        2.321829e-09  7.543818e+19  4.185147e+05
+K_G_WCD        1.805038e-34  2.977008e+55  7.330492e+10
+Group Var               NaN           NaN  2.718282e+00

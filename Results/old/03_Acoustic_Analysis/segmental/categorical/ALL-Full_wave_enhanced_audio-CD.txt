@@ -1,0 +1,73 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_CD + S_Z_CD + SH_ZH_CD + TH_DH_CD + P_B_CD + T_D_CD + K_G_CD + IY_IH_CD_DUR + AA_AE_CD_DUR + IY_IH_CD_ERB + AA_AE_CD_ERB
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      144
+Model Family:                                Binomial   Df Model:                           11
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                    nan
+Date:                                Fri, 25 Mar 2022   Deviance:                       29.675
+Time:                                        14:05:12   Pearson chi2:                     138.
+No. Iterations:                                    36                                         
+Covariance Type:                            nonrobust                                         
+================================================================================
+                   coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------
+Intercept      -11.1806      2.955     -3.784      0.000     -16.972      -5.390
+F_V_CD          -0.0224      0.013     -1.675      0.094      -0.049       0.004
+S_Z_CD           3.3079      1.168      2.831      0.005       1.018       5.598
+SH_ZH_CD         2.5676      0.478      5.377      0.000       1.632       3.504
+TH_DH_CD        -0.1859      0.083     -2.235      0.025      -0.349      -0.023
+P_B_CD           0.2727      0.203      1.344      0.179      -0.125       0.670
+T_D_CD          -0.1812      0.328     -0.552      0.581      -0.825       0.462
+K_G_CD           0.1542      0.352      0.439      0.661      -0.535       0.843
+IY_IH_CD_DUR    -0.2741      1.300     -0.211      0.833      -2.821       2.273
+AA_AE_CD_DUR     0.8997      0.489      1.840      0.066      -0.059       1.858
+IY_IH_CD_ERB    -0.5061      0.412     -1.227      0.220      -1.315       0.302
+AA_AE_CD_ERB    -0.1750      0.382     -0.458      0.647      -0.924       0.574
+================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept      -11.180640
+F_V_CD          -0.022401
+S_Z_CD           3.307884
+SH_ZH_CD         2.567626
+TH_DH_CD        -0.185856
+P_B_CD           0.272729
+T_D_CD          -0.181242
+K_G_CD           0.154216
+IY_IH_CD_DUR    -0.274136
+AA_AE_CD_DUR     0.899669
+IY_IH_CD_ERB    -0.506125
+AA_AE_CD_ERB    -0.175033
+
+T-values: 
+Intercept      -3.784044
+F_V_CD         -1.675309
+S_Z_CD          2.831419
+SH_ZH_CD        5.376941
+TH_DH_CD       -2.235313
+P_B_CD          1.344007
+T_D_CD         -0.551978
+K_G_CD          0.438661
+IY_IH_CD_DUR   -0.210955
+AA_AE_CD_DUR    1.840018
+IY_IH_CD_ERB   -1.227027
+AA_AE_CD_ERB   -0.458180
+
+Odds Ratio w/ Confidence Intervals: 
+                        5%         95%  Odds Ratio
+Intercept     4.258746e-08    0.004564    0.000014
+F_V_CD        9.525536e-01    1.003814    0.977848
+S_Z_CD        2.767935e+00  269.796247   27.327248
+SH_ZH_CD      5.112526e+00   33.233521   13.034847
+TH_DH_CD      7.055213e-01    0.977366    0.830393
+P_B_CD        8.825044e-01    1.955117    1.313544
+T_D_CD        4.383233e-01    1.587743    0.834233
+K_G_CD        5.857683e-01    2.323938    1.166743
+IY_IH_CD_DUR  5.953985e-02    9.706913    0.760229
+AA_AE_CD_DUR  9.430394e-01    6.410803    2.458788
+IY_IH_CD_ERB  2.685890e-01    1.352998    0.602827
+AA_AE_CD_ERB  3.970183e-01    1.774835    0.839430

@@ -1,0 +1,83 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ F_V_WCD + S_Z_WCD + SH_ZH_WCD + TH_DH_WCD + P_B_WCD + T_D_WCD + K_G_WCD + IY_IH_WCD_DUR + UW_UH_WCD_DUR + AA_AE_WCD_DUR + IY_IH_WCD_ERB + UW_UH_WCD_ERB + AA_AE_WCD_ERB
+           Mixed Linear Model Regression Results
+============================================================
+Model:               MixedLM  Dependent Variable:  MMSE     
+No. Observations:    155      Method:              REML     
+No. Groups:          155      Scale:               23.5580  
+Min. group size:     1        Log-Likelihood:      -502.1494
+Max. group size:     1        Converged:           Yes      
+Mean group size:     1.0                                    
+------------------------------------------------------------
+               Coef.  Std.Err.   z    P>|z|  [0.025   0.975]
+------------------------------------------------------------
+Intercept      23.315    2.613  8.922 0.000   18.193  28.437
+F_V_WCD        -0.001    0.002 -0.384 0.701   -0.004   0.003
+S_Z_WCD        -0.000    0.001 -0.085 0.932   -0.003   0.003
+SH_ZH_WCD      -0.001    0.001 -0.944 0.345   -0.004   0.001
+TH_DH_WCD      -0.002    0.002 -1.225 0.221   -0.006   0.001
+P_B_WCD       118.420   78.990  1.499 0.134  -36.397 273.237
+T_D_WCD        16.511   31.509  0.524 0.600  -45.246  78.268
+K_G_WCD        30.526   56.212  0.543 0.587  -79.646 140.699
+IY_IH_WCD_DUR -47.573   31.318 -1.519 0.129 -108.954  13.808
+UW_UH_WCD_DUR  54.371   28.954  1.878 0.060   -2.378 111.120
+AA_AE_WCD_DUR   5.909   29.660  0.199 0.842  -52.223  64.041
+IY_IH_WCD_ERB   0.523    1.913  0.273 0.784   -3.227   4.273
+UW_UH_WCD_ERB  -1.183    1.419 -0.833 0.405   -3.964   1.599
+AA_AE_WCD_ERB   1.435    1.799  0.797 0.425   -2.092   4.961
+Group Var      23.558                                       
+============================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept         23.314984
+F_V_WCD           -0.000647
+S_Z_WCD           -0.000125
+SH_ZH_WCD         -0.001250
+TH_DH_WCD         -0.002231
+P_B_WCD          118.420017
+T_D_WCD           16.511103
+K_G_WCD           30.526278
+IY_IH_WCD_DUR    -47.573029
+UW_UH_WCD_DUR     54.370585
+AA_AE_WCD_DUR      5.908713
+IY_IH_WCD_ERB      0.523228
+UW_UH_WCD_ERB     -1.182830
+AA_AE_WCD_ERB      1.434522
+Group Var          1.000000
+
+T-values: 
+Intercept        8.922099
+F_V_WCD         -0.384296
+S_Z_WCD         -0.085340
+SH_ZH_WCD       -0.944409
+TH_DH_WCD       -1.224728
+P_B_WCD          1.499181
+T_D_WCD          0.524007
+K_G_WCD          0.543060
+IY_IH_WCD_DUR   -1.519053
+UW_UH_WCD_DUR    1.877818
+AA_AE_WCD_DUR    0.199217
+IY_IH_WCD_ERB    0.273476
+UW_UH_WCD_ERB   -0.833424
+AA_AE_WCD_ERB    0.797347
+Group Var             NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%            95%    Odds Ratio
+Intercept      7.965856e+07   2.238234e+12  1.335269e+10
+F_V_WCD        9.960629e-01   1.002655e+00  9.993535e-01
+S_Z_WCD        9.970140e-01   1.002745e+00  9.998752e-01
+SH_ZH_WCD      9.961617e-01   1.001346e+00  9.987503e-01
+TH_DH_WCD      9.942163e-01   1.001340e+00  9.977718e-01
+P_B_WCD        1.559252e-16  4.628107e+118  2.686333e+51
+T_D_WCD        2.238161e-20   9.805506e+33  1.481429e+07
+K_G_WCD        2.570203e-35   1.272978e+61  1.808815e+13
+IY_IH_WCD_DUR  4.805630e-48   9.927539e+05  2.184218e-21
+UW_UH_WCD_DUR  9.269307e-02   1.814025e+48  4.100579e+23
+AA_AE_WCD_DUR  2.087849e-23   6.494469e+27  3.682319e+02
+IY_IH_WCD_ERB  3.968960e-02   7.174525e+01  1.687466e+00
+UW_UH_WCD_ERB  1.897765e-02   4.947256e+00  3.064104e-01
+AA_AE_WCD_ERB  1.234786e-01   1.426980e+02  4.197636e+00
+Group Var               NaN            NaN  2.718282e+00

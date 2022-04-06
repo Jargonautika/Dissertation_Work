@@ -1,0 +1,83 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + P_B_CO + T_D_CO + K_G_CO + IY_IH_CO_DUR + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CO_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB
+         Mixed Linear Model Regression Results
+========================================================
+Model:             MixedLM Dependent Variable: MMSE     
+No. Observations:  155     Method:             REML     
+No. Groups:        155     Scale:              24.7773  
+Min. group size:   1       Log-Likelihood:     -518.5160
+Max. group size:   1       Converged:          Yes      
+Mean group size:   1.0                                  
+--------------------------------------------------------
+             Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+--------------------------------------------------------
+Intercept    20.585    1.399 14.717 0.000  17.843 23.326
+F_V_CO       -0.001    0.001 -1.146 0.252  -0.002  0.000
+S_Z_CO        0.000    0.000  0.363 0.716  -0.001  0.001
+SH_ZH_CO     -0.003    0.003 -0.764 0.445  -0.009  0.004
+TH_DH_CO     -0.000    0.000 -0.062 0.951  -0.001  0.001
+P_B_CO       15.182   21.771  0.697 0.486 -27.488 57.851
+T_D_CO       -2.760   18.952 -0.146 0.884 -39.904 34.385
+K_G_CO       -3.520   20.666 -0.170 0.865 -44.025 36.985
+IY_IH_CO_DUR 21.449    8.959  2.394 0.017   3.891 39.008
+UW_UH_CO_DUR  9.347   10.365  0.902 0.367 -10.969 29.662
+AA_AE_CO_DUR  1.119    6.302  0.178 0.859 -11.232 13.470
+IY_IH_CO_ERB -0.034    0.481 -0.070 0.944  -0.976  0.909
+UW_UH_CO_ERB  0.034    0.461  0.073 0.941  -0.870  0.938
+AA_AE_CO_ERB -0.146    0.485 -0.300 0.764  -1.096  0.805
+Group Var    24.777                                     
+========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept       20.584858
+F_V_CO          -0.000611
+S_Z_CO           0.000142
+SH_ZH_CO        -0.002612
+TH_DH_CO        -0.000029
+P_B_CO          15.181514
+T_D_CO          -2.759703
+K_G_CO          -3.519902
+IY_IH_CO_DUR    21.449136
+UW_UH_CO_DUR     9.346864
+AA_AE_CO_DUR     1.118687
+IY_IH_CO_ERB    -0.033871
+UW_UH_CO_ERB     0.033888
+AA_AE_CO_ERB    -0.145514
+Group Var        1.000000
+
+T-values: 
+Intercept       14.716755
+F_V_CO          -1.146093
+S_Z_CO           0.363216
+SH_ZH_CO        -0.763788
+TH_DH_CO        -0.061752
+P_B_CO           0.697336
+T_D_CO          -0.145618
+K_G_CO          -0.170321
+IY_IH_CO_DUR     2.394244
+UW_UH_CO_DUR     0.901757
+AA_AE_CO_DUR     0.177525
+IY_IH_CO_ERB    -0.070437
+UW_UH_CO_ERB     0.073475
+AA_AE_CO_ERB    -0.300145
+Group Var             NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                        5%           95%    Odds Ratio
+Intercept     5.614149e+07  1.350507e+10  8.707438e+08
+F_V_CO        9.983466e-01  1.000434e+00  9.993896e-01
+S_Z_CO        9.993781e-01  1.000906e+00  1.000142e+00
+SH_ZH_CO      9.907274e-01  1.004100e+00  9.973911e-01
+TH_DH_CO      9.990478e-01  1.000895e+00  9.999709e-01
+P_B_CO        1.153352e-12  1.332091e+25  3.919656e+06
+T_D_CO        4.675097e-18  8.573577e+14  6.331059e-02
+K_G_CO        7.587979e-20  1.154852e+16  2.960235e-02
+IY_IH_CO_DUR  4.893801e+01  8.726421e+16  2.066528e+09
+UW_UH_CO_DUR  1.723612e-05  7.623313e+12  1.146282e+04
+AA_AE_CO_DUR  1.324110e-05  7.075467e+05  3.060832e+00
+IY_IH_CO_ERB  3.766799e-01  2.480891e+00  9.666964e-01
+UW_UH_CO_ERB  4.189221e-01  2.554472e+00  1.034468e+00
+AA_AE_CO_ERB  3.342951e-01  2.236031e+00  8.645776e-01
+Group Var              NaN           NaN  2.718282e+00

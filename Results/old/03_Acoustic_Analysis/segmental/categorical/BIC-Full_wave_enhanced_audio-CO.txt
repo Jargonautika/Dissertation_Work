@@ -1,0 +1,33 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ UW_UH_CO_DUR
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      154
+Model Family:                                Binomial   Df Model:                            1
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -105.37
+Date:                                Fri, 25 Mar 2022   Deviance:                       210.75
+Time:                                        14:05:56   Pearson chi2:                     157.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+================================================================================
+                   coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------
+Intercept       -0.2249      0.192     -1.168      0.243      -0.602       0.152
+UW_UH_CO_DUR     6.1571      2.722      2.262      0.024       0.821      11.493
+================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept      -0.224878
+UW_UH_CO_DUR    6.157068
+
+T-values: 
+Intercept      -1.168402
+UW_UH_CO_DUR    2.261658
+
+Odds Ratio w/ Confidence Intervals: 
+                    5%           95%  Odds Ratio
+Intercept     0.547657      1.164567    0.798614
+UW_UH_CO_DUR  2.273506  98008.896608  472.042196

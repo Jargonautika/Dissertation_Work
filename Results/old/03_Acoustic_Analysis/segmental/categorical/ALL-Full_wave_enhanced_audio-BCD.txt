@@ -1,0 +1,77 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_BCD + S_Z_BCD + TH_DH_BCD + P_B_BCD + T_D_BCD + K_G_BCD + IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      143
+Model Family:                                Binomial   Df Model:                           12
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -99.306
+Date:                                Fri, 25 Mar 2022   Deviance:                       198.61
+Time:                                        14:04:24   Pearson chi2:                     153.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+=================================================================================
+                    coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------
+Intercept        -1.1278      0.545     -2.070      0.038      -2.195      -0.060
+F_V_BCD           0.0004      0.000      1.990      0.047    6.33e-06       0.001
+S_Z_BCD           0.0003      0.000      1.924      0.054   -6.55e-06       0.001
+TH_DH_BCD        -0.0005      0.000     -2.592      0.010      -0.001      -0.000
+P_B_BCD          14.9119     11.390      1.309      0.190      -7.411      37.235
+T_D_BCD          -0.3898      7.173     -0.054      0.957     -14.449      13.669
+K_G_BCD           3.9989      9.289      0.430      0.667     -14.208      22.206
+IY_IH_BCD_DUR    -0.0522      4.378     -0.012      0.990      -8.633       8.529
+UW_UH_BCD_DUR     1.1350      3.110      0.365      0.715      -4.961       7.231
+AA_AE_BCD_DUR     4.2605      3.829      1.113      0.266      -3.245      11.766
+IY_IH_BCD_ERB    -0.0205      0.232     -0.088      0.930      -0.475       0.435
+UW_UH_BCD_ERB    -0.1214      0.157     -0.774      0.439      -0.429       0.186
+AA_AE_BCD_ERB     0.3985      0.208      1.918      0.055      -0.009       0.806
+=================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept        -1.127779
+F_V_BCD           0.000424
+S_Z_BCD           0.000347
+TH_DH_BCD        -0.000540
+P_B_BCD          14.911856
+T_D_BCD          -0.389842
+K_G_BCD           3.998930
+IY_IH_BCD_DUR    -0.052228
+UW_UH_BCD_DUR     1.134980
+AA_AE_BCD_DUR     4.260476
+IY_IH_BCD_ERB    -0.020451
+UW_UH_BCD_ERB    -0.121372
+AA_AE_BCD_ERB     0.398453
+
+T-values: 
+Intercept       -2.070392
+F_V_BCD          1.989680
+S_Z_BCD          1.923623
+TH_DH_BCD       -2.591568
+P_B_BCD          1.309245
+T_D_BCD         -0.054348
+K_G_BCD          0.430482
+IY_IH_BCD_DUR   -0.011929
+UW_UH_BCD_DUR    0.364918
+AA_AE_BCD_DUR    1.112566
+IY_IH_BCD_ERB   -0.088085
+UW_UH_BCD_ERB   -0.773747
+AA_AE_BCD_ERB    1.917612
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      1.113133e-01  9.416212e-01  3.237514e-01
+F_V_BCD        1.000006e+00  1.000842e+00  1.000424e+00
+S_Z_BCD        9.999934e-01  1.000700e+00  1.000347e+00
+TH_DH_BCD      9.990519e-01  9.998684e-01  9.994600e-01
+P_B_BCD        6.042809e-04  1.482637e+16  2.993208e+06
+T_D_BCD        5.308728e-07  8.637680e+05  6.771639e-01
+K_G_BCD        6.753794e-07  4.404317e+09  5.453976e+01
+IY_IH_BCD_DUR  1.780579e-04  5.059108e+03  9.491122e-01
+UW_UH_BCD_DUR  7.006163e-03  1.381499e+03  3.111110e+00
+AA_AE_BCD_DUR  3.896719e-02  1.287963e+05  7.084370e+01
+IY_IH_BCD_ERB  6.215788e-01  1.544332e+00  9.797572e-01
+UW_UH_BCD_ERB  6.512794e-01  1.204510e+00  8.857046e-01
+AA_AE_BCD_ERB  9.912384e-01  2.238279e+00  1.489519e+00

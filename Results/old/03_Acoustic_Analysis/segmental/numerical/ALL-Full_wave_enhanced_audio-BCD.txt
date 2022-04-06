@@ -1,0 +1,83 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ F_V_BCD + S_Z_BCD + SH_ZH_BCD + TH_DH_BCD + P_B_BCD + T_D_BCD + K_G_BCD + IY_IH_BCD_DUR + UW_UH_BCD_DUR + AA_AE_BCD_DUR + IY_IH_BCD_ERB + UW_UH_BCD_ERB + AA_AE_BCD_ERB
+          Mixed Linear Model Regression Results
+=========================================================
+Model:              MixedLM Dependent Variable: MMSE     
+No. Observations:   155     Method:             REML     
+No. Groups:         155     Scale:              15.6153  
+Min. group size:    1       Log-Likelihood:     -484.0161
+Max. group size:    1       Converged:          Yes      
+Mean group size:    1.0                                  
+---------------------------------------------------------
+              Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+---------------------------------------------------------
+Intercept     12.463    1.580  7.890 0.000   9.367 15.558
+F_V_BCD        0.001    0.000  2.694 0.007   0.000  0.002
+S_Z_BCD        0.001    0.000  1.472 0.141  -0.000  0.001
+SH_ZH_BCD      0.006    0.001 10.082 0.000   0.005  0.007
+TH_DH_BCD     -0.001    0.000 -2.067 0.039  -0.002 -0.000
+P_B_BCD       18.402   28.385  0.648 0.517 -37.233 74.036
+T_D_BCD        4.324   18.993  0.228 0.820 -32.902 41.550
+K_G_BCD        0.474   23.678  0.020 0.984 -45.935 46.883
+IY_IH_BCD_DUR -0.325   11.604 -0.028 0.978 -23.069 22.419
+UW_UH_BCD_DUR  6.249    8.200  0.762 0.446  -9.823 22.321
+AA_AE_BCD_DUR  5.224   10.046  0.520 0.603 -14.466 24.915
+IY_IH_BCD_ERB  0.108    0.626  0.172 0.863  -1.120  1.336
+UW_UH_BCD_ERB -0.444    0.360 -1.233 0.217  -1.150  0.262
+AA_AE_BCD_ERB  0.606    0.518  1.170 0.242  -0.409  1.620
+Group Var     15.615                                     
+=========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        12.462567
+F_V_BCD           0.001288
+S_Z_BCD           0.000592
+SH_ZH_BCD         0.005675
+TH_DH_BCD        -0.001019
+P_B_BCD          18.401703
+T_D_BCD           4.324239
+K_G_BCD           0.474005
+IY_IH_BCD_DUR    -0.324881
+UW_UH_BCD_DUR     6.249214
+AA_AE_BCD_DUR     5.224147
+IY_IH_BCD_ERB     0.107813
+UW_UH_BCD_ERB    -0.444325
+AA_AE_BCD_ERB     0.605614
+Group Var         1.000000
+
+T-values: 
+Intercept         7.890084
+F_V_BCD           2.693853
+S_Z_BCD           1.471517
+SH_ZH_BCD        10.081796
+TH_DH_BCD        -2.066636
+P_B_BCD           0.648279
+T_D_BCD           0.227671
+K_G_BCD           0.020019
+IY_IH_BCD_DUR    -0.027997
+UW_UH_BCD_DUR     0.762097
+AA_AE_BCD_DUR     0.520005
+IY_IH_BCD_ERB     0.172114
+UW_UH_BCD_ERB    -1.233486
+AA_AE_BCD_ERB     1.169957
+Group Var              NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      1.169316e+04  5.713683e+06  2.584782e+05
+F_V_BCD        1.000351e+00  1.002228e+00  1.001289e+00
+S_Z_BCD        9.998035e-01  1.001381e+00  1.000592e+00
+SH_ZH_BCD      1.004583e+00  1.006802e+00  1.005692e+00
+TH_DH_BCD      9.980159e-01  9.999474e-01  9.989812e-01
+P_B_BCD        6.760780e-17  1.424031e+32  9.812012e+07
+T_D_BCD        5.138564e-15  1.109543e+18  7.550801e+01
+K_G_BCD        1.124264e-20  2.295339e+20  1.606414e+00
+IY_IH_BCD_DUR  9.578348e-11  5.451566e+09  7.226133e-01
+UW_UH_BCD_DUR  5.421560e-05  4.941674e+09  5.176059e+02
+AA_AE_BCD_DUR  5.216288e-07  6.611123e+10  1.857028e+02
+IY_IH_BCD_ERB  3.263089e-01  3.802034e+00  1.113839e+00
+UW_UH_BCD_ERB  3.165285e-01  1.299125e+00  6.412567e-01
+AA_AE_BCD_ERB  6.643559e-01  5.053925e+00  1.832377e+00
+Group Var               NaN           NaN  2.718282e+00

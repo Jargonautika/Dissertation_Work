@@ -1,0 +1,65 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_WCD + SH_ZH_WCD + TH_DH_WCD + P_B_WCD + T_D_WCD + K_G_WCD + UW_UH_WCD_DUR + UW_UH_WCD_ERB + AA_AE_WCD_ERB
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      146
+Model Family:                                Binomial   Df Model:                            9
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -93.510
+Date:                                Fri, 25 Mar 2022   Deviance:                       187.02
+Time:                                        14:04:57   Pearson chi2:                     159.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+=================================================================================
+                    coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------
+Intercept        -0.8632      0.660     -1.308      0.191      -2.157       0.430
+F_V_WCD       -2.834e-05      0.001     -0.053      0.958      -0.001       0.001
+SH_ZH_WCD        -0.0005      0.000     -1.301      0.193      -0.001       0.000
+TH_DH_WCD        -0.0012      0.001     -1.996      0.046      -0.002   -2.09e-05
+P_B_WCD          53.2792     24.813      2.147      0.032       4.646     101.912
+T_D_WCD           1.7735      9.908      0.179      0.858     -17.645      21.192
+K_G_WCD          19.9481     18.151      1.099      0.272     -15.628      55.524
+UW_UH_WCD_DUR    20.1090      8.641      2.327      0.020       3.172      37.046
+UW_UH_WCD_ERB    -0.8406      0.470     -1.788      0.074      -1.762       0.081
+AA_AE_WCD_ERB     1.0833      0.566      1.913      0.056      -0.027       2.193
+=================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept        -0.863189
+F_V_WCD          -0.000028
+SH_ZH_WCD        -0.000537
+TH_DH_WCD        -0.001156
+P_B_WCD          53.279219
+T_D_WCD           1.773550
+K_G_WCD          19.948053
+UW_UH_WCD_DUR    20.108953
+UW_UH_WCD_ERB    -0.840568
+AA_AE_WCD_ERB     1.083346
+
+T-values: 
+Intercept       -1.307977
+F_V_WCD         -0.052644
+SH_ZH_WCD       -1.301433
+TH_DH_WCD       -1.995966
+P_B_WCD          2.147221
+T_D_WCD          0.179009
+K_G_WCD          1.098978
+UW_UH_WCD_DUR    2.327055
+UW_UH_WCD_ERB   -1.787782
+AA_AE_WCD_ERB    1.912765
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      1.157118e-01  1.537679e+00  4.218146e-01
+F_V_WCD        9.989173e-01  1.001027e+00  9.999717e-01
+SH_ZH_WCD      9.986553e-01  1.000272e+00  9.994632e-01
+TH_DH_WCD      9.977114e-01  9.999791e-01  9.988447e-01
+P_B_WCD        1.042128e+02  1.818947e+44  1.376799e+23
+T_D_WCD        2.172022e-08  1.598165e+09  5.891731e+00
+K_G_WCD        1.632239e-07  1.299794e+24  4.606056e+08
+UW_UH_WCD_DUR  2.385925e+01  1.226754e+16  5.410123e+08
+UW_UH_WCD_ERB  1.716856e-01  1.084322e+00  4.314655e-01
+AA_AE_WCD_ERB  9.736216e-01  8.965862e+00  2.954548e+00

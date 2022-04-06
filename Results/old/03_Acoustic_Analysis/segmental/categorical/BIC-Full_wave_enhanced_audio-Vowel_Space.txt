@@ -1,33 +1,33 @@
-Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ V_COG
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ Vowel_Rate
                          Generalized Linear Model Regression Results                          
 ==============================================================================================
 Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
 Model:                                            GLM   Df Residuals:                      154
 Model Family:                                Binomial   Df Model:                            1
 Link Function:                                  logit   Scale:                          1.0000
-Method:                                          IRLS   Log-Likelihood:                -103.77
-Date:                                Fri, 18 Mar 2022   Deviance:                       207.53
-Time:                                        14:13:24   Pearson chi2:                     156.
+Method:                                          IRLS   Log-Likelihood:                -92.143
+Date:                                Fri, 25 Mar 2022   Deviance:                       184.29
+Time:                                        14:06:51   Pearson chi2:                     154.
 No. Iterations:                                     4                                         
 Covariance Type:                            nonrobust                                         
 ==============================================================================
                  coef    std err          z      P>|z|      [0.025      0.975]
 ------------------------------------------------------------------------------
-Intercept      1.0090      0.400      2.524      0.012       0.225       1.793
-V_COG         -0.0013      0.000     -2.691      0.007      -0.002      -0.000
+Intercept     -2.2679      0.488     -4.647      0.000      -3.224      -1.311
+Vowel_Rate    11.2759      2.239      5.036      0.000       6.888      15.664
 ==============================================================================
 
 Total number of trials:	156
 
 Parameters: 
-Intercept    1.009018
-V_COG       -0.001271
+Intercept     -2.267854
+Vowel_Rate    11.275936
 
 T-values: 
-Intercept    2.523524
-V_COG       -2.690938
+Intercept    -4.646844
+Vowel_Rate    5.036091
 
 Odds Ratio w/ Confidence Intervals: 
-                 5%       95%  Odds Ratio
-Intercept  1.252744  6.005642    2.742906
-V_COG      0.997805  0.999655    0.998730
+                    5%           95%    Odds Ratio
+Intercept     0.039780  2.694669e-01      0.103534
+Vowel_Rate  979.974701  6.352417e+06  78899.989426

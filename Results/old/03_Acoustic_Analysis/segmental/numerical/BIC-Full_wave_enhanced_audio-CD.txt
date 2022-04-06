@@ -1,0 +1,55 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ UW_UH_WCD_DUR + K_G_BCD + T_D_WCD + K_G_WCD + IY_IH_BCD_DUR + UW_UH_BCD_DUR
+             Mixed Linear Model Regression Results
+===============================================================
+Model:                MixedLM   Dependent Variable:   MMSE     
+No. Observations:     155       Method:               REML     
+No. Groups:           155       Scale:                23.5973  
+Min. group size:      1         Log-Likelihood:       -490.5937
+Max. group size:      1         Converged:            Yes      
+Mean group size:      1.0                                      
+---------------------------------------------------------------
+              Coef.     Std.Err.     z    P>|z|  [0.025  0.975]
+---------------------------------------------------------------
+Intercept     20.963         1.431 14.651 0.000  18.159  23.768
+UW_UH_WCD_DUR 50.755        25.912  1.959 0.050  -0.032 101.541
+K_G_BCD       -1.347        28.214 -0.048 0.962 -56.644  53.951
+T_D_WCD       10.856        31.681  0.343 0.732 -51.236  72.949
+K_G_WCD       27.100        55.388  0.489 0.625 -81.459 135.659
+IY_IH_BCD_DUR -3.002        13.470 -0.223 0.824 -29.403  23.400
+UW_UH_BCD_DUR  8.610         8.738  0.985 0.324  -8.516  25.737
+Group Var     23.597 461026929.961                             
+===============================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept        20.963353
+UW_UH_WCD_DUR    50.754554
+K_G_BCD          -1.346661
+T_D_WCD          10.856259
+K_G_WCD          27.099823
+IY_IH_BCD_DUR    -3.001540
+UW_UH_BCD_DUR     8.610495
+Group Var         1.000000
+
+T-values: 
+Intercept        1.465138e+01
+UW_UH_WCD_DUR    1.958734e+00
+K_G_BCD         -4.773075e-02
+T_D_WCD          3.426791e-01
+K_G_WCD          4.892714e-01
+IY_IH_BCD_DUR   -2.228273e-01
+UW_UH_BCD_DUR    9.853650e-01
+Group Var        1.053671e-08
+
+Odds Ratio w/ Confidence Intervals: 
+                         5%           95%    Odds Ratio
+Intercept      7.697686e+07  2.099796e+10  1.271360e+09
+UW_UH_WCD_DUR  9.686326e-01  1.255124e+44  1.102613e+22
+K_G_BCD        2.509622e-25  2.695857e+23  2.601073e-01
+T_D_WCD        5.601272e-23  4.801089e+31  5.185770e+04
+K_G_WCD        4.196146e-36  8.236771e+58  5.879004e+11
+IY_IH_BCD_DUR  1.700375e-13  1.453284e+10  4.971044e-02
+UW_UH_BCD_DUR  2.001552e-04  1.505269e+11  5.488966e+03
+Group Var      0.000000e+00           inf  2.718282e+00

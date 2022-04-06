@@ -1,0 +1,77 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  Condition ~ F_V_CO + S_Z_CO + SH_ZH_CO + TH_DH_CO + P_B_CO + T_D_CO + K_G_CO + UW_UH_CO_DUR + AA_AE_CO_DUR + IY_IH_CO_ERB + UW_UH_CO_ERB + AA_AE_CO_ERB
+                         Generalized Linear Model Regression Results                          
+==============================================================================================
+Dep. Variable:     ['Condition[cc]', 'Condition[cd]']   No. Observations:                  156
+Model:                                            GLM   Df Residuals:                      143
+Model Family:                                Binomial   Df Model:                           12
+Link Function:                                  logit   Scale:                          1.0000
+Method:                                          IRLS   Log-Likelihood:                -101.21
+Date:                                Fri, 25 Mar 2022   Deviance:                       202.42
+Time:                                        14:05:56   Pearson chi2:                     158.
+No. Iterations:                                     4                                         
+Covariance Type:                            nonrobust                                         
+================================================================================
+                   coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------
+Intercept       -0.9686      0.480     -2.019      0.043      -1.909      -0.028
+F_V_CO          -0.0002      0.000     -1.500      0.134      -0.001    7.41e-05
+S_Z_CO           0.0001      0.000      1.011      0.312      -0.000       0.000
+SH_ZH_CO        -0.0007      0.001     -0.689      0.491      -0.003       0.001
+TH_DH_CO      3.473e-06      0.000      0.025      0.980      -0.000       0.000
+P_B_CO           8.7018      6.550      1.329      0.184      -4.136      21.540
+T_D_CO           1.1485      5.647      0.203      0.839      -9.920      12.217
+K_G_CO           5.3776      6.148      0.875      0.382      -6.673      17.428
+UW_UH_CO_DUR     4.7731      3.119      1.530      0.126      -1.340      10.886
+AA_AE_CO_DUR     0.3331      1.938      0.172      0.864      -3.466       4.132
+IY_IH_CO_ERB     0.0165      0.138      0.119      0.905      -0.255       0.288
+UW_UH_CO_ERB    -0.0669      0.137     -0.490      0.624      -0.335       0.201
+AA_AE_CO_ERB     0.0168      0.142      0.119      0.905      -0.261       0.295
+================================================================================
+
+Total number of trials:	156
+
+Parameters: 
+Intercept      -0.968551
+F_V_CO         -0.000242
+S_Z_CO          0.000121
+SH_ZH_CO       -0.000747
+TH_DH_CO        0.000003
+P_B_CO          8.701841
+T_D_CO          1.148509
+K_G_CO          5.377585
+UW_UH_CO_DUR    4.773104
+AA_AE_CO_DUR    0.333070
+IY_IH_CO_ERB    0.016456
+UW_UH_CO_ERB   -0.066942
+AA_AE_CO_ERB    0.016847
+
+T-values: 
+Intercept      -2.019215
+F_V_CO         -1.499873
+S_Z_CO          1.011189
+SH_ZH_CO       -0.688599
+TH_DH_CO        0.024640
+P_B_CO          1.328528
+T_D_CO          0.203374
+K_G_CO          0.874631
+UW_UH_CO_DUR    1.530276
+AA_AE_CO_DUR    0.171830
+IY_IH_CO_ERB    0.118974
+UW_UH_CO_ERB   -0.489724
+AA_AE_CO_ERB    0.118790
+
+Odds Ratio w/ Confidence Intervals: 
+                    5%           95%   Odds Ratio
+Intercept     0.148276  9.719794e-01     0.379633
+F_V_CO        0.999443  1.000074e+00     0.999758
+S_Z_CO        0.999887  1.000355e+00     1.000121
+SH_ZH_CO      0.997130  1.001381e+00     0.999253
+TH_DH_CO      0.999727  1.000280e+00     1.000003
+P_B_CO        0.015988  2.262155e+09  6013.974589
+T_D_CO        0.000049  2.021921e+05     3.153487
+K_G_CO        0.001265  3.706685e+07   216.498866
+UW_UH_CO_DUR  0.261781  5.344746e+04   118.285813
+AA_AE_CO_DUR  0.031240  6.231518e+01     1.395245
+IY_IH_CO_ERB  0.775200  1.333152e+00     1.016592
+UW_UH_CO_ERB  0.715442  1.222590e+00     0.935250
+AA_AE_CO_ERB  0.770186  1.342881e+00     1.016990

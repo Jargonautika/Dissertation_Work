@@ -1,0 +1,55 @@
+Level:    segmental      Which:  Full_wave_enhanced_audio      Formula:  MMSE ~ IY_IH_CO_DUR + P_B_CO + T_D_CO + K_G_CO + UW_UH_CO_DUR + AA_AE_CO_DUR
+         Mixed Linear Model Regression Results
+========================================================
+Model:             MixedLM Dependent Variable: MMSE     
+No. Observations:  155     Method:             REML     
+No. Groups:        155     Scale:              23.9577  
+Min. group size:   1       Log-Likelihood:     -494.9128
+Max. group size:   1       Converged:          Yes      
+Mean group size:   1.0                                  
+--------------------------------------------------------
+             Coef.  Std.Err.   z    P>|z|  [0.025 0.975]
+--------------------------------------------------------
+Intercept    21.188    1.215 17.446 0.000  18.808 23.569
+IY_IH_CO_DUR 18.129    3.076  5.893 0.000  12.100 24.159
+P_B_CO       16.840   20.774  0.811 0.418 -23.877 57.556
+T_D_CO       -1.118   17.872 -0.063 0.950 -36.148 33.911
+K_G_CO       -1.928   19.825 -0.097 0.923 -40.784 36.927
+UW_UH_CO_DUR  9.696    9.818  0.988 0.323  -9.546 28.939
+AA_AE_CO_DUR -0.281    5.839 -0.048 0.962 -11.725 11.163
+Group Var    23.958                                     
+========================================================
+
+
+Total number of trials: 155
+
+Parameters: 
+Intercept       21.188444
+IY_IH_CO_DUR    18.129425
+P_B_CO          16.839562
+T_D_CO          -1.118263
+K_G_CO          -1.928303
+UW_UH_CO_DUR     9.696129
+AA_AE_CO_DUR    -0.280744
+Group Var        1.000000
+
+T-values: 
+Intercept       17.445908
+IY_IH_CO_DUR     5.892999
+P_B_CO           0.810598
+T_D_CO          -0.062569
+K_G_CO          -0.097268
+UW_UH_CO_DUR     0.987602
+AA_AE_CO_DUR    -0.048081
+Group Var             NaN
+
+Odds Ratio w/ Confidence Intervals: 
+                        5%           95%    Odds Ratio
+Intercept     1.473062e+08  1.721184e+10  1.592297e+09
+IY_IH_CO_DUR  1.798224e+05  3.105812e+10  7.473248e+07
+P_B_CO        4.268373e-11  9.917352e+24  2.057449e+07
+T_D_CO        2.001155e-16  5.338366e+14  3.268470e-01
+K_G_CO        1.939811e-18  1.089777e+16  1.453947e-01
+UW_UH_CO_DUR  7.145094e-05  3.697794e+12  1.625456e+04
+AA_AE_CO_DUR  8.089221e-06  7.050860e+04  7.552216e-01
+Group Var              NaN           NaN  2.718282e+00
