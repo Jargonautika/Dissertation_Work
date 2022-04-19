@@ -31,7 +31,7 @@ def findWords(tg, returnString = 0): # 0 for just the word time stamps
 
     startData, wordList, startWord = list(), list(), False
     a, b, counter = 0.0, 0.0, 0
-    with open(tg, 'r') as f:
+    with open(tg, 'r') as f: # TODO start here
         lastLine = "" # Keep an eye on what we saw previous to this line
         for line in f:
             if startWord: # startWord is flipped to True after we have gotten past the 'phone' IntervalTier
@@ -72,16 +72,7 @@ def findWords(tg, returnString = 0): # 0 for just the word time stamps
     return wordList
 
 
-def main(tmpFile, partition, condition, sig, fs):
-
-    tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
-    id = os.path.basename(tmpFile).split('.')[0].split('-')[0]
-
-    if partition == "train":
-        tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))
-
-    else: 
-        tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
+def main(tmpFile, partition, condition, sig, fs, tg):
 
     words = findWords(tg)
 

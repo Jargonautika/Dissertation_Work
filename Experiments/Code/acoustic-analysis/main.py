@@ -46,24 +46,17 @@ def segmentalStuff(which):
     # # Do the Phonemic Contrast Degradation Models
     # segmentalAnalysis.main(which, False)
 
-    for segmentalModel in ["BCD",
+    for segmentalModel in [#"Phoneme_Category-phonetic_contrasts",
+                            "Vowel_Space",
+                            "BCD",
                             "WCD",
                             "CD",
-                            "CO",
-                            # "Phoneme_Category-fricative_categories",
-                            "Phoneme_Category-phonetic_contrasts",
-                            # "Phoneme_Category-plosive_categories",
-                            # "Phoneme_Category-vowel_dur_categories",
-                            # "Phoneme_Category-vowel_erb_categories",
-                            "Vowel_Space"]:
-    # for segmentalModel in ["Phoneme_Category-vowel_erb_categories"]:
+                            "CO"]:
 
         # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-        runGLMER.main(level = 'segmental', ttype = 'categorical', which = which, segmentalModel = segmentalModel, step = False)    # Model all measurements
-        runGLMER.main(level = 'segmental', ttype = 'categorical', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
+        # runGLMER.main(level = 'segmental', ttype = 'categorical', which = which, segmentalModel = segmentalModel, step = True)     # Use BIC stepwise feature selection
 
         # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-        runLMER.main(level = 'segmental', ttype = 'numerical', which = which, segmentalModel = segmentalModel, step = False) # Model all measurements
         runLMER.main(level = 'segmental', ttype = 'numerical', which = which, segmentalModel = segmentalModel, step = True) # Use BIC stepwise feature selection
 
 
@@ -71,24 +64,27 @@ def segmentalStuff(which):
 def globalStuff(which):
 
     # # Run Global Acoustic-Phonetic Deprecation Analysis
-    # globalAnalysis.main(which)
+    globalAnalysis.main(which)
+    # longitudinalAnalysis.main(which) # TODO use the same protocol for global feature extraction on the 2021 data as with the 2020 data
+    # We should just call the functions from globalAnalysis, though, to make sure it's consistent. 
 
     # Run Generalized Mixed Effects Models (categorical: 'cc' vs 'cd')
-    # runGLMER.main(level = 'global', ttype = 'categorical', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
-    runGLMER.main(level = 'global', ttype = 'categorical', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
+    # runGLMER.main(level = 'global', ttype = 'categorical', which = which, segmentalModel = None, step = True) # Use BIC stepwise feature selection
 
     # Run Linear Mixed Effects Models (numerical: MMSE 0 - 30)
-    # runLMER.main(level = 'global', ttype = 'numerical', which = which, segmentalModel = None, step = False, interaction = ["FundFreq*iqr"]) # Model all measurements
-    runLMER.main(level = 'global', ttype = 'numerical', which = which, segmentalModel = None, step = True, interaction = ["FundFreq*iqr"]) # Use BIC stepwise feature selection
+    runLMER.main(level = 'global', ttype = 'numerical', which = which, segmentalModel = None, step = True) # Use BIC stepwise feature selection
+
+    # TODO it's unclear what the labels look like (should be deltas)
+    # runLMER.main(level = 'global', ttype = 'longitudinal', which = which, segmentalModel = None, step = True) # Use BIC stepwise feature selection
 
 
 def main():
 
-    # Choose between Full_wave_enhanced_audio and Normalised_audio-chunks
-    # for which in ["Normalised_audio-chunks", "Full_wave_enhanced_audio"]:
-    for which in ["Full_wave_enhanced_audio"]: # The analysis is actually the exact same if we're doing Norm or Full here. 
+    # The analysis is actually the exact same if we're doing Norm or Full here. 
+    for which in ["Full_wave_enhanced_audio"]: 
 
-        # globalStuff(which)
+        globalStuff(which)
+        return
 
         segmentalStuff(which)
 

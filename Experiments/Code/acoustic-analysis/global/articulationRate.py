@@ -10,25 +10,16 @@ def postProcessWord(word):
     return word.replace("___PAR", "").replace("\\", "").replace('"', "")
 
 
-def getWords(tmpFile, partition, condition):
-
-    tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
-    id = os.path.basename(tmpFile).split('.')[0].split('-')[0]
-
-    if partition == "train":
-        tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))
-
-    else: 
-        tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
+def getWords(tmpFile, partition, condition, tg):
 
     wordList = concatenateWords.findWords(tg, returnString = 1)
     return wordList
 
 
-def main(tmpFile, partition, condition):
+def main(tmpFile, partition, condition, tg):
 
     # Get all the words except hesitation, exclamation, and/or noise
-    wordList = getWords(tmpFile, partition, condition)
+    wordList = getWords(tmpFile, partition, condition, tg)
 
     # Determine the duration of all these words
     durs = [b-a for a, b, _ in wordList]

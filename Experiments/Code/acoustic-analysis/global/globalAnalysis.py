@@ -48,7 +48,7 @@ def saveWav(utt, tarRMS):
     # Get the signal
     sig = wav.getData()
     fs = wav.getSamplingRate()
-    assert fs == 44100, "Not all files have the same sampling rate"
+    # assert fs == 44100, "Not all files have the same sampling rate" # 2021 data has to be resampled to 16kHz because of a codec issue (3 vs 1 or 7)
 
     # Scale to target
     kx, _ = normaliseRMS(sig, tarRMS)
@@ -92,16 +92,16 @@ def normIt(files):
     return signals, files
 
 
-def getPausingRate(tmpFile, partition, condition):
+def getPausingRate(tmpFile, partition, condition, tg):
 
-    rate = pauseRate.main(tmpFile, partition, condition)
+    rate = pauseRate.main(tmpFile, partition, condition, tg)
 
     return rate
 
 
-def getArticulationRate(tmpFile, which, partition, condition):
+def getArticulationRate(tmpFile, partition, condition, tg):
 
-    rate = articulationRate.main(tmpFile, partition, condition)
+    rate = articulationRate.main(tmpFile, partition, condition, tg)
 
     return rate
 
@@ -140,7 +140,7 @@ def filterSignal(sig, fs, numSamples):
     return bpFilteredSig
 
 
-def getIntensity(file, wav, which, partition, condition):
+def getIntensity(file, wav, which, partition, condition, tg):
 
     sig = wav.getData()
     fs = wav.getSamplingRate()
@@ -149,7 +149,7 @@ def getIntensity(file, wav, which, partition, condition):
     if "Full" in which:
         # Concatenate the word segments together
         # Get rid of silence and fillers
-        sig = concatenateWords.main(file, partition, condition, sig, fs)
+        sig = concatenateWords.main(file, partition, condition, sig, fs, tg)
 
     # Normalize the signal
     sig, _ = normaliseRMS(sig, tarRMS = 0.075)
@@ -163,18 +163,24 @@ def getIntensity(file, wav, which, partition, condition):
     return intensity
 
 
-def getRidOfInterviewer(file, wav, partition, condition, tmpFolder = "tmpGlobal"):
+def getRidOfInterviewer(file, wav, partition, condition, tmpFolder = "tmpGlobal", tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/", adresso = False):
 
-    tgDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/TextGrids/"
     id = os.path.basename(file).split('.')[0].split('-')[0]
     if partition == "train":
-        tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))
+        if adresso:
+            tg = os.path.join(tgDir, '{}.TextGrid.Fixed'.format(id))
+        else:
+            tg = os.path.join(tgDir, partition, condition, '{}.TextGrid'.format(id))
 
-    else: 
-        tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
+    else:
+        if adresso:
+            tg = os.path.join(tgDir, '{}.TextGrid.Fixed'.format(id))
+        else:
+            tg = os.path.join(tgDir, partition, '{}.TextGrid'.format(id))
 
     wav = removeInterviewer.main(wav, tg, tmpFolder)
-    return wav
+    
+    return wav, tg
 
 
 def hertzToSemitones(x, re=1):
@@ -212,7 +218,7 @@ def getFundamentalFrequency(sig, fs=44100):
     return f0Semi, iqr
 
 
-def getInformation(file, sig, which, partition, condition, destFolder):
+def getInformation(file, sig, which, partition, condition, destFolder, ddir = "", adresso = False):
 
     id = os.path.basename(file).split('.')[0].split('-')[0]
 
@@ -225,19 +231,22 @@ def getInformation(file, sig, which, partition, condition, destFolder):
 
     # Get rid of the interviewer in the long files
     if "Full" in which:
-        wav = getRidOfInterviewer(file, wav, partition, condition, destFolder)
+        if adresso:
+            wav, tg = getRidOfInterviewer(file, wav, partition, condition, destFolder, ddir, adresso)
+        else:
+            wav, tg = getRidOfInterviewer(file, wav, partition, condition, destFolder)
 
     # Get Median F0 per file
     f0, iqr = getFundamentalFrequency(sig)
 
     # Get Intensity per file
-    intensity = getIntensity(file, wav, which, partition, condition)
+    intensity = getIntensity(file, wav, which, partition, condition, tg)
 
     # Get articulation rate
-    articulationRate = getArticulationRate(file, which, partition, condition)
+    articulationRate = getArticulationRate(file, partition, condition, tg)
 
     # Get pausing
-    pausingRate = getPausingRate(file, partition, condition)
+    pausingRate = getPausingRate(file, partition, condition, tg)
 
     return id, f0, iqr, intensity, articulationRate, pausingRate, condition
 
@@ -252,53 +261,114 @@ def main(which):
         shutil.rmtree("tmpGlobal")
         os.mkdir("tmpGlobal")
 
-    # Iterate over the files, maintaining access to metadata
+    # Iterate over the 2020 files, maintaining access to metadata
     dataDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/"
-    categoricalList, numericalList = list(), list()
-    for partition in ["train", "test"]:
+    categoricalList, numericalList, longitudinalList = list(), list(), list()
+    # for partition in ["train", "test"]:
 
+    #     if partition == "train":
+
+    #         for condition in ["cc", "cd"]:
+
+    #             signals, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
+    #             # X = list()
+    #             # for sig, file in zip(signals, files):
+    #             #     x = getInformation(file, sig, which, partition, condition, "tmpGlobal")
+    #             #     X.append(x)
+    #             X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, condition, "tmpGlobal") for i in range(len(signals)))
+
+    #             # Get the metadata
+    #             trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
+    #             df = pd.read_csv(trainMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
+    #             df.ID = df.ID.str.replace(' ', '')
+
+    #             for x in X:
+    #                 id = x[0].split('-')[0]
+    #                 row = df.loc[df['ID'] == id]
+    #                 lilList = [id, row.age.values[0], row.gender.values[0]]
+
+    #                 # Find Categorical Labels
+    #                 for i in x[1:]:
+    #                     lilList.append(i)
+    #                 categoricalList.append(lilList)
+    #                 lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
+
+    #                 # Find MMSE
+    #                 for i in x[1:-1]:
+    #                     lilList.append(i)
+    #                 # Filter out that one NaN guy for MMSE
+    #                 if np.isnan(row.mmse.values[0]):
+    #                     continue
+    #                 else:
+    #                     mmse = row.mmse.values[0]
+    #                 lilList.append(mmse)
+    #                 numericalList.append(lilList)
+
+    #             shutil.rmtree("filesToNormalize")
+
+    #     else:
+
+    #         # File for knowing in the test partition which condition each participant falls into
+    #         testMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt"
+    #         df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
+    #         df.ID = df.ID.str.replace(' ', '')
+            
+    #         signals, files = normIt(glob.glob(os.path.join(dataDir, partition, which, "*")))
+    #         # X = list()
+    #         # for sig, file in zip(signals, files):
+    #         #     x = getInformation(file, sig, which, partition, condition, "tmpGlobal")
+    #         #     X.append(x)
+    #         X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, df, "tmpGlobal") for i in range(len(signals)))
+            
+    #         for x in X:
+    #             id = x[0].split('-')[0]
+    #             row = df.loc[df['ID'] == id]
+    #             lilList = [id, row.age.values[0], sexDict[row.gender.values[0]]]
+
+    #             # Get Categorical labels
+    #             for i in x[1:]:
+    #                 lilList.append(i)
+    #             categoricalList.append(lilList)
+    #             lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
+                
+    #             # Find MMSE
+    #             for i in x[1:-1]:
+    #                 lilList.append(i)
+    #             # Filter out that one NaN guy for MMSE
+    #             if np.isnan(row.mmse.values[0]):
+    #                 continue
+    #             else:
+    #                 mmse = row.mmse.values[0]
+    #             lilList.append(mmse)
+    #             numericalList.append(lilList)
+
+    #         shutil.rmtree("filesToNormalize")
+
+
+    # Iterate over the 2021 files, maintaining access to metadata
+    dataDir = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSSo-IS2021-data"
+    for partition in ['test', 'train']:
         if partition == "train":
-
-            for condition in ["cc", "cd"]:
-
-                signals, files = normIt(glob.glob(os.path.join(dataDir, partition, which, condition, "*")))
-                # X = list()
-                # for sig, file in zip(signals, files):
-                #     x = getInformation(file, sig, which, partition, condition, "tmpGlobal")
-                #     X.append(x)
-                X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, condition, "tmpGlobal") for i in range(len(signals)))
-
-                # Get the metadata
-                trainMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/train/{}_meta_data.txt".format(condition)
-                df = pd.read_csv(trainMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
-                df.ID = df.ID.str.replace(' ', '')
+            for condition in ["decline", "no_decline"]:
+                signals, files = normIt(glob.glob(os.path.join(dataDir, partition, 'progression', partition, 'audio', condition, 'resample', "*.wav")))
+                X = list()
+                for sig, file in zip(signals[:5], files[:5]):
+                    x = getInformation(file, sig, which, partition, condition, "tmpGlobal", os.path.join(dataDir, partition, 'progression', partition, 'audio', condition, 'textgrids'), True)
+                    X.append(x)
+                # X = Parallel(n_jobs=mp.cpu_count())(delayed(getInformation)(files[i], signals[i], which, partition, condition, "tmpGlobal", True) for i in range(len(signals)))
 
                 for x in X:
-                    id = x[0].split('-')[0]
-                    row = df.loc[df['ID'] == id]
-                    lilList = [id, row.age.values[0], row.gender.values[0]]
+                    lilList = [x[0]]
 
                     # Find Categorical Labels
                     for i in x[1:]:
                         lilList.append(i)
-                    categoricalList.append(lilList)
-                    lilList = [id, row.age.values[0], row.gender.values[0]] # Reset
-
-                    # Find MMSE
-                    for i in x[1:-1]:
-                        lilList.append(i)
-                    # Filter out that one NaN guy for MMSE
-                    if np.isnan(row.mmse.values[0]):
-                        continue
-                    else:
-                        mmse = row.mmse.values[0]
-                    lilList.append(mmse)
-                    numericalList.append(lilList)
-
+                    longitudinalList.append(lilList)
                 shutil.rmtree("filesToNormalize")
 
         else:
 
+            # TODO start here
             # File for knowing in the test partition which condition each participant falls into
             testMetaData = "/home/chasea2/SPEECH/Adams_Chase_Preliminary_Exam/Experiments/Data/ADReSS-IS2020-data/meta_data_test.txt"
             df = pd.read_csv(testMetaData, sep = ";", skipinitialspace = True).rename(columns=lambda x: x.strip())
@@ -335,7 +405,8 @@ def main(which):
 
             shutil.rmtree("filesToNormalize")
 
-    for task, taskList, target in [('categorical', categoricalList, 'Condition'), ('numerical', numericalList, 'MMSE')]:
+    
+    for task, taskList, target in [('categorical', categoricalList, 'Condition'), ('numerical', numericalList, 'MMSE'), ('longitudinal', longitudinalList, 'Decline')]:
         DF = pd.DataFrame(taskList, columns = ['ID', 'Age', 'Gender', 'F0', 'iqr', 'Intensity', 'ArticulationRate', 'PausingRate', target])
         DF = removeNaN(DF)
         DF.to_csv('./global/GlobalMeasures_{}-{}.csv'.format(which, task), index = False)
