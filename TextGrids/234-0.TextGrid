@@ -1,0 +1,70 @@
+File type = "ooTextFile"
+Object class = "TextGrid"
+
+xmin = 0 
+xmax = 128.4963125 
+tiers? <exists> 
+size = 1 
+item []: 
+    item [1]:
+        class = "IntervalTier" 
+        name = "INV" 
+        xmin = 0 
+        xmax = 128.4963125 
+        intervals: size = 14 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.2064484828347302 
+            text = "inv" 
+        intervals [2]:
+            xmin = 1.2064484828347302 
+            xmax = 8.22608189588097 
+            text = "" 
+        intervals [3]:
+            xmin = 8.22608189588097 
+            xmax = 10.115983199393419 
+            text = "inv" 
+        intervals [4]:
+            xmin = 10.115983199393419 
+            xmax = 40.17441345525808 
+            text = "" 
+        intervals [5]:
+            xmin = 40.17441345525808 
+            xmax = 41.524342957766976 
+            text = "inv" 
+        intervals [6]:
+            xmin = 41.524342957766976 
+            xmax = 62.133266696069406 
+            text = "" 
+        intervals [7]:
+            xmin = 62.133266696069406 
+            xmax = 65.19310690175622 
+            text = "inv" 
+        intervals [8]:
+            xmin = 65.19310690175622 
+            xmax = 109.9207710848842 
+            text = "" 
+        intervals [9]:
+            xmin = 109.9207710848842 
+            xmax = 116.13044679642509 
+            text = "inv" 
+        intervals [10]:
+            xmin = 116.13044679642509 
+            xmax = 118.93456149307066 
+            text = "" 
+        intervals [11]:
+            xmin = 118.93456149307066 
+            xmax = 119.28742092389224 
+            text = "inv" 
+        intervals [12]:
+            xmin = 119.28742092389224 
+            xmax = 121.31832298128755 
+            text = "" 
+        intervals [13]:
+            xmin = 121.31832298128755 
+            xmax = 123.64719522470996 
+            text = "inv" 
+        intervals [14]:
+            xmin = 123.64719522470996 
+            xmax = 128.4963125 
+            text = "" 
