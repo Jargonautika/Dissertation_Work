@@ -1,0 +1,98 @@
+File type = "ooTextFile"
+Object class = "TextGrid"
+
+xmin = 0 
+xmax = 131.657125 
+tiers? <exists> 
+size = 1 
+item []: 
+    item [1]:
+        class = "IntervalTier" 
+        name = "INV" 
+        xmin = 0 
+        xmax = 131.657125 
+        intervals: size = 21 
+        intervals [1]:
+            xmin = 0 
+            xmax = 15.734142458169915 
+            text = "inv" 
+        intervals [2]:
+            xmin = 15.734142458169915 
+            xmax = 47.183353115278344 
+            text = "" 
+        intervals [3]:
+            xmin = 47.183353115278344 
+            xmax = 48.29008158375655 
+            text = "inv" 
+        intervals [4]:
+            xmin = 48.29008158375655 
+            xmax = 49.309436752091756 
+            text = "" 
+        intervals [5]:
+            xmin = 49.309436752091756 
+            xmax = 50.48897630402248 
+            text = "inv" 
+        intervals [6]:
+            xmin = 50.48897630402248 
+            xmax = 59.32716470434184 
+            text = "" 
+        intervals [7]:
+            xmin = 59.32716470434184 
+            xmax = 63.38477551533789 
+            text = "inv" 
+        intervals [8]:
+            xmin = 63.38477551533789 
+            xmax = 64.23764912529248 
+            text = "" 
+        intervals [9]:
+            xmin = 64.23764912529248 
+            xmax = 67.49407563602816 
+            text = "inv" 
+        intervals [10]:
+            xmin = 67.49407563602816 
+            xmax = 68.2435706265943 
+            text = "" 
+        intervals [11]:
+            xmin = 68.2435706265943 
+            xmax = 71.18986127916469 
+            text = "inv" 
+        intervals [12]:
+            xmin = 71.18986127916469 
+            xmax = 93.82750188974617 
+            text = "" 
+        intervals [13]:
+            xmin = 93.82750188974617 
+            xmax = 95.64612911027943 
+            text = "inv" 
+        intervals [14]:
+            xmin = 95.64612911027943 
+            xmax = 103.93098644826425 
+            text = "" 
+        intervals [15]:
+            xmin = 103.93098644826425 
+            xmax = 104.41595370707311 
+            text = "inv" 
+        intervals [16]:
+            xmin = 104.41595370707311 
+            xmax = 105.87085548349972 
+            text = "" 
+        intervals [17]:
+            xmin = 105.87085548349972 
+            xmax = 107.24492938345817 
+            text = "inv" 
+        intervals [18]:
+            xmin = 107.24492938345817 
+            xmax = 114.68109401852747 
+            text = "" 
+        intervals [19]:
+            xmin = 114.68109401852747 
+            xmax = 117.06551637433775 
+            text = "inv" 
+        intervals [20]:
+            xmin = 117.06551637433775 
+            xmax = 129.63425116513423 
+            text = "" 
+        intervals [21]:
+            xmin = 129.63425116513423 
+            xmax = 131.657125 
+            text = "inv" 
